@@ -288,9 +288,9 @@ const skills = {
   <section id="architecture" class="py-8 sm:py-10 border-b border-border/60">
     <div class="mb-5">
       <h2 class="text-xs uppercase font-mono tracking-widest text-accent font-semibold mb-1">Engineering Walkthrough</h2>
-      <p class="text-xl sm:text-2xl font-bold tracking-tight text-text">The Hard Part: Schema Normalization & RLS</p>
+      <p class="text-xl sm:text-2xl font-bold tracking-tight text-text">The Hard Part: Architecture & Schema Diff</p>
       <p class="text-xs text-text-muted mt-0.5 max-w-2xl">
-        How a real schema redesign fixed tenant isolation and payment reconciliation in UnitKo.
+        Interactive side-by-side diffs comparing flawed initial architectures against production fixes across UnitKo, Ledgerly, and TellHealth.
       </p>
     </div>
 
@@ -327,9 +327,18 @@ const skills = {
         </p>
       </div>
       <div class="flex flex-wrap items-center gap-3 font-medium text-sm">
+        <button
+          type="button"
+          onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
+          class="px-5 py-2.5 rounded-lg bg-accent text-accent-text hover:opacity-90 transition-opacity shadow-sm cursor-pointer flex items-center gap-2"
+        >
+          <TechIcon name="mail" class="w-4 h-4 text-accent-text" />
+          <span>Send Message</span>
+        </button>
         <a
           href="mailto:johnfelixmarc@gmail.com"
-          class="px-5 py-2.5 rounded-lg bg-accent text-accent-text hover:opacity-90 transition-opacity shadow-sm"
+          class="px-4 py-2.5 rounded-lg border border-border hover:bg-surface-raised text-text-muted hover:text-text text-xs font-mono transition-colors"
+          title="Direct mailto: link"
         >
           johnfelixmarc@gmail.com
         </a>
