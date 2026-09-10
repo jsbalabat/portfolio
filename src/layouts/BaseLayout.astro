@@ -1,0 +1,174 @@
+---
+import '../styles/global.css';
+import CommandPalette from '../components/pitched/CommandPalette';
+import TldrToggle from '../components/TldrToggle';
+import TransitionOpener from '../components/TransitionOpener.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Marc | Full-Stack Software Engineer',
+  description = 'Full-stack engineer who ships production systems that replace manual workflows. Sole engineer on three shipped products in 14 months.',
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://jsbalabat.dev');
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Primary Meta Tags -->
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+
+    <!-- Tranquil Dark/Light Theme Script -->
+    <script is:inline>
+      const theme = (() => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          return 'dark';
+        }
+        return 'light';
+      })();
+
+      if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+
+      // Check TLDR mode preference on initial page load
+      if (typeof localStorage !== 'undefined' && localStorage.getItem('portfolio_tldr_active') === 'true') {
+        document.addEventListener('DOMContentLoaded', () => {
+          document.body.classList.add('tldr-active');
+        });
+      }
+    </script>
+  </head>
+  <body class="min-h-screen bg-bg text-text antialiased selection:bg-accent/20 selection:text-accent">
+    <!-- Top Transition Opener Curtain Reveal -->
+    <TransitionOpener />
+
+    <!-- Maximized Full-Width Container (eliminating excess lateral whitespace) -->
+    <div class="w-full max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12 flex flex-col min-h-screen">
+      <!-- Site Navigation -->
+      <header class="py-4 sm:py-5 flex items-center justify-between gap-4 border-b border-border/60">
+        <a href="/" class="group flex items-center gap-2.5 font-mono text-sm tracking-tight text-text">
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-accent group-hover:scale-125 transition-transform duration-200"></span>
+          <span class="font-bold text-lg tracking-tight">Marc</span>
+          <span class="text-text-muted">/</span>
+          <span class="text-text-muted text-xs font-mono">full-stack engineer</span>
+        </a>
+
+        <!-- Middle / Right Nav items -->
+        <nav class="flex items-center gap-3 sm:gap-5 text-sm font-medium text-text-muted">
+          <!-- TLDR Interactive Toggle Button -->
+          <TldrToggle client:load />
+
+          <a href="/#work" class="hover:text-text transition-colors">Case Studies</a>
+          <a href="/#architecture" class="hover:text-text transition-colors">Architecture</a>
+          <a href="/#skills" class="hover:text-text transition-colors">Stack</a>
+          <a href="/#about" class="hover:text-text transition-colors">About</a>
+          
+          <!-- Command Palette Trigger -->
+          <CommandPalette client:load />
+
+          <!-- Theme Toggle -->
+          <button
+            id="theme-toggle"
+            type="button"
+            aria-label="Toggle color theme"
+            class="px-2.5 py-1.5 rounded-lg hover:bg-surface-raised border border-border text-xs font-mono text-text transition-colors"
+          >
+            <span class="dark:hidden">☾ Dark</span>
+            <span class="hidden dark:inline">☼ Light</span>
+          </button>
+        </nav>
+      </header>
+
+      <!-- Main Page Content -->
+      <main class="flex-1 py-6 sm:py-8">
+        <slot />
+      </main>
+
+      <!-- Site Footer -->
+      <footer class="py-6 sm:py-8 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-text-muted">
+        <div>
+          <span>© {new Date().getFullYear()} Marc (jsbalabat). Built with Astro 5, React 19, and Tailwind CSS 4.</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <a href="mailto:johnfelixmarc@gmail.com" class="hover:text-text transition-colors">johnfelixmarc@gmail.com</a>
+          <span>•</span>
+          <a href="https://github.com/jsbalabat" target="_blank" rel="noopener noreferrer" class="hover:text-text transition-colors">GitHub</a>
+          <span>•</span>
+          <span class="inline-flex items-center gap-1.5 text-accent font-medium">
+            Cloudflare Workers Runtime
+          </span>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Floating TLDR Active Indicator Toast -->
+    <div
+      id="tldr-toast"
+      class="tldr-banner fixed bottom-6 left-1/2 -translate-x-1/2 z-40 px-4 py-2 rounded-full border border-accent/70 bg-surface/90 backdrop-blur-md shadow-lg text-xs font-mono items-center gap-3"
+    >
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span class="text-text font-medium">TLDR Active: High-signal metrics and outcomes highlighted</span>
+      <button
+        id="tldr-toast-dismiss"
+        type="button"
+        class="text-accent underline hover:opacity-80 font-semibold cursor-pointer"
+      >
+        Turn Off
+      </button>
+    </div>
+
+    <!-- Theme Toggle & TLDR Toast Dismiss Scripts -->
+    <script>
+      const toggle = document.getElementById('theme-toggle');
+      if (toggle) {
+        toggle.addEventListener('click', () => {
+          const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+          const next = isDark ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', next);
+          localStorage.setItem('theme', next);
+        });
+      }
+
+      const toastDismiss = document.getElementById('tldr-toast-dismiss');
+      if (toastDismiss) {
+        toastDismiss.addEventListener('click', () => {
+          document.body.classList.remove('tldr-active');
+          localStorage.setItem('portfolio_tldr_active', 'false');
+          // Dispatch custom event to sync react toggle button state if needed
+          window.dispatchEvent(new Event('tldr-state-change'));
+        });
+      }
+    </script>
+  </body>
+</html>
