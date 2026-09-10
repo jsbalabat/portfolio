@@ -1,0 +1,100 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import TechIcon from '../../components/icons/TechIcon.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('work');
+  return entries.map((entry) => ({
+    params: { id: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<BaseLayout
+  title={`${entry.data.title} — Architectural Case Study | Marc`}
+  description={entry.data.tagline}
+>
+  <article class="max-w-5xl mx-auto py-8">
+    <!-- Back link -->
+    <div class="mb-8">
+      <a href="/#work" class="text-xs font-mono text-text-muted hover:text-text transition-colors inline-flex items-center gap-1.5">
+        ← Back to case studies
+      </a>
+    </div>
+
+    <!-- Case Study Header -->
+    <header class="border-b border-border/70 pb-8 mb-12">
+      <div class="flex flex-wrap items-center gap-2 font-mono text-xs text-text-muted mb-4">
+        <span class="px-2.5 py-0.5 rounded-full bg-surface-raised border border-border font-semibold text-text">
+          Case Study 0{entry.data.order}
+        </span>
+        <span>{entry.data.timeline}</span>
+        <span>•</span>
+        <span>{entry.data.role}</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-text mb-4">
+        {entry.data.title}
+      </h1>
+
+      <p class="text-lg sm:text-xl text-text-muted leading-relaxed max-w-3xl mb-8">
+        {entry.data.tagline}
+      </p>
+
+      <!-- Metadata & Live Links Bar -->
+      <div class="p-5 rounded-2xl border border-border bg-surface flex flex-wrap items-center justify-between gap-4 shadow-xs">
+        <div class="flex flex-wrap items-center gap-2">
+          {entry.data.stack.map((tech: string) => (
+            <span class="px-3 py-1 rounded-lg bg-surface-raised border border-border text-xs font-mono text-text flex items-center gap-1.5">
+              <TechIcon name={tech} class="w-3.5 h-3.5 text-accent" />
+              <span>{tech}</span>
+            </span>
+          ))}
+        </div>
+
+        <div class="flex items-center gap-4 text-xs font-mono">
+          {entry.data.liveUrl && (
+            <a
+              href={entry.data.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="px-3 py-1.5 rounded-md bg-accent text-accent-text font-medium hover:opacity-90 transition-opacity"
+            >
+              Open Live App ↗
+            </a>
+          )}
+          {entry.data.repoUrl && (
+            <a
+              href={entry.data.repoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="px-3 py-1.5 rounded-md border border-border hover:bg-surface-raised transition-colors"
+            >
+              View GitHub Repo ↗
+            </a>
+          )}
+        </div>
+      </div>
+    </header>
+
+    <!-- Case Study Markdown Content -->
+    <div class="prose prose-zinc dark:prose-invert max-w-none text-text-muted leading-relaxed space-y-6 text-base [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:tracking-tight [&_h2]:text-text [&_h2]:pt-8 [&_h2]:border-t [&_h2]:border-border/40 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-text [&_p]:leading-relaxed [&_blockquote]:border-l-2 [&_blockquote]:border-accent [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-text-muted [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-2 [&_code]:font-mono [&_code]:text-xs [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:bg-surface-raised [&_code]:border [&_code]:border-border/60">
+      <Content />
+    </div>
+
+    <!-- Case Study Footer -->
+    <div class="mt-16 pt-8 border-t border-border flex items-center justify-between">
+      <a href="/#work" class="text-sm font-medium text-accent hover:underline inline-flex items-center gap-1">
+        ← Back to all projects
+      </a>
+      <a href="mailto:johnfelixmarc@gmail.com" class="text-sm font-medium text-text-muted hover:text-text transition-colors">
+        Discuss this architecture →
+      </a>
+    </div>
+  </article>
+</BaseLayout>
