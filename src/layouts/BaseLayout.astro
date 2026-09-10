@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import CommandPalette from '../components/pitched/CommandPalette';
 import TldrToggle from '../components/TldrToggle';
+import ContactModal from '../components/ContactModal';
 import TransitionOpener from '../components/TransitionOpener.astro';
 
 interface Props {
@@ -93,6 +94,13 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://jsbalaba
           <a href="/#architecture" class="hover:text-text transition-colors">Architecture</a>
           <a href="/#skills" class="hover:text-text transition-colors">Stack</a>
           <a href="/#about" class="hover:text-text transition-colors">About</a>
+          <button
+            type="button"
+            onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
+            class="hover:text-text transition-colors cursor-pointer"
+          >
+            Contact
+          </button>
           
           <!-- Command Palette Trigger -->
           <CommandPalette client:load />
@@ -121,7 +129,14 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://jsbalaba
           <span>© {new Date().getFullYear()} Marc (jsbalabat). Built with Astro 5, React 19, and Tailwind CSS 4.</span>
         </div>
         <div class="flex items-center gap-4">
-          <a href="mailto:johnfelixmarc@gmail.com" class="hover:text-text transition-colors">johnfelixmarc@gmail.com</a>
+          <button
+            type="button"
+            onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
+            class="hover:text-text transition-colors cursor-pointer text-left underline decoration-accent/40 hover:decoration-accent"
+            title="Open email contact popup"
+          >
+            johnfelixmarc@gmail.com
+          </button>
           <span>•</span>
           <a href="https://github.com/jsbalabat" target="_blank" rel="noopener noreferrer" class="hover:text-text transition-colors">GitHub</a>
           <span>•</span>
@@ -147,6 +162,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://jsbalaba
         Turn Off
       </button>
     </div>
+
+    <!-- Contact Email Modal Popup -->
+    <ContactModal client:load />
 
     <!-- Theme Toggle & TLDR Toast Dismiss Scripts -->
     <script>

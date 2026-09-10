@@ -82,6 +82,11 @@ const key = name.toLowerCase();
   <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" class={className} aria-hidden="true">
     <path d="M12 0L1.5 6v12L12 24l10.5-6V6L12 0zm0 2.3l8.5 4.85v9.7L12 21.7 3.5 16.85v-9.7L12 2.3z" />
   </svg>
+) : (key.includes('mail') || key.includes('email')) ? (
+  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className} aria-hidden="true">
+    <rect width="20" height="16" x="2" y="4" rx="2" />
+    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+  </svg>
 ) : (
   <svg viewBox="0 0 16 16" width={size} height={size} fill="currentColor" class={className} aria-hidden="true">
     <circle cx="8" cy="8" r="4" />
