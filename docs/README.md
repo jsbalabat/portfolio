@@ -65,6 +65,8 @@ Recorded here so you do not relitigate them at 1am in Phase 3.
 | Admin gate | Cloudflare Access | Free for 50 users. Google login in front of `/admin` with zero auth code to write or maintain. |
 | Case studies at launch | UnitKo, tell-health, invoicing platform | The three with public code, live URLs, and defensible numbers. |
 | MyThorneAI | Off the site entirely | The internship letter signed 30 July 2026 carries a confidentiality clause covering source code, architecture, and internal processes. |
+| Visual tone & Palette | Tranquil Minimalist (#73877b, #839788, #bdbbb6, #e5d1d0, #f5e4d7) | Calming, accessible, human aesthetic avoiding cold AI-like motifs. Documented in `docs/UI_UX_BEST_PRACTICES.md`. |
+| UI/UX Best Practices | Proof-First & Scannable | Integrated TLDR mode, authentic tech stack SVG icons, interactive schema diff slider, and Command Palette. |
 
 ### Two things that are true now and were not last year
 
