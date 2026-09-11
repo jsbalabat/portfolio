@@ -38,100 +38,140 @@ const skills = {
     { name: 'Wrangler CLI', note: 'Workers edge deployment', highlight: false },
   ],
 };
+
+const keyOutcomes: Record<string, { badge: string; text: string }> = {
+  ledgerly: {
+    badge: '6 Companies • ~150 Inv/Day',
+    text: 'Replaced Excel billing via idempotent Cloud Functions write-path.',
+  },
+  unitko: {
+    badge: '3NF Schema • Postgres RLS',
+    text: 'Enforced tenant isolation and eliminated cash waterfall drift.',
+  },
+  'tell-health': {
+    badge: '25/58 Retained • 6-Day Sprint',
+    text: 'Deterministic Zod schema guardrails & PII scrub over LLM triage.',
+  },
+};
 ---
 
 <BaseLayout>
-  <!-- Hero Section (Tranquil, Compact Spacing, Maximized Width) -->
-  <section class="pb-8 sm:pb-10 border-b border-border/60">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
-      
-      <!-- Left Column: Picture and Title -->
-      <div class="lg:col-span-8 flex flex-col items-start">
-        <div class="flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface text-xs font-mono text-text-muted shadow-xs mb-4">
-          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-          <span>Full-stack software engineer • Sole developer</span>
-        </div>
+  <!-- Full-Height Editorial Cover Page (True 100vh Hero Cover with zero header offset) -->
+  <section id="cover" class="min-h-[100svh] py-8 sm:py-12 lg:py-16 border-b border-border/60 flex flex-col justify-between">
+    <!-- Top & Middle Content -->
+    <div class="my-auto py-4">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
+        
+        <!-- Left Column: Picture, Identity, Headline, and CTAs -->
+        <div class="lg:col-span-8 flex flex-col items-start">
+          <div class="flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface text-xs font-mono text-text-muted shadow-2xs mb-5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Full-stack software engineer • Sole developer</span>
+          </div>
 
-        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8 mb-6 w-full">
-          <!-- Portrait Image (Expanded & Prominent) -->
-          <div class="relative shrink-0">
-            <div class="w-36 h-36 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-60 lg:h-60 rounded-3xl overflow-hidden border-2 border-border shadow-md bg-surface-raised relative group">
-              <img
-                src="/images/profile.jpg"
-                alt="Marc - Full-Stack Engineer"
-                class="w-full h-full object-cover object-center filter grayscale contrast-105 group-hover:grayscale-0 transition-all duration-500"
-                loading="eager"
-              />
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8 mb-6 w-full">
+            <!-- Portrait Image (Expanded & Prominent) -->
+            <div class="relative shrink-0">
+              <div class="w-36 h-36 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-60 lg:h-60 rounded-3xl overflow-hidden border-2 border-border shadow-md bg-surface-raised relative group">
+                <img
+                  src="/images/profile.jpg"
+                  alt="Marc - Full-Stack Engineer"
+                  class="w-full h-full object-cover object-center filter grayscale contrast-105 group-hover:grayscale-0 transition-all duration-500"
+                  loading="eager"
+                />
+              </div>
+              <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-surface border border-border text-accent text-xs font-mono font-bold shadow-xs whitespace-nowrap">
+                Marc
+              </div>
             </div>
-            <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full bg-surface border border-border text-accent text-[11px] font-mono font-semibold shadow-xs whitespace-nowrap">
-              Marc
+
+            <!-- Main Title -->
+            <div class="flex-1">
+              <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-text leading-[1.1]">
+                I build production systems that replace manual workflows.
+              </h1>
             </div>
           </div>
 
-          <!-- Main Title -->
-          <div class="flex-1">
-            <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-text leading-tight">
-              I build production systems that replace manual workflows.
-            </h1>
+          <p class="text-sm sm:text-base text-text-muted leading-relaxed mb-6 max-w-3xl tldr-dim">
+            Sole engineer across three shipped products in 14 months with 650+ commits. I design systems where correctness and edge cases matter: replacing Excel billing for distribution companies, fixing schema normalization bugs, and building reliable offline-first pipelines.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-3 text-sm font-medium">
+            <a
+              href="#work"
+              class="px-5 py-2.5 rounded-xl bg-accent text-accent-text hover:opacity-90 transition-all shadow-xs flex items-center gap-2 font-medium"
+            >
+              <span>Explore Case Studies</span>
+              <span class="text-xs">↓</span>
+            </a>
+            <a
+              href="#architecture"
+              class="px-4 py-2.5 rounded-xl border border-border hover:bg-surface-raised text-text transition-colors"
+            >
+              Schema Diff Playground
+            </a>
+            <button
+              type="button"
+              onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
+              class="px-4 py-2.5 rounded-xl border border-border hover:bg-surface-raised text-text transition-colors cursor-pointer flex items-center gap-2"
+            >
+              <TechIcon name="mail" class="w-4 h-4 text-accent" />
+              <span>Get in Touch</span>
+            </button>
+            <a
+              href="https://github.com/jsbalabat"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="px-4 py-2.5 rounded-xl border border-border/80 hover:bg-surface-raised text-text-muted hover:text-text transition-colors flex items-center gap-2"
+            >
+              <TechIcon name="github" class="w-4 h-4 text-accent" />
+              <span>GitHub</span>
+            </a>
           </div>
         </div>
 
-        <p class="text-sm sm:text-base text-text-muted leading-relaxed mb-5 max-w-3xl tldr-dim">
-          Sole engineer across three shipped products in 14 months with 650+ commits. I design systems where correctness and edge cases matter: replacing Excel billing for distribution companies, fixing schema normalization bugs, and building reliable offline-first pipelines.
-        </p>
+        <!-- Right Column: Key Metrics Callout (Highlights in TLDR Mode) -->
+        <div class="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3.5">
+          <div class="tldr-highlight flex-1 p-5 rounded-2xl border border-border bg-surface shadow-xs transition-all duration-300">
+            <span class="text-[11px] font-mono uppercase tracking-wider text-accent font-semibold block mb-1">
+              Shipped Products
+            </span>
+            <p class="text-2xl sm:text-3xl font-extrabold text-text tracking-tight">3 Applications</p>
+            <p class="text-xs text-text-muted mt-1 leading-relaxed">Sole engineer from architecture to deployment.</p>
+          </div>
 
-        <div class="flex flex-wrap items-center gap-3 text-sm font-medium">
-          <a
-            href="#work"
-            class="px-4 py-2 rounded-lg bg-accent text-accent-text hover:opacity-90 transition-opacity shadow-sm"
-          >
-            Explore Case Studies
-          </a>
-          <a
-            href="#architecture"
-            class="px-4 py-2 rounded-lg border border-border hover:bg-surface-raised text-text transition-colors"
-          >
-            View Schema Normalization
-          </a>
-          <a
-            href="https://github.com/jsbalabat"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="px-4 py-2 rounded-lg border border-border/80 hover:bg-surface-raised text-text-muted hover:text-text transition-colors flex items-center gap-2"
-          >
-            <TechIcon name="github" class="w-4 h-4 text-accent" />
-            <span>GitHub Profile</span>
-          </a>
+          <div class="tldr-highlight flex-1 p-5 rounded-2xl border border-border bg-surface shadow-xs transition-all duration-300">
+            <span class="text-[11px] font-mono uppercase tracking-wider text-accent font-semibold block mb-1">
+              Commercial Adoption
+            </span>
+            <p class="text-2xl sm:text-3xl font-extrabold text-text tracking-tight">6 Companies</p>
+            <p class="text-xs text-text-muted mt-1 leading-relaxed">Cleared ~150 invoices/day replacing Excel billing.</p>
+          </div>
+
+          <div class="tldr-highlight flex-1 p-5 rounded-2xl border border-border bg-surface shadow-xs transition-all duration-300">
+            <span class="text-[11px] font-mono uppercase tracking-wider text-accent font-semibold block mb-1">
+              Verified Git History
+            </span>
+            <p class="text-2xl sm:text-3xl font-extrabold text-text tracking-tight">650+ Commits</p>
+            <p class="text-xs text-text-muted mt-1 leading-relaxed">Continuous delivery over 14 months.</p>
+          </div>
         </div>
+
       </div>
+    </div>
 
-      <!-- Right Column: Key Metrics Callout (Highlights in TLDR Mode) -->
-      <div class="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3">
-        <div class="tldr-highlight flex-1 p-4 rounded-xl border border-border bg-surface shadow-xs transition-all duration-300">
-          <span class="text-[11px] font-mono uppercase tracking-wider text-accent font-semibold block mb-0.5">
-            Shipped Products
-          </span>
-          <p class="text-2xl font-extrabold text-text tracking-tight">3 Applications</p>
-          <p class="text-xs text-text-muted mt-0.5">Sole engineer from architecture to deployment.</p>
-        </div>
-
-        <div class="tldr-highlight flex-1 p-4 rounded-xl border border-border bg-surface shadow-xs transition-all duration-300">
-          <span class="text-[11px] font-mono uppercase tracking-wider text-accent font-semibold block mb-0.5">
-            Commercial Adoption
-          </span>
-          <p class="text-2xl font-extrabold text-text tracking-tight">6 Companies</p>
-          <p class="text-xs text-text-muted mt-0.5">Cleared ~150 invoices/day replacing Excel billing.</p>
-        </div>
-
-        <div class="tldr-highlight flex-1 p-4 rounded-xl border border-border bg-surface shadow-xs transition-all duration-300">
-          <span class="text-[11px] font-mono uppercase tracking-wider text-accent font-semibold block mb-0.5">
-            Verified Git History
-          </span>
-          <p class="text-2xl font-extrabold text-text tracking-tight">650+ Commits</p>
-          <p class="text-xs text-text-muted mt-0.5">Continuous delivery over 14 months.</p>
-        </div>
+    <!-- Editorial Bottom Anchor / Scroll Prompt -->
+    <div class="pt-6 pb-2 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border/40 text-xs font-mono text-text-muted">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>Open to full-stack, frontend, or backend roles</span>
       </div>
-
+      <div class="flex items-center">
+        <svg viewBox="0 0 24 24" class="w-5 h-5 text-text-muted animate-bounce" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 9l6 6 6-6"/>
+        </svg>
+      </div>
     </div>
   </section>
 
@@ -149,19 +189,19 @@ const skills = {
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
       {Object.entries(skills).map(([category, items]) => (
-        <div class="p-4 rounded-xl border border-border bg-surface shadow-xs">
+        <div class="p-4 rounded-xl border border-border bg-surface shadow-xs flex flex-col">
           <h3 class="text-xs font-mono font-bold text-accent uppercase tracking-wider mb-3 pb-1.5 border-b border-border/50">
             {category}
           </h3>
-          <ul class="space-y-2.5 text-sm">
+          <ul class="space-y-1.5 text-sm flex-1">
             {items.map((item) => (
-              <li class={`flex items-center gap-2.5 text-text transition-all duration-300 ${item.highlight ? 'tldr-highlight p-1 rounded-md' : 'tldr-dim'}`}>
-                <span class="shrink-0 text-accent">
-                  <TechIcon name={item.name} class="w-4 h-4" />
+              <li class={`flex items-center gap-2.5 px-2 py-1.5 rounded-lg transition-all duration-200 ${item.highlight ? 'tldr-highlight' : 'tldr-dim'}`}>
+                <span class="w-7 h-7 rounded-md bg-surface-raised border border-border/60 flex items-center justify-center shrink-0 text-accent shadow-2xs">
+                  <TechIcon name={item.name} class="w-3.5 h-3.5" />
                 </span>
-                <div>
-                  <span class="font-medium text-xs text-text block leading-tight">{item.name}</span>
-                  <span class="text-[10px] text-text-muted block leading-tight">{item.note}</span>
+                <div class="min-w-0 flex-1">
+                  <span class="font-medium text-xs text-text block truncate leading-tight">{item.name}</span>
+                  <span class="text-[10px] text-text-muted block truncate mt-0.5 leading-tight">{item.note}</span>
                 </div>
               </li>
             ))}
@@ -226,15 +266,23 @@ const skills = {
                 {study.data.tagline}
               </p>
 
-              <!-- High-Signal Outcome Highlight Strip for TLDR -->
-              <div class="tldr-highlight mb-4 p-2.5 rounded-lg bg-surface-raised/80 border border-border/80 text-xs font-mono text-accent flex items-center gap-2">
-                <span class="font-bold text-accent">Key Outcome:</span>
-                <span class="text-text">
-                  {study.id === 'ledgerly' && 'Replaced Excel billing across 6 companies • ~150 invoices/day • Cloud Functions write-path'}
-                  {study.id === 'unitko' && 'Rewrote non-1NF database to 3NF PostgreSQL • Enforced Supabase Row-Level Security isolation'}
-                  {study.id === 'tell-health' && '6-day sprint triage engine • Retained in 25 of 58 cohort candidates • Red-flag guardrails'}
-                </span>
-              </div>
+              <!-- Single-Line High-Signal Outcome Strip (Clean baseline, unified font size) -->
+              {keyOutcomes[study.id] && (
+                <div
+                  class="tldr-highlight mb-4 px-3.5 py-2.5 rounded-lg bg-surface-raised/70 border border-border/80 border-l-4 border-l-accent flex items-center gap-2.5 text-xs text-text overflow-hidden shadow-2xs"
+                  title={`${keyOutcomes[study.id].badge} — ${keyOutcomes[study.id].text}`}
+                >
+                  <div class="shrink-0 flex items-center gap-2 text-xs font-mono font-bold text-accent">
+                    <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                    <span>Outcome:</span>
+                  </div>
+                  <div class="min-w-0 flex-1 truncate text-xs text-text">
+                    <span class="font-semibold text-text">{keyOutcomes[study.id].badge}</span>
+                    <span class="text-text-muted mx-1.5">•</span>
+                    <span>{keyOutcomes[study.id].text}</span>
+                  </div>
+                </div>
+              )}
 
               {/* Tech Stack Badges with Authentic SVG Icons */}
               <div class="flex flex-wrap gap-2 mb-5">

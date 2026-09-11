@@ -16,6 +16,7 @@ const {
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://jsbalabat.dev');
+const isHomepage = Astro.url.pathname === '/' || Astro.url.pathname === '';
 ---
 
 <!doctype html>
@@ -74,10 +75,13 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://jsbalaba
     <!-- Top Transition Opener Curtain Reveal -->
     <TransitionOpener />
 
-    <!-- Maximized Full-Width Container (eliminating excess lateral whitespace) -->
-    <div class="w-full max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12 flex flex-col min-h-screen">
-      <!-- Site Navigation -->
-      <header class="py-4 sm:py-5 flex items-center justify-between gap-4 border-b border-border/60">
+    <!-- Site Navigation (Fixed, backdrop-blurred, 0-100 fade halfway through cover page) -->
+    <header
+      id="site-header"
+      class="fixed top-0 left-0 right-0 z-40 bg-bg/90 backdrop-blur-md border-b border-border/60 transition-opacity duration-150 pointer-events-none"
+      style={isHomepage ? "opacity: 0;" : "opacity: 1; pointer-events: auto;"}
+    >
+      <div class="w-full max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12 py-3.5 sm:py-4 flex items-center justify-between gap-4">
         <a href="/" class="group flex items-center gap-2.5 font-mono text-sm tracking-tight text-text">
           <span class="inline-block w-2.5 h-2.5 rounded-full bg-accent group-hover:scale-125 transition-transform duration-200"></span>
           <span class="font-bold text-lg tracking-tight">Marc</span>
@@ -116,10 +120,13 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://jsbalaba
             <span class="hidden dark:inline">☼ Light</span>
           </button>
         </nav>
-      </header>
+      </div>
+    </header>
 
+    <!-- Maximized Full-Width Container (eliminating excess lateral whitespace) -->
+    <div class="w-full max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12 flex flex-col min-h-screen">
       <!-- Main Page Content -->
-      <main class="flex-1 py-6 sm:py-8">
+      <main class={`flex-1 ${isHomepage ? '' : 'pt-20 sm:pt-24 py-6 sm:py-8'}`}>
         <slot />
       </main>
 
@@ -186,6 +193,38 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://jsbalaba
           // Dispatch custom event to sync react toggle button state if needed
           window.dispatchEvent(new Event('tldr-state-change'));
         });
+      }
+
+      // Dynamic header fade-in: 0-100 halfway through cover page onwards
+      const header = document.getElementById('site-header');
+      const cover = document.getElementById('cover');
+
+      if (header && cover) {
+        const updateHeader = () => {
+          const coverHeight = cover.offsetHeight || window.innerHeight;
+          const halfway = coverHeight * 0.5;
+          const scrollY = window.scrollY || window.pageYOffset || 0;
+
+          if (scrollY <= halfway) {
+            header.style.opacity = '0';
+            header.style.pointerEvents = 'none';
+          } else if (scrollY >= coverHeight) {
+            header.style.opacity = '1';
+            header.style.pointerEvents = 'auto';
+          } else {
+            const progress = (scrollY - halfway) / (coverHeight - halfway);
+            const clamped = Math.max(0, Math.min(1, progress));
+            header.style.opacity = clamped.toFixed(3);
+            header.style.pointerEvents = clamped > 0.15 ? 'auto' : 'none';
+          }
+        };
+
+        window.addEventListener('scroll', updateHeader, { passive: true });
+        window.addEventListener('resize', updateHeader, { passive: true });
+        updateHeader();
+      } else if (header) {
+        header.style.opacity = '1';
+        header.style.pointerEvents = 'auto';
       }
     </script>
   </body>
