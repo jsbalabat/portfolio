@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 interface CommandItem {
   id: string;
@@ -12,12 +13,17 @@ interface CommandItem {
 
 export default function CommandPalette() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isMac, setIsMac] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const isClosingRef = useRef(false);
 
   useEffect(() => {
+    setMounted(true);
     setIsMac(/(Mac|iPhone|iPod|iPad)/i.test(navigator.userAgent));
   }, []);
 
@@ -127,8 +133,10 @@ export default function CommandPalette() {
       category: 'Contact',
       icon: 'mail',
       action: () => {
-        setIsOpen(false);
-        window.dispatchEvent(new CustomEvent('open-contact-modal'));
+        closePalette();
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('open-contact-modal'));
+        }, 150);
       },
       shortcut: 'M',
     },
@@ -164,30 +172,85 @@ export default function CommandPalette() {
     );
   });
 
+  const closePalette = useCallback(() => {
+    if (isClosingRef.current || !isOpen) return;
+    isClosingRef.current = true;
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsOpen(false);
+      setIsClosing(false);
+      isClosingRef.current = false;
+      setQuery('');
+    }, 220);
+  }, [isOpen]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        setIsOpen((prev) => !prev);
-      } else if (e.key === 'Escape') {
-        setIsOpen(false);
+        if (isOpen) {
+          closePalette();
+        } else {
+          isClosingRef.current = false;
+          setIsClosing(false);
+          setIsOpen(true);
+        }
+      } else if (e.key === 'Escape' && isOpen && !isClosingRef.current) {
+        closePalette();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [isOpen, closePalette]);
 
   useEffect(() => {
     if (isOpen) {
+      document.documentElement.style.overflowY = 'scroll';
       document.body.style.overflow = 'hidden';
-      setTimeout(() => inputRef.current?.focus(), 50);
+      setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 50);
       setSelectedIndex(0);
     } else {
+      document.documentElement.style.overflowY = '';
       document.body.style.overflow = '';
-      setQuery('');
     }
+
+    return () => {
+      document.documentElement.style.overflowY = '';
+      document.body.style.overflow = '';
+    };
   }, [isOpen]);
+
+  // Auto-scroll results list to follow actively highlighted item
+  useEffect(() => {
+    if (!isOpen || !listRef.current) return;
+    const container = listRef.current;
+    const item = container.children[selectedIndex] as HTMLElement;
+    if (!item) return;
+
+    if (selectedIndex === 0) {
+      container.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    const padding = 8; // 8px buffer (matching p-2) to ensure items have breathing room and are never covered by the search bar
+    const itemTop = item.offsetTop;
+    const itemBottom = itemTop + item.offsetHeight;
+    const containerTop = container.scrollTop;
+    const containerBottom = containerTop + container.clientHeight;
+
+    if (itemTop - padding < containerTop) {
+      container.scrollTo({ top: Math.max(0, itemTop - padding), behavior: 'smooth' });
+    } else if (itemBottom + padding > containerBottom) {
+      container.scrollTo({
+        top: Math.min(
+          container.scrollHeight - container.clientHeight,
+          itemBottom + padding - container.clientHeight
+        ),
+        behavior: 'smooth',
+      });
+    }
+  }, [selectedIndex, isOpen]);
 
   const handleKeyNavigation = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
@@ -287,17 +350,31 @@ export default function CommandPalette() {
         </kbd>
       </button>
 
-      {/* Modal Dialog */}
-      {isOpen && (
+      {/* Modal Dialog Portaled to document.body */}
+      {mounted && isOpen && createPortal(
         <div
           role="dialog"
           aria-modal="true"
           aria-labelledby="command-palette-input"
-          className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150"
-          onClick={() => setIsOpen(false)}
+          className={`fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-black/60 backdrop-blur-xs ${
+            isClosing ? 'animate-modal-backdrop-out' : 'animate-modal-backdrop'
+          }`}
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) {
+              closePalette();
+            }
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              closePalette();
+            }
+          }}
         >
           <div
-            className="w-full max-w-xl rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden font-mono text-sm text-text transition-all animate-in zoom-in-95 duration-150"
+            className={`w-full max-w-xl rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden font-mono text-sm text-text ${
+              isClosing ? 'animate-modal-content-out' : 'animate-modal-content'
+            }`}
+            onMouseDown={(e) => e.stopPropagation()}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Search Input Bar */}
@@ -342,8 +419,8 @@ export default function CommandPalette() {
               </kbd>
             </div>
 
-            {/* Results List */}
-            <div className="max-h-80 sm:max-h-96 overflow-y-auto p-2 space-y-1">
+            {/* Results List (Auto-scrolls to follow highlighted item) */}
+            <div ref={listRef} className="relative max-h-80 sm:max-h-96 overflow-y-auto p-2 space-y-1">
               {filtered.length === 0 ? (
                 <div className="py-12 text-center text-xs text-text-muted space-y-1">
                   <p className="font-semibold text-text">No matching commands found</p>
@@ -358,18 +435,18 @@ export default function CommandPalette() {
                       type="button"
                       onClick={() => cmd.action()}
                       onMouseEnter={() => setSelectedIndex(idx)}
-                      className={`w-full text-left px-3 py-2.5 rounded-xl flex items-center justify-between transition-all duration-150 cursor-pointer relative group ${
+                      className={`w-full text-left px-3 py-2.5 rounded-xl flex items-center justify-between transition-colors duration-150 cursor-pointer relative group border ${
                         isSelected
-                          ? 'bg-accent/15 text-text border border-accent/40 shadow-xs'
-                          : 'text-text-muted hover:bg-surface-raised border border-transparent'
+                          ? 'bg-accent/15 text-text border-accent/40 shadow-xs'
+                          : 'text-text-muted hover:bg-surface-raised border-transparent'
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <span
-                          className={`p-1.5 rounded-lg shrink-0 transition-colors ${
+                          className={`p-1.5 rounded-lg shrink-0 transition-colors border ${
                             isSelected
-                              ? 'bg-accent text-accent-text'
-                              : 'bg-surface-raised text-accent border border-border/60'
+                              ? 'bg-accent text-accent-text border-accent'
+                              : 'bg-surface-raised text-accent border-border/60'
                           }`}
                         >
                           {renderIcon(cmd.icon)}
@@ -379,7 +456,7 @@ export default function CommandPalette() {
                             <span className="text-xs sm:text-sm text-text font-medium truncate">
                               {cmd.title}
                             </span>
-                            <span className="text-[10px] uppercase font-mono tracking-wider px-1.5 py-0.2 rounded bg-surface border border-border/50 text-text-muted shrink-0">
+                            <span className="text-[10px] uppercase font-mono tracking-wider px-1.5 py-0.5 rounded bg-surface border border-border/50 text-text-muted shrink-0">
                               {cmd.category}
                             </span>
                           </div>
@@ -394,10 +471,10 @@ export default function CommandPalette() {
                       {cmd.shortcut && (
                         <div className="ml-3 shrink-0">
                           <kbd
-                            className={`px-2 py-0.5 rounded text-[10px] font-mono transition-colors ${
+                            className={`px-2 py-0.5 rounded text-[10px] font-mono transition-colors border font-semibold ${
                               isSelected
-                                ? 'bg-accent text-accent-text font-bold shadow-xs'
-                                : 'bg-surface-raised border border-border text-text-muted'
+                                ? 'bg-accent text-accent-text border-accent shadow-xs'
+                                : 'bg-surface-raised border-border text-text-muted'
                             }`}
                           >
                             {cmd.shortcut}
@@ -428,7 +505,8 @@ export default function CommandPalette() {
               </span>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
