@@ -113,18 +113,73 @@ export default function CommandPalette() {
     },
     {
       id: 'toggle-theme',
-      title: 'Toggle Light / Dark Theme',
-      subtitle: 'Switch between tranquil linen and dark slate modes',
+      title: 'Cycle Color Theme (System / Light / Dark)',
+      subtitle: 'Cycle between system auto, light linen, and dark slate',
       category: 'Actions',
       icon: 'theme',
       action: () => {
-        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        const next = isDark ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        localStorage.setItem('theme', next);
-        setIsOpen(false);
+        const currentPref = (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('theme_preference')) || 'system';
+        const cycle: Record<string, string> = {
+          system: 'light',
+          light: 'dark',
+          dark: 'system',
+        };
+        const next = cycle[currentPref] || 'system';
+        try { sessionStorage.setItem('theme_preference', next); } catch (e) {}
+        document.documentElement.setAttribute('data-theme-preference', next);
+        if (next === 'system') {
+          const resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', resolved);
+        } else {
+          document.documentElement.setAttribute('data-theme', next);
+        }
+        window.dispatchEvent(new CustomEvent('theme-preference-change', { detail: next }));
+        closePalette();
       },
       shortcut: 'T',
+    },
+    {
+      id: 'theme-system',
+      title: 'Set Theme: System (Auto)',
+      subtitle: 'Default: Automatically follow operating system light/dark preference',
+      category: 'Actions',
+      icon: 'theme',
+      action: () => {
+        try { sessionStorage.setItem('theme_preference', 'system'); } catch (e) {}
+        document.documentElement.setAttribute('data-theme-preference', 'system');
+        const resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', resolved);
+        window.dispatchEvent(new CustomEvent('theme-preference-change', { detail: 'system' }));
+        closePalette();
+      },
+    },
+    {
+      id: 'theme-light',
+      title: 'Set Theme: Light Mode',
+      subtitle: 'Force tranquil linen light theme',
+      category: 'Actions',
+      icon: 'theme',
+      action: () => {
+        try { sessionStorage.setItem('theme_preference', 'light'); } catch (e) {}
+        document.documentElement.setAttribute('data-theme-preference', 'light');
+        document.documentElement.setAttribute('data-theme', 'light');
+        window.dispatchEvent(new CustomEvent('theme-preference-change', { detail: 'light' }));
+        closePalette();
+      },
+    },
+    {
+      id: 'theme-dark',
+      title: 'Set Theme: Dark Mode',
+      subtitle: 'Force deep slate dark theme',
+      category: 'Actions',
+      icon: 'theme',
+      action: () => {
+        try { sessionStorage.setItem('theme_preference', 'dark'); } catch (e) {}
+        document.documentElement.setAttribute('data-theme-preference', 'dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+        window.dispatchEvent(new CustomEvent('theme-preference-change', { detail: 'dark' }));
+        closePalette();
+      },
     },
     {
       id: 'contact-modal',
@@ -148,7 +203,7 @@ export default function CommandPalette() {
       icon: 'mail',
       action: () => {
         window.location.href = 'mailto:johnfelixmarc@gmail.com';
-        setIsOpen(false);
+        closePalette();
       },
       shortcut: '@',
     },
@@ -158,8 +213,23 @@ export default function CommandPalette() {
       subtitle: 'github.com/jsbalabat',
       category: 'Contact',
       icon: 'external',
-      action: () => window.open('https://github.com/jsbalabat', '_blank'),
+      action: () => {
+        window.open('https://github.com/jsbalabat', '_blank');
+        closePalette();
+      },
       shortcut: 'GH',
+    },
+    {
+      id: 'external-linkedin',
+      title: 'LinkedIn Profile',
+      subtitle: 'linkedin.com/in/marc-balabat',
+      category: 'Contact',
+      icon: 'external',
+      action: () => {
+        window.open('https://www.linkedin.com/in/marc-balabat', '_blank');
+        closePalette();
+      },
+      shortcut: 'IN',
     },
   ];
 

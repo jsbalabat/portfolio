@@ -45,23 +45,41 @@ const isHomepage = Astro.url.pathname === '/' || Astro.url.pathname === '';
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
 
-    <!-- Tranquil Dark/Light Theme Script -->
+    <!-- Tranquil Dark/Light/System Theme Script (Default: System) -->
     <script is:inline>
-      const theme = (() => {
-        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-          return localStorage.getItem('theme');
-        }
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          return 'dark';
-        }
-        return 'light';
-      })();
+      const getStoredTheme = () => {
+        try {
+          // Clean up legacy binary theme key if present
+          if (typeof localStorage !== 'undefined') {
+            localStorage.removeItem('theme');
+          }
+          // Default option when loading in the website is always system
+          if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('theme_preference')) {
+            return sessionStorage.getItem('theme_preference');
+          }
+        } catch (e) {}
+        return 'system';
+      };
 
-      if (theme === 'light') {
-        document.documentElement.setAttribute('data-theme', 'light');
-      } else {
-        document.documentElement.setAttribute('data-theme', 'dark');
-      }
+      const resolveTheme = (preference) => {
+        if (preference === 'system') {
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        return preference;
+      };
+
+      const initialPref = getStoredTheme();
+      const initialResolved = resolveTheme(initialPref);
+      document.documentElement.setAttribute('data-theme', initialResolved);
+      document.documentElement.setAttribute('data-theme-preference', initialPref);
+
+      // Listen for system theme changes dynamically
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        const currentPref = typeof sessionStorage !== 'undefined' ? (sessionStorage.getItem('theme_preference') || 'system') : 'system';
+        if (currentPref === 'system') {
+          document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+        }
+      });
 
       // Check TLDR mode preference on initial page load
       if (typeof localStorage !== 'undefined' && localStorage.getItem('portfolio_tldr_active') === 'true') {
@@ -109,15 +127,16 @@ const isHomepage = Astro.url.pathname === '/' || Astro.url.pathname === '';
           <!-- Command Palette Trigger -->
           <CommandPalette client:load />
 
-          <!-- Theme Toggle -->
+          <!-- Theme Toggle (Cycles: System -> Light -> Dark) -->
           <button
             id="theme-toggle"
             type="button"
-            aria-label="Toggle color theme"
-            class="px-2.5 py-1.5 rounded-lg hover:bg-surface-raised border border-border text-xs font-mono text-text transition-colors"
+            aria-label="Toggle color theme (System, Light, Dark)"
+            title="Theme: System (default), Light, Dark"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-surface-raised border border-border text-xs font-mono text-text transition-colors cursor-pointer"
           >
-            <span class="dark:hidden">☾ Dark</span>
-            <span class="hidden dark:inline">☼ Light</span>
+            <span id="theme-toggle-icon" class="text-accent">◐</span>
+            <span id="theme-toggle-text">System</span>
           </button>
         </nav>
       </div>
@@ -147,6 +166,8 @@ const isHomepage = Astro.url.pathname === '/' || Astro.url.pathname === '';
           <span>•</span>
           <a href="https://github.com/jsbalabat" target="_blank" rel="noopener noreferrer" class="hover:text-text transition-colors">GitHub</a>
           <span>•</span>
+          <a href="https://www.linkedin.com/in/marc-balabat" target="_blank" rel="noopener noreferrer" class="hover:text-text transition-colors">LinkedIn</a>
+          <span>•</span>
           <span class="inline-flex items-center gap-1.5 text-accent font-medium">
             Cloudflare Workers Runtime
           </span>
@@ -175,15 +196,71 @@ const isHomepage = Astro.url.pathname === '/' || Astro.url.pathname === '';
 
     <!-- Theme Toggle & TLDR Toast Dismiss Scripts -->
     <script>
+      const getActiveThemePreference = (): string => {
+        try {
+          if (typeof sessionStorage !== 'undefined') {
+            const stored = sessionStorage.getItem('theme_preference');
+            if (stored) return stored;
+          }
+        } catch (e) {}
+        return 'system';
+      };
+
+      const updateThemeToggleUI = () => {
+        const pref = getActiveThemePreference();
+        const iconEl = document.getElementById('theme-toggle-icon');
+        const textEl = document.getElementById('theme-toggle-text');
+        const btn = document.getElementById('theme-toggle');
+        if (!iconEl || !textEl || !btn) return;
+
+        if (pref === 'system') {
+          iconEl.textContent = '◐';
+          textEl.textContent = 'System';
+          btn.setAttribute('title', 'Theme: System (Default Auto)');
+        } else if (pref === 'light') {
+          iconEl.textContent = '☼';
+          textEl.textContent = 'Light';
+          btn.setAttribute('title', 'Theme: Light');
+        } else {
+          iconEl.textContent = '☾';
+          textEl.textContent = 'Dark';
+          btn.setAttribute('title', 'Theme: Dark');
+        }
+      };
+
+      const applyThemePreference = (nextPref: string) => {
+        try {
+          sessionStorage.setItem('theme_preference', nextPref);
+        } catch (e) {}
+        document.documentElement.setAttribute('data-theme-preference', nextPref);
+        if (nextPref === 'system') {
+          const resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', resolved);
+        } else {
+          document.documentElement.setAttribute('data-theme', nextPref);
+        }
+        updateThemeToggleUI();
+        window.dispatchEvent(new CustomEvent('theme-preference-change', { detail: nextPref }));
+      };
+
       const toggle = document.getElementById('theme-toggle');
       if (toggle) {
+        updateThemeToggleUI();
         toggle.addEventListener('click', () => {
-          const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-          const next = isDark ? 'light' : 'dark';
-          document.documentElement.setAttribute('data-theme', next);
-          localStorage.setItem('theme', next);
+          const currentPref = getActiveThemePreference();
+          const cycle: Record<string, string> = {
+            system: 'light',
+            light: 'dark',
+            dark: 'system',
+          };
+          const next = cycle[currentPref] || 'system';
+          applyThemePreference(next);
         });
       }
+
+      window.addEventListener('theme-preference-change', () => {
+        updateThemeToggleUI();
+      });
 
       const toastDismiss = document.getElementById('tldr-toast-dismiss');
       if (toastDismiss) {
