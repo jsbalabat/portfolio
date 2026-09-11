@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://jsbalabat.dev',
+  site: 'https://marcbalabat.tech',
   output: 'static',
   adapter: cloudflare({
     imageService: 'cloudflare',
