@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef, type SyntheticEvent } from 'react';
+import { useState, useEffect, useRef, useCallback, type SyntheticEvent } from 'react';
 
 export default function ContactModal() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [name, setName] = useState('');
@@ -12,18 +13,32 @@ export default function ContactModal() {
 
   const dialogRef = useRef<HTMLDivElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const isClosingRef = useRef(false);
+
+  const closeModal = useCallback(() => {
+    if (isClosingRef.current || !isOpen) return;
+    isClosingRef.current = true;
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsOpen(false);
+      setIsClosing(false);
+      isClosingRef.current = false;
+    }, 220);
+  }, [isOpen]);
 
   // Listen for global custom events to open the modal from anywhere
   useEffect(() => {
     const handleOpen = () => {
+      isClosingRef.current = false;
+      setIsClosing(false);
       setIsOpen(true);
       setStatus('idle');
       setErrorMessage('');
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        setIsOpen(false);
+      if (e.key === 'Escape' && isOpen && !isClosing) {
+        closeModal();
       }
     };
 
@@ -34,18 +49,25 @@ export default function ContactModal() {
       window.removeEventListener('open-contact-modal', handleOpen);
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isOpen]);
+  }, [isOpen, isClosing, closeModal]);
 
-  // Focus the first input field when modal opens
+  // Prevent background shift and lock scroll when modal opens
   useEffect(() => {
     if (isOpen) {
+      document.documentElement.style.overflowY = 'scroll';
       document.body.style.overflow = 'hidden';
       setTimeout(() => {
-        nameInputRef.current?.focus();
+        nameInputRef.current?.focus({ preventScroll: true });
       }, 100);
     } else {
+      document.documentElement.style.overflowY = '';
       document.body.style.overflow = '';
     }
+
+    return () => {
+      document.documentElement.style.overflowY = '';
+      document.body.style.overflow = '';
+    };
   }, [isOpen]);
 
   const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
@@ -121,16 +143,25 @@ export default function ContactModal() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="contact-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
+      className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs ${
+        isClosing ? 'animate-modal-backdrop-out' : 'animate-modal-backdrop'
+      }`}
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) {
+          closeModal();
+        }
+      }}
       onClick={(e) => {
         if (e.target === e.currentTarget) {
-          setIsOpen(false);
+          closeModal();
         }
       }}
     >
       <div
         ref={dialogRef}
-        className="relative w-full max-w-lg rounded-2xl border border-border bg-surface p-6 sm:p-7 shadow-2xl transition-all text-text"
+        className={`relative w-full max-w-lg rounded-2xl border border-border bg-surface p-6 sm:p-7 shadow-2xl text-text ${
+          isClosing ? 'animate-modal-content-out' : 'animate-modal-content'
+        }`}
       >
         {/* Modal Header */}
         <div className="flex items-start justify-between gap-4 mb-5 pb-3 border-b border-border/60">
@@ -149,7 +180,7 @@ export default function ContactModal() {
 
           <button
             type="button"
-            onClick={() => setIsOpen(false)}
+            onClick={closeModal}
             aria-label="Close contact modal"
             className="p-1 rounded-lg text-text-muted hover:text-text hover:bg-surface-raised transition-colors text-lg leading-none cursor-pointer"
           >
@@ -174,7 +205,7 @@ export default function ContactModal() {
                 type="button"
                 onClick={() => {
                   setStatus('idle');
-                  setIsOpen(false);
+                  closeModal();
                 }}
                 className="px-4 py-2 rounded-lg bg-accent text-accent-text hover:opacity-90 font-medium text-xs font-mono transition-opacity cursor-pointer"
               >
@@ -300,7 +331,7 @@ export default function ContactModal() {
               <div className="flex items-center gap-2 w-full sm:w-auto justify-end order-1 sm:order-2">
                 <button
                   type="button"
-                  onClick={() => setIsOpen(false)}
+                  onClick={closeModal}
                   className="px-3.5 py-2 rounded-lg border border-border hover:bg-surface-raised text-xs font-mono text-text transition-colors cursor-pointer"
                   disabled={status === 'submitting'}
                 >
