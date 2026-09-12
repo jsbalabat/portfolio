@@ -22,7 +22,7 @@ const { Content } = await render(entry);
   <article class="max-w-5xl mx-auto py-8">
     <!-- Back link -->
     <div class="mb-8">
-      <a href="/#work" class="text-xs font-mono text-text-muted hover:text-text transition-colors inline-flex items-center gap-1.5">
+      <a href="/#work" class="text-xs font-mono text-text-muted hover:text-text active:scale-[0.96] transition-all inline-flex items-center gap-1.5">
         ← Back to case studies
       </a>
     </div>
@@ -30,19 +30,18 @@ const { Content } = await render(entry);
     <!-- Case Study Header -->
     <header class="border-b border-border/70 pb-8 mb-12">
       <div class="flex flex-wrap items-center gap-2 font-mono text-xs text-text-muted mb-4">
-        <span class="px-2.5 py-0.5 rounded-full bg-surface-raised border border-border font-semibold text-text">
-          Case Study 0{entry.data.order}
-        </span>
+        <span class="font-bold text-accent tabular-nums">0{entry.data.order}</span>
+        <span class="text-text-muted/40">/</span>
         <span>{entry.data.timeline}</span>
-        <span>•</span>
+        <span class="text-text-muted/40">•</span>
         <span>{entry.data.role}</span>
       </div>
 
-      <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-text mb-4">
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-text mb-4 text-balance">
         {entry.data.title}
       </h1>
 
-      <p class="text-lg sm:text-xl text-text-muted leading-relaxed max-w-3xl mb-8">
+      <p class="text-lg sm:text-xl text-text-muted leading-relaxed max-w-3xl mb-8 text-pretty">
         {entry.data.tagline}
       </p>
 
@@ -63,7 +62,7 @@ const { Content } = await render(entry);
               href={entry.data.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              class="px-3 py-1.5 rounded-md bg-accent text-accent-text font-medium hover:opacity-90 transition-opacity"
+              class="px-3.5 py-1.5 rounded-lg bg-accent text-accent-text font-medium hover:opacity-90 active:scale-[0.96] transition-all shadow-xs"
             >
               Open Live App ↗
             </a>
@@ -73,7 +72,7 @@ const { Content } = await render(entry);
               href={entry.data.repoUrl}
               target="_blank"
               rel="noopener noreferrer"
-              class="px-3 py-1.5 rounded-md border border-border hover:bg-surface-raised transition-colors"
+              class="px-3.5 py-1.5 rounded-lg border border-border hover:bg-surface-raised active:scale-[0.96] transition-all"
             >
               View GitHub Repo ↗
             </a>
@@ -89,13 +88,13 @@ const { Content } = await render(entry);
 
     <!-- Case Study Footer -->
     <div class="mt-16 pt-8 border-t border-border flex items-center justify-between">
-      <a href="/#work" class="text-sm font-medium text-accent hover:underline inline-flex items-center gap-1">
+      <a href="/#work" class="text-sm font-medium text-accent hover:underline active:scale-[0.96] transition-all inline-flex items-center gap-1">
         ← Back to all projects
       </a>
       <button
         type="button"
         onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
-        class="text-sm font-medium text-accent hover:underline transition-colors cursor-pointer"
+        class="text-sm font-medium text-accent hover:underline active:scale-[0.96] transition-all cursor-pointer"
       >
         Discuss this architecture →
       </button>
