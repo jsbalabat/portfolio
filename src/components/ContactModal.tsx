@@ -39,6 +39,21 @@ export default function ContactModal() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen && !isClosing) {
         closeModal();
+      } else if (e.key === 'Tab' && isOpen && dialogRef.current) {
+        const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusables.length > 0) {
+          const first = focusables[0];
+          const last = focusables[focusables.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
       }
     };
 
@@ -120,15 +135,9 @@ export default function ContactModal() {
         setMessage('');
       } else {
         setStatus('error');
-        if (data.message && data.message.toLowerCase().includes('key')) {
-          setErrorMessage(
-            'Web3Forms access key not set or invalid. Get a free key at https://web3forms.com using johnfelixmarc@gmail.com and add PUBLIC_WEB3FORMS_KEY to your .env file.'
-          );
-        } else {
-          setErrorMessage(
-            data.message || 'Unable to send message right now. Please use direct email below.'
-          );
-        }
+        setErrorMessage(
+          'Unable to send message via the automated form right now. Please use the direct email link below.'
+        );
       }
     } catch {
       setStatus('error');
@@ -182,7 +191,7 @@ export default function ContactModal() {
             type="button"
             onClick={closeModal}
             aria-label="Close contact modal"
-            className="p-1 rounded-lg text-text-muted hover:text-text hover:bg-surface-raised transition-colors text-lg leading-none cursor-pointer"
+            className="p-1 rounded-lg text-text-muted hover:text-text hover:bg-surface-raised active:scale-[0.96] transition-all text-lg leading-none cursor-pointer"
           >
             ✕
           </button>
@@ -207,14 +216,14 @@ export default function ContactModal() {
                   setStatus('idle');
                   closeModal();
                 }}
-                className="px-4 py-2 rounded-lg bg-accent text-accent-text hover:opacity-90 font-medium text-xs font-mono transition-opacity cursor-pointer"
+                className="px-4 py-2 rounded-lg bg-accent text-accent-text hover:opacity-90 active:scale-[0.96] font-medium text-xs font-mono transition-all cursor-pointer"
               >
                 Done
               </button>
               <button
                 type="button"
                 onClick={() => setStatus('idle')}
-                className="px-4 py-2 rounded-lg border border-border hover:bg-surface-raised text-xs font-mono text-text transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-lg border border-border hover:bg-surface-raised active:scale-[0.96] text-xs font-mono text-text transition-all cursor-pointer"
               >
                 Send Another
               </button>
@@ -332,7 +341,7 @@ export default function ContactModal() {
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="px-3.5 py-2 rounded-lg border border-border hover:bg-surface-raised text-xs font-mono text-text transition-colors cursor-pointer"
+                  className="px-3.5 py-2 rounded-lg border border-border hover:bg-surface-raised active:scale-[0.96] text-xs font-mono text-text transition-all cursor-pointer"
                   disabled={status === 'submitting'}
                 >
                   Cancel
@@ -340,7 +349,7 @@ export default function ContactModal() {
                 <button
                   type="submit"
                   disabled={status === 'submitting'}
-                  className="px-4 py-2 rounded-lg bg-accent text-accent-text hover:opacity-90 font-medium text-xs font-mono transition-opacity shadow-xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg bg-accent text-accent-text hover:opacity-90 active:scale-[0.96] font-medium text-xs font-mono transition-all shadow-xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
                 >
                   {status === 'submitting' ? (
                     <>

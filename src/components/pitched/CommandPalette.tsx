@@ -398,7 +398,7 @@ export default function CommandPalette() {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="group inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border/80 bg-surface hover:bg-surface-raised hover:border-border transition-all duration-200 text-xs font-mono text-text-muted hover:text-text shadow-xs cursor-pointer"
+        className="group inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border/80 bg-surface hover:bg-surface-raised active:scale-[0.96] hover:border-border transition-all duration-200 text-xs font-mono text-text-muted hover:text-text shadow-xs cursor-pointer"
         aria-label="Open Command Palette"
         title="Search projects, navigation, and actions"
       >
@@ -505,7 +505,7 @@ export default function CommandPalette() {
                       type="button"
                       onClick={() => cmd.action()}
                       onMouseEnter={() => setSelectedIndex(idx)}
-                      className={`w-full text-left px-3 py-2.5 rounded-xl flex items-center justify-between transition-colors duration-150 cursor-pointer relative group border ${
+                      className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center justify-between transition-all duration-150 active:scale-[0.98] cursor-pointer relative group border ${
                         isSelected
                           ? 'bg-accent/15 text-text border-accent/40 shadow-xs'
                           : 'text-text-muted hover:bg-surface-raised border-transparent'
@@ -513,7 +513,7 @@ export default function CommandPalette() {
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <span
-                          className={`p-1.5 rounded-lg shrink-0 transition-colors border ${
+                          className={`p-1.5 rounded-md shrink-0 transition-colors border ${
                             isSelected
                               ? 'bg-accent text-accent-text border-accent'
                               : 'bg-surface-raised text-accent border-border/60'
@@ -541,7 +541,7 @@ export default function CommandPalette() {
                       {cmd.shortcut && (
                         <div className="ml-3 shrink-0">
                           <kbd
-                            className={`px-2 py-0.5 rounded text-[10px] font-mono transition-colors border font-semibold ${
+                            className={`px-2 py-0.5 rounded text-[10px] font-mono tabular-nums transition-colors border font-semibold ${
                               isSelected
                                 ? 'bg-accent text-accent-text border-accent shadow-xs'
                                 : 'bg-surface-raised border-border text-text-muted'
@@ -570,7 +570,7 @@ export default function CommandPalette() {
                   <span className="text-[10px]">Select</span>
                 </span>
               </div>
-              <span className="text-[10px] text-text-muted/80">
+              <span className="text-[10px] text-text-muted/80 tabular-nums">
                 {filtered.length} {filtered.length === 1 ? 'action' : 'actions'}
               </span>
             </div>

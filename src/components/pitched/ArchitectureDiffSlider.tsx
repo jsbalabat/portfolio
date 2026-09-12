@@ -325,7 +325,7 @@ export default function ArchitectureDiffSlider() {
                 setActiveScenario(id);
                 setSliderPos(50);
               }}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer font-medium ${
+              className={`px-3 py-1.5 rounded-lg transition-all active:scale-[0.96] cursor-pointer font-medium ${
                 activeScenario === id
                   ? 'bg-accent text-accent-text shadow-xs'
                   : 'text-text-muted hover:text-text hover:bg-surface-raised'
@@ -347,7 +347,7 @@ export default function ArchitectureDiffSlider() {
             <span className="w-2.5 h-2.5 rounded-full bg-[#81c784]/80"></span>
           </div>
           <div className="flex items-center gap-2 text-slate-200">
-            <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+            <span className="w-2 h-2 rounded-full bg-accent/80"></span>
             <span className="font-semibold">{scenario.fileName}</span>
             <span className="text-[10px] text-slate-400 uppercase">({scenario.language})</span>
           </div>
@@ -363,7 +363,7 @@ export default function ArchitectureDiffSlider() {
                 type="button"
                 onClick={() => setSliderPos(0)}
                 title="Slide 100% to After (v2)"
-                className={`px-1.5 py-0.5 rounded cursor-pointer ${
+                className={`px-1.5 py-0.5 rounded tabular-nums active:scale-[0.96] transition-transform cursor-pointer ${
                   sliderPos === 0 ? 'bg-emerald-900/60 text-emerald-300 font-bold' : 'hover:text-white'
                 }`}
               >
@@ -372,7 +372,7 @@ export default function ArchitectureDiffSlider() {
               <button
                 type="button"
                 onClick={() => setSliderPos(25)}
-                className={`px-1.5 py-0.5 rounded cursor-pointer ${
+                className={`px-1.5 py-0.5 rounded tabular-nums active:scale-[0.96] transition-transform cursor-pointer ${
                   sliderPos === 25 ? 'bg-accent/30 text-accent font-bold' : 'hover:text-white'
                 }`}
               >
@@ -381,7 +381,7 @@ export default function ArchitectureDiffSlider() {
               <button
                 type="button"
                 onClick={() => setSliderPos(50)}
-                className={`px-1.5 py-0.5 rounded cursor-pointer ${
+                className={`px-1.5 py-0.5 rounded tabular-nums active:scale-[0.96] transition-transform cursor-pointer ${
                   sliderPos === 50 ? 'bg-accent/30 text-accent font-bold' : 'hover:text-white'
                 }`}
               >
@@ -390,7 +390,7 @@ export default function ArchitectureDiffSlider() {
               <button
                 type="button"
                 onClick={() => setSliderPos(75)}
-                className={`px-1.5 py-0.5 rounded cursor-pointer ${
+                className={`px-1.5 py-0.5 rounded tabular-nums active:scale-[0.96] transition-transform cursor-pointer ${
                   sliderPos === 75 ? 'bg-accent/30 text-accent font-bold' : 'hover:text-white'
                 }`}
               >
@@ -400,7 +400,7 @@ export default function ArchitectureDiffSlider() {
                 type="button"
                 onClick={() => setSliderPos(100)}
                 title="Slide 100% to Before (v1)"
-                className={`px-1.5 py-0.5 rounded cursor-pointer ${
+                className={`px-1.5 py-0.5 rounded tabular-nums active:scale-[0.96] transition-transform cursor-pointer ${
                   sliderPos === 100 ? 'bg-rose-900/60 text-rose-300 font-bold' : 'hover:text-white'
                 }`}
               >
@@ -414,7 +414,7 @@ export default function ArchitectureDiffSlider() {
             <button
               type="button"
               onClick={() => setViewMode('split')}
-              className={`px-2 py-0.8 rounded transition-colors cursor-pointer ${
+              className={`px-2 py-0.8 rounded transition-all active:scale-[0.96] cursor-pointer ${
                 viewMode === 'split' ? 'bg-accent text-accent-text font-bold' : 'text-slate-300 hover:text-white'
               }`}
             >
@@ -423,7 +423,7 @@ export default function ArchitectureDiffSlider() {
             <button
               type="button"
               onClick={() => setViewMode('before')}
-              className={`px-2 py-0.8 rounded transition-colors cursor-pointer ${
+              className={`px-2 py-0.8 rounded transition-all active:scale-[0.96] cursor-pointer ${
                 viewMode === 'before' ? 'bg-rose-900/70 text-rose-200 font-bold' : 'text-slate-300 hover:text-white'
               }`}
             >
@@ -432,7 +432,7 @@ export default function ArchitectureDiffSlider() {
             <button
               type="button"
               onClick={() => setViewMode('after')}
-              className={`px-2 py-0.8 rounded transition-colors cursor-pointer ${
+              className={`px-2 py-0.8 rounded transition-all active:scale-[0.96] cursor-pointer ${
                 viewMode === 'after' ? 'bg-emerald-900/70 text-emerald-200 font-bold' : 'text-slate-300 hover:text-white'
               }`}
             >
@@ -444,7 +444,7 @@ export default function ArchitectureDiffSlider() {
           <button
             type="button"
             onClick={handleCopy}
-            className="px-2.5 py-1 rounded-lg border border-border/50 bg-[#18211d] hover:bg-surface-raised text-slate-200 hover:text-white transition-colors cursor-pointer text-[11px] flex items-center gap-1.5"
+            className="px-2.5 py-1 rounded-lg border border-border/50 bg-[#18211d] hover:bg-surface-raised active:scale-[0.96] text-slate-200 hover:text-white transition-all cursor-pointer text-[11px] flex items-center gap-1.5"
             title="Copy active code"
           >
             {copied ? (
@@ -499,7 +499,7 @@ export default function ArchitectureDiffSlider() {
                       : 'text-slate-200'
                   }`}
                 >
-                  <span className="w-6 text-right shrink-0 text-slate-500 select-none text-[11px]">
+                  <span className="w-6 text-right shrink-0 text-slate-500 select-none text-[11px] tabular-nums">
                     {line.num}
                   </span>
                   <span className="font-mono whitespace-pre">{line.text}</span>
@@ -516,10 +516,11 @@ export default function ArchitectureDiffSlider() {
             tabIndex={0}
             aria-label="Diff comparison slider"
             aria-valuenow={Math.round(sliderPos)}
+            aria-valuetext={`${Math.round(sliderPos)}% before, ${Math.round(100 - sliderPos)}% after`}
             aria-valuemin={0}
             aria-valuemax={100}
             onKeyDown={handleKeyDown}
-            className="absolute top-0 bottom-0 pointer-events-none z-20"
+            className="absolute top-0 bottom-0 pointer-events-none z-20 focus:outline-none"
             style={{ left: `${sliderPos}%` }}
           >
             {/* Divider Line */}
@@ -527,7 +528,7 @@ export default function ArchitectureDiffSlider() {
 
             {/* Handle Grip Center Pill */}
             <div
-              className="absolute top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-accent text-accent-text shadow-2xl flex items-center justify-center text-xs font-bold ring-4 ring-black/70 pointer-events-auto cursor-ew-resize -translate-x-1/2 hover:scale-110 active:scale-95 transition-transform"
+              className="absolute top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-accent text-accent-text shadow-2xl flex items-center justify-center text-xs font-bold ring-4 ring-black/70 pointer-events-auto cursor-ew-resize -translate-x-1/2 hover:scale-110 active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-accent transition-transform"
             >
               <span className="select-none">↔</span>
             </div>
@@ -560,7 +561,7 @@ export default function ArchitectureDiffSlider() {
                       : 'text-slate-200'
                   }`}
                 >
-                  <span className="w-6 text-right shrink-0 text-slate-500 select-none text-[11px]">
+                  <span className="w-6 text-right shrink-0 text-slate-500 select-none text-[11px] tabular-nums">
                     {line.num}
                   </span>
                   <span className="font-mono whitespace-pre">{line.text}</span>
