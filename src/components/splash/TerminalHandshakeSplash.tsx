@@ -1,13 +1,99 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-const BOOT_SCRIPT_LINES = [
-  'booting vmlinuz-6.8.0-edge (x86_64)...',
-  '[  0.012491] Initializing V8 isolate runtime... OK',
-  '[  0.048102] Loading ACPI tables and hardware drivers... OK',
-  '[  0.089410] Mounting rootfs /dev/cf-workers0 (read-only)... OK',
-  '[  0.134820] Initializing network stack: IPv4/IPv6 socket layer... OK',
-  '[  0.189201] Launching systemd-handshake.service: socket listening... OK',
-  '[  0.241032] Reached target System Initialization.',
+interface TextSpan {
+  text: string;
+  className?: string;
+  pauseBeforeMs?: number;
+}
+
+interface BootLine {
+  id: number;
+  spans: TextSpan[];
+  postDelayMs: number;
+}
+
+const BOOT_LINES: BootLine[] = [
+  {
+    id: 1,
+    spans: [
+      { text: '[sys:boot] ', className: 'text-[#8b949e]' },
+      { text: 'booting ', className: 'text-[#c9d1d9]' },
+      { text: 'marcbalabat.tech', className: 'text-[#79c0ff] font-semibold' },
+      { text: ' on ', className: 'text-[#8b949e]' },
+      { text: 'cloudflare-workers:edge', className: 'text-[#e3b341]' },
+      { text: ' (v0.1.0)...', className: 'text-[#d2a8ff]' },
+    ],
+    postDelayMs: 380,
+  },
+  {
+    id: 2,
+    spans: [
+      { text: '[  0.0142 ] ', className: 'text-[#58a6ff]' },
+      { text: 'runtime:v8', className: 'text-[#d2a8ff] font-medium' },
+      { text: ' initializing isolate sandbox & wasm memory... ', className: 'text-[#8b949e]' },
+      { text: '[ OK ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 300 },
+    ],
+    postDelayMs: 260,
+  },
+  {
+    id: 3,
+    spans: [
+      { text: '[  0.0618 ] ', className: 'text-[#58a6ff]' },
+      { text: 'stack:deploy', className: 'text-[#d2a8ff] font-medium' },
+      { text: ' mounting ', className: 'text-[#8b949e]' },
+      { text: '3 production applications', className: 'text-[#ffa657] font-medium' },
+      { text: ' + ', className: 'text-[#8b949e]' },
+      { text: 'schema engine', className: 'text-[#a5d6ff]' },
+      { text: '... ', className: 'text-[#8b949e]' },
+      { text: '[ MOUNTED ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 420 },
+    ],
+    postDelayMs: 300,
+  },
+  {
+    id: 4,
+    spans: [
+      { text: '[  0.1190 ] ', className: 'text-[#58a6ff]' },
+      { text: 'network:edge', className: 'text-[#d2a8ff] font-medium' },
+      { text: ' routing traffic via ', className: 'text-[#8b949e]' },
+      { text: 'Cloudflare Global Anycast', className: 'text-[#79c0ff]' },
+      { text: '... ', className: 'text-[#8b949e]' },
+      { text: '[ 200 OK ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 500 },
+    ],
+    postDelayMs: 340,
+  },
+  {
+    id: 5,
+    spans: [
+      { text: '[  0.1904 ] ', className: 'text-[#58a6ff]' },
+      { text: 'git:origin', className: 'text-[#d2a8ff] font-medium' },
+      { text: ' syncing tree ', className: 'text-[#8b949e]' },
+      { text: 'github.com/jsbalabat/portfolio', className: 'text-[#ff7b72]' },
+      { text: ' (650+ commits)... ', className: 'text-[#e3b341]' },
+      { text: '[ VERIFIED ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 380 },
+    ],
+    postDelayMs: 280,
+  },
+  {
+    id: 6,
+    spans: [
+      { text: '[  0.2670 ] ', className: 'text-[#58a6ff]' },
+      { text: 'auth:daemon', className: 'text-[#d2a8ff] font-medium' },
+      { text: ' interlock safety daemon armed on ', className: 'text-[#8b949e]' },
+      { text: '/dev/interlock0', className: 'text-[#79c0ff]' },
+      { text: '... ', className: 'text-[#8b949e]' },
+      { text: '[ ARMED ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 350 },
+    ],
+    postDelayMs: 320,
+  },
+  {
+    id: 7,
+    spans: [
+      { text: '[  OK  ] ', className: 'text-[#7ee787] font-bold' },
+      { text: 'Production environment ready. Target: ', className: 'text-[#c9d1d9]' },
+      { text: 'https://marcbalabat.tech', className: 'text-[#79c0ff] underline decoration-[#79c0ff]/40' },
+    ],
+    postDelayMs: 400,
+  },
 ];
 
 type ActivationStage = 'booting' | 'power_rail' | 'power_knob' | 'ready';
@@ -18,13 +104,13 @@ export default function TerminalHandshakeSplash() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Typewriter animation state
-  const [completedLines, setCompletedLines] = useState<string[]>([]);
-  const [currentLineIndex, setCurrentLineIndex] = useState(0);
-  const [currentLineText, setCurrentLineText] = useState('');
+  // Typewriter state
+  const [completedLines, setCompletedLines] = useState<BootLine[]>([]);
+  const [activeLineIndex, setActiveLineIndex] = useState(0);
+  const [activeSpans, setActiveSpans] = useState<TextSpan[]>([]);
   const [isBootComplete, setIsBootComplete] = useState(false);
 
-  // Staggered uneven activation
+  // Staggered uneven button activation
   const [activationStage, setActivationStage] = useState<ActivationStage>('booting');
 
   // Slider & Hold state
@@ -37,7 +123,7 @@ export default function TerminalHandshakeSplash() {
   const holdTimerRef = useRef<number | null>(null);
   const holdStartTimeRef = useRef<number | null>(null);
 
-  // Initialize and check sessionStorage
+  // Check initial session storage on mount
   useEffect(() => {
     setMounted(true);
     const unlocked = sessionStorage.getItem('portfolio_unlocked') === 'true';
@@ -56,8 +142,8 @@ export default function TerminalHandshakeSplash() {
       setIsAtEnd(false);
       setHoldProgress(0);
       setCompletedLines([]);
-      setCurrentLineIndex(0);
-      setCurrentLineText('');
+      setActiveLineIndex(0);
+      setActiveSpans([]);
       setIsBootComplete(false);
       setActivationStage('booting');
       setIsVisible(true);
@@ -76,7 +162,7 @@ export default function TerminalHandshakeSplash() {
     setIsUnlocked(true);
     sessionStorage.setItem('portfolio_unlocked', 'true');
 
-    // Remove lockout class to reveal background content
+    // Remove lockout class to reveal background content smoothly
     document.documentElement.classList.remove('splash-locked');
 
     setTimeout(() => {
@@ -93,36 +179,78 @@ export default function TerminalHandshakeSplash() {
     triggerUnlock();
   }, [triggerUnlock]);
 
-  // Typewriter streaming effect (left to right character stream)
+  // Typewriter engine with variable load times & per-character streaming
   useEffect(() => {
     if (!isVisible || isBootComplete) return;
 
-    if (currentLineIndex >= BOOT_SCRIPT_LINES.length) {
+    if (activeLineIndex >= BOOT_LINES.length) {
       setIsBootComplete(true);
       return;
     }
 
-    const targetLine = BOOT_SCRIPT_LINES[currentLineIndex];
+    const currentLine = BOOT_LINES[activeLineIndex];
+    let isCancelled = false;
+    let spanIdx = 0;
+    let charIdx = 0;
+    let timeoutId: number;
 
-    if (currentLineText.length < targetLine.length) {
-      // Stream characters at high terminal cadence
-      const charChunk = targetLine.slice(0, currentLineText.length + 3);
-      const timer = window.setTimeout(() => {
-        setCurrentLineText(charChunk);
-      }, 12);
-      return () => window.clearTimeout(timer);
-    } else {
-      // Line complete: add to completed lines, brief pause, advance to next
-      const timer = window.setTimeout(() => {
-        setCompletedLines((prev) => [...prev, targetLine]);
-        setCurrentLineText('');
-        setCurrentLineIndex((prev) => prev + 1);
-      }, 65);
-      return () => window.clearTimeout(timer);
-    }
-  }, [isVisible, isBootComplete, currentLineIndex, currentLineText]);
+    const streamNextChar = () => {
+      if (isCancelled) return;
 
-  // Staggered / uneven activation of controls once boot completes
+      if (spanIdx >= currentLine.spans.length) {
+        // Line complete: wait postDelayMs, then move to next line
+        timeoutId = window.setTimeout(() => {
+          if (isCancelled) return;
+          setCompletedLines((prev) => [...prev, currentLine]);
+          setActiveSpans([]);
+          setActiveLineIndex((prev) => prev + 1);
+        }, currentLine.postDelayMs);
+        return;
+      }
+
+      const currentSpan = currentLine.spans[spanIdx];
+
+      // Check if entering a new span with a designated load pause
+      if (charIdx === 0 && currentSpan.pauseBeforeMs && currentSpan.pauseBeforeMs > 0) {
+        const pauseTime = currentSpan.pauseBeforeMs;
+        // Temporarily nullify pause to avoid repeating
+        currentSpan.pauseBeforeMs = 0;
+        timeoutId = window.setTimeout(streamNextChar, pauseTime);
+        return;
+      }
+
+      // Advance one character
+      charIdx++;
+
+      // Construct partial spans for render
+      const renderedSpans: TextSpan[] = [];
+      for (let i = 0; i < spanIdx; i++) {
+        renderedSpans.push(currentLine.spans[i]);
+      }
+      renderedSpans.push({
+        text: currentSpan.text.slice(0, charIdx),
+        className: currentSpan.className,
+      });
+      setActiveSpans(renderedSpans);
+
+      if (charIdx >= currentSpan.text.length) {
+        spanIdx++;
+        charIdx = 0;
+      }
+
+      // Deliberate typewriter typing cadence (20ms per char)
+      timeoutId = window.setTimeout(streamNextChar, 20);
+    };
+
+    streamNextChar();
+
+    return () => {
+      isCancelled = true;
+      window.clearTimeout(timeoutId);
+    };
+  }, [isVisible, isBootComplete, activeLineIndex]);
+
+  // Staggered uneven activation of buttons once boot sequence completes
   useEffect(() => {
     if (!isBootComplete) return;
 
@@ -136,10 +264,10 @@ export default function TerminalHandshakeSplash() {
       setActivationStage('power_knob');
     }, 280);
 
-    // Stage 3: Enable bypass and flip ready status
+    // Stage 3: Enable bypass and activate ready status
     const t3 = window.setTimeout(() => {
       setActivationStage('ready');
-    }, 440);
+    }, 450);
 
     return () => {
       window.clearTimeout(t1);
@@ -148,7 +276,7 @@ export default function TerminalHandshakeSplash() {
     };
   }, [isBootComplete]);
 
-  // Handle pointer drag physics for slider
+  // Pointer drag physics for slider
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (activationStage !== 'ready' || isUnlocked) return;
     setIsDragging(true);
@@ -168,7 +296,7 @@ export default function TerminalHandshakeSplash() {
 
     setSliderProgress(progress);
 
-    // Check if slider reached the far right (>= 96%)
+    // Slide reached the right edge (>= 96%) -> initiate hold sequence
     if (progress >= 0.96) {
       if (!isAtEnd) {
         setIsAtEnd(true);
@@ -196,17 +324,17 @@ export default function TerminalHandshakeSplash() {
       // ignore
     }
 
-    // If released before hold completed, snap back to origin
+    // If released before 100% hold completed, snap back to start
     cancelHold();
     setIsAtEnd(false);
     setSliderProgress(0);
   };
 
-  // Hold action that takes place strictly after sliding left to right
+  // Hold action that takes place strictly after sliding left to right (slowed down to 850ms)
   const startHold = () => {
     if (holdTimerRef.current) clearInterval(holdTimerRef.current);
     holdStartTimeRef.current = Date.now();
-    const holdDuration = 450; // ms
+    const holdDuration = 850; // ms (smooth, deliberate load time)
 
     holdTimerRef.current = window.setInterval(() => {
       if (!holdStartTimeRef.current) return;
@@ -233,7 +361,7 @@ export default function TerminalHandshakeSplash() {
     }
   };
 
-  // Keyboard shortcuts (Escape to bypass anytime)
+  // Keyboard shortcut: Escape to bypass anytime
   useEffect(() => {
     if (!isVisible) return;
 
@@ -271,6 +399,24 @@ export default function TerminalHandshakeSplash() {
           : 'scale-100 opacity-100'
       }`}
     >
+      {/* CLI Sharp Blink Keyframes (no smooth fade, hard on/off like real terminal) */}
+      <style>{`
+        @keyframes cli-sharp-blink {
+          0%, 49% {
+            opacity: 1;
+            visibility: visible;
+          }
+          50%, 100% {
+            opacity: 0;
+            visibility: hidden;
+          }
+        }
+        .cli-prompt-blink {
+          display: inline-block;
+          animation: cli-sharp-blink 0.85s steps(1, end) infinite;
+        }
+      `}</style>
+
       {/* Terminal Window */}
       <div className="w-full max-w-2xl rounded-2xl border border-border bg-[#0d1117] text-[#c9d1d9] shadow-2xl overflow-hidden font-mono flex flex-col">
         {/* Terminal Titlebar */}
@@ -281,7 +427,7 @@ export default function TerminalHandshakeSplash() {
             <span className="w-3 h-3 rounded-full bg-[#27c93f] inline-block" />
           </div>
           <div className="text-xs text-text-muted font-medium">
-            marc@edge-runtime:~ (zsh)
+            marc@marcbalabat.tech:~ (zsh)
           </div>
           <div className="flex items-center gap-1.5 text-[11px]">
             {isUnlocked ? (
@@ -303,41 +449,50 @@ export default function TerminalHandshakeSplash() {
           </div>
         </div>
 
-        {/* Terminal Log Output (Typewriter Left to Right) */}
-        <div className="p-5 sm:p-6 space-y-1.5 text-xs min-h-[210px] flex flex-col justify-start">
-          {completedLines.map((line, idx) => (
-            <div key={idx} className="text-text-muted leading-relaxed font-mono">
-              {line}
+        {/* Terminal Log Screen (Typewriter character stream with VS Code colors) */}
+        <div className="p-5 sm:p-6 space-y-1.5 text-xs min-h-[220px] flex flex-col justify-start">
+          {/* Completed lines */}
+          {completedLines.map((line) => (
+            <div key={line.id} className="leading-relaxed font-mono">
+              {line.spans.map((span, sIdx) => (
+                <span key={sIdx} className={span.className}>
+                  {span.text}
+                </span>
+              ))}
             </div>
           ))}
 
-          {/* Currently Typing Line with Blinking Cursor */}
+          {/* Currently typing line (no trailing cursor; character stream only) */}
           {!isBootComplete && (
-            <div className="text-text font-mono leading-relaxed flex items-center gap-0.5">
-              <span>{currentLineText}</span>
-              <span className="inline-block w-2 h-3.5 bg-accent animate-pulse ml-0.5" />
+            <div className="leading-relaxed font-mono">
+              {activeSpans.map((span, sIdx) => (
+                <span key={sIdx} className={span.className}>
+                  {span.text}
+                </span>
+              ))}
             </div>
           )}
 
-          {/* Prompt Status Once Boot Sequence Finishes */}
-          {isBootComplete && (
-            <div className="pt-2 flex items-center gap-2 text-xs font-mono">
-              <span className="text-accent font-bold">❯</span>
-              {isUnlocked ? (
-                <span className="text-emerald-400 font-bold">
-                  Handshake verified. Launching workspace...
-                </span>
-              ) : (
-                <span className="text-text flex items-center gap-1">
-                  <span>Slide right and hold to authenticate:</span>
-                  <span className="inline-block w-2 h-3.5 bg-accent animate-pulse" />
-                </span>
-              )}
-            </div>
-          )}
+          {/* Terminal Prompt Line: the chevron '>' blinks sharply like an authentic CLI */}
+          <div className="pt-2 flex items-center gap-1 text-xs font-mono">
+            <span className="cli-prompt-blink font-bold text-accent mr-1">&gt;</span>
+            {!isBootComplete ? (
+              <span className="text-text-muted">
+                System boot sequence in progress...
+              </span>
+            ) : isUnlocked ? (
+              <span className="text-emerald-400 font-bold">
+                Handshake verified. Launching workspace...
+              </span>
+            ) : (
+              <span className="text-text font-medium">
+                Slide right and hold to authenticate:
+              </span>
+            )}
+          </div>
         </div>
 
-        {/* Handshake Panel with Uneven Activation & Slide-then-Hold */}
+        {/* Handshake Controls Panel */}
         <div className="p-4 sm:p-5 bg-surface/50 border-t border-border/80 flex flex-col gap-3">
           {/* Slider Rail */}
           <div
@@ -356,7 +511,7 @@ export default function TerminalHandshakeSplash() {
                 : 'border-border/60 bg-surface-raised/60'
             }`}
           >
-            {/* Dynamic Slider Progress Fill (100% synced with thumb position) */}
+            {/* Dynamic Slider Progress Fill (100% synced with thumb knob position) */}
             <div
               className={`absolute top-0 bottom-0 left-0 border-r transition-none ${
                 isUnlocked
@@ -369,7 +524,7 @@ export default function TerminalHandshakeSplash() {
               }}
             />
 
-            {/* Slider Track Static Prompt Text (No bouncing arrow) */}
+            {/* Slider Track Prompt Text (Stationary glyph; no bounce) */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-xs font-mono">
               {!isFullyReady ? (
                 <span className="text-text-muted/50 text-[11px]">
@@ -411,7 +566,7 @@ export default function TerminalHandshakeSplash() {
             </div>
           </div>
 
-          {/* Controls Row: Live Hold State + Far-Right Bypass Button (Enter button removed) */}
+          {/* Controls Row: Status indicator on left + Far-right Bypass button */}
           <div className="flex items-center justify-between gap-3 pt-1">
             <div className="text-[11px] font-mono text-text-muted flex items-center gap-2">
               <span
@@ -431,7 +586,7 @@ export default function TerminalHandshakeSplash() {
                   : isAtEnd
                   ? 'Holding latch...'
                   : isFullyReady
-                  ? 'Slide to right end to trigger hold'
+                  ? 'Slide to right end and hold to authenticate'
                   : 'Awaiting boot sequence'}
               </span>
             </div>
