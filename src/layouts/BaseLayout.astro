@@ -18,6 +18,11 @@ const {
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://marcbalabat.tech');
 const isHomepage = Astro.url.pathname === '/' || Astro.url.pathname === '';
+
+const appVersion = import.meta.env.PUBLIC_APP_VERSION || '0.1.0';
+const gitSha = import.meta.env.PUBLIC_GIT_SHA || 'dev';
+const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || 'main';
+const isProduction = gitBranch === 'main';
 ---
 
 <!doctype html>
@@ -152,8 +157,24 @@ const isHomepage = Astro.url.pathname === '/' || Astro.url.pathname === '';
 
       <!-- Site Footer -->
       <footer class="py-6 sm:py-8 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-text-muted">
-        <div>
-          <span>© {new Date().getFullYear()} Marc (jsbalabat). Built with Astro 5, React 19, and Tailwind CSS 4.</span>
+        <div class="flex flex-wrap items-center gap-3">
+          <span>© {new Date().getFullYear()} Marc (jsbalabat).</span>
+          <!-- Dynamic Version & Git SHA Status Pill -->
+          <a
+            href={gitSha !== 'dev' ? `https://github.com/jsbalabat/portfolio/commit/${gitSha}` : 'https://github.com/jsbalabat/portfolio'}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border border-border/70 bg-surface hover:bg-surface-raised hover:border-border text-[11px] font-mono text-text-muted hover:text-text transition-all active:scale-[0.96]"
+            title={`Deployed from ${gitBranch} branch (${gitSha})`}
+          >
+            <span class={`w-1.5 h-1.5 rounded-full ${isProduction ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
+            <span>v{appVersion}</span>
+            <span class="text-text-muted/40">·</span>
+            <span class="text-text font-medium">{gitSha}</span>
+            {!isProduction && (
+              <span class="text-[10px] text-accent font-normal">({gitBranch})</span>
+            )}
+          </a>
         </div>
         <div class="flex items-center gap-4">
           <button
