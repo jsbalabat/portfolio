@@ -161,8 +161,12 @@ body.tldr-active .tldr-dim {
 }
 
 /* ==========================================================================
-   Splash Gate Strict Lockout
+   Splash Gate Strict Lockout & Seamless Transition
    ========================================================================== */
+
+#main-content-wrapper {
+  transition: opacity 0.35s ease-out;
+}
 
 html.splash-locked,
 html.splash-locked body {

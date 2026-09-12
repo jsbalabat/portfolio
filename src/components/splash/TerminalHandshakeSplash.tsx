@@ -115,6 +115,8 @@ export default function TerminalHandshakeSplash() {
   const [holdProgress, setHoldProgress] = useState(0);
 
   const trackRef = useRef<HTMLDivElement>(null);
+  const promptTextRef = useRef<HTMLSpanElement>(null);
+  const textLeftOffsetRef = useRef<number | null>(null);
   const holdTimerRef = useRef<number | null>(null);
   const holdStartTimeRef = useRef<number | null>(null);
 
@@ -144,6 +146,7 @@ export default function TerminalHandshakeSplash() {
       setIsBootComplete(false);
       setActivationStage('booting');
       setIsVisible(true);
+      textLeftOffsetRef.current = null;
       document.documentElement.classList.add('splash-locked');
     };
 
@@ -155,7 +158,7 @@ export default function TerminalHandshakeSplash() {
 
   const isFullyReady = activationStage === 'ready';
 
-  // Unlock sequence: Solid program change transition (no fade)
+  // Unlock sequence: Smooth curtain transition to reveal portfolio
   const triggerUnlock = useCallback(() => {
     if (isUnlocked) return;
     setIsUnlocked(true);
@@ -166,12 +169,29 @@ export default function TerminalHandshakeSplash() {
 
     setTimeout(() => {
       setIsExiting(true);
-    }, 180);
+    }, 160);
 
     setTimeout(() => {
       setIsVisible(false);
-    }, 420);
+    }, 700);
   }, [isUnlocked]);
+
+  // Measure text position relative to track container when ready and on resize
+  useEffect(() => {
+    const measureTextPosition = () => {
+      if (trackRef.current && promptTextRef.current) {
+        const trackRect = trackRef.current.getBoundingClientRect();
+        const textRect = promptTextRef.current.getBoundingClientRect();
+        if (textRect.width > 0) {
+          textLeftOffsetRef.current = textRect.left - trackRect.left;
+        }
+      }
+    };
+
+    measureTextPosition();
+    window.addEventListener('resize', measureTextPosition);
+    return () => window.removeEventListener('resize', measureTextPosition);
+  }, [isFullyReady]);
 
   // Bypass strictly only allowed when loading finishes
   const handleBypass = useCallback(() => {
@@ -404,6 +424,16 @@ export default function TerminalHandshakeSplash() {
   const maxTravel = Math.max(60, trackWidth - thumbWidth - padding * 2);
   const currentThumbX = sliderProgress * maxTravel;
 
+  // Knob right edge relative to the track container
+  const knobRight = padding + currentThumbX + thumbWidth;
+
+  // Track text left edge relative to track container (measured or fallback)
+  const fallbackTextLeft = Math.max(60, (trackWidth - 180) / 2);
+  const textLeftBoundary = textLeftOffsetRef.current ?? fallbackTextLeft;
+
+  // Text disappears ONLY when the slider knob physically moves over the text itself
+  const isTextOverlapped = knobRight >= (textLeftBoundary - 4);
+
   const isRailPowered = activationStage === 'power_rail' || activationStage === 'power_knob' || activationStage === 'ready';
   const isKnobPowered = activationStage === 'power_knob' || activationStage === 'ready';
 
@@ -412,7 +442,10 @@ export default function TerminalHandshakeSplash() {
       role="dialog"
       aria-modal="true"
       aria-label="Engineering boot terminal handshake"
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-bg p-4 sm:p-6 select-none overflow-hidden transition-transform duration-200 ease-in-out ${
+      style={{
+        transition: 'transform 500ms cubic-bezier(0.16, 1, 0.3, 1)',
+      }}
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-bg p-4 sm:p-6 select-none overflow-hidden shadow-2xl ${
         isExiting
           ? '-translate-y-full pointer-events-none'
           : 'translate-y-0'
@@ -569,7 +602,7 @@ export default function TerminalHandshakeSplash() {
                 />
               )}
 
-              {/* Slider Track Prompt Text (Hides when dragging past text unless authenticating hold at the end) */}
+              {/* Slider Track Prompt Text (Hides ONLY when slider knob physically moves over the text itself) */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-xs font-mono">
                 {!isFullyReady ? (
                   <span className="text-text-muted/50 text-[11px]">
@@ -583,8 +616,17 @@ export default function TerminalHandshakeSplash() {
                   <span className="text-accent font-bold tracking-wide">
                     Hold to proceed ({Math.round(holdProgress * 100)}%)
                   </span>
-                ) : isDragging ? null : (
-                  <span className="text-text-muted flex items-center gap-2">
+                ) : null}
+
+                {/* Prompt text element: preserved in DOM so bounding box measurements stay accurate */}
+                {isFullyReady && !isUnlocked && (
+                  <span
+                    ref={promptTextRef}
+                    className={`text-text-muted flex items-center gap-2 transition-opacity duration-150 ${
+                      isAtEnd || isTextOverlapped ? 'opacity-0 pointer-events-none' : 'opacity-100'
+                    }`}
+                    style={isAtEnd ? { display: 'none' } : undefined}
+                  >
                     <span>Slide right to proceed</span>
                     <span className="text-accent">➔</span>
                   </span>
