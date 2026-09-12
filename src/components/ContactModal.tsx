@@ -90,7 +90,7 @@ export default function ContactModal() {
 
     const accessKey =
       import.meta.env.PUBLIC_WEB3FORMS_KEY ||
-      'e2d3b5b6-678c-4a37-9759-99419eeef8c9'; // Configurable via PUBLIC_WEB3FORMS_KEY
+      'e2170536-6acd-4b20-9b41-5c53846340d2';
 
     try {
       const response = await fetch('https://api.web3forms.com/submit', {
