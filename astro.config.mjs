@@ -54,8 +54,5 @@ export default defineConfig({
     plugins: [
       tailwindcss(),
     ],
-    ssr: {
-      noExternal: ['three', '@react-three/fiber', '@react-three/drei'],
-    },
   },
 });
