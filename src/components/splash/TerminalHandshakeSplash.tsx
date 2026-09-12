@@ -20,79 +20,69 @@ const BOOT_LINES: BootLine[] = [
       { text: 'booting ', className: 'text-[#c9d1d9]' },
       { text: 'marcbalabat.tech', className: 'text-[#79c0ff] font-semibold' },
       { text: ' on ', className: 'text-[#8b949e]' },
-      { text: 'cloudflare-workers:edge', className: 'text-[#e3b341]' },
+      { text: 'cloudflare:edge', className: 'text-[#e3b341]' },
       { text: ' (v0.1.0)...', className: 'text-[#d2a8ff]' },
     ],
-    postDelayMs: 380,
+    postDelayMs: 140,
   },
   {
     id: 2,
     spans: [
-      { text: '[  0.0142 ] ', className: 'text-[#58a6ff]' },
+      { text: '[ 0.014s ] ', className: 'text-[#58a6ff]' },
       { text: 'runtime:v8', className: 'text-[#d2a8ff] font-medium' },
-      { text: ' initializing isolate sandbox & wasm memory... ', className: 'text-[#8b949e]' },
-      { text: '[ OK ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 300 },
+      { text: ' isolate sandbox & wasm memory... ', className: 'text-[#8b949e]' },
+      { text: '[ OK ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 180 },
     ],
-    postDelayMs: 260,
+    postDelayMs: 120,
   },
   {
     id: 3,
     spans: [
-      { text: '[  0.0618 ] ', className: 'text-[#58a6ff]' },
-      { text: 'stack:deploy', className: 'text-[#d2a8ff] font-medium' },
-      { text: ' mounting ', className: 'text-[#8b949e]' },
-      { text: '3 production applications', className: 'text-[#ffa657] font-medium' },
-      { text: ' + ', className: 'text-[#8b949e]' },
-      { text: 'schema engine', className: 'text-[#a5d6ff]' },
-      { text: '... ', className: 'text-[#8b949e]' },
-      { text: '[ MOUNTED ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 420 },
+      { text: '[ 0.061s ] ', className: 'text-[#58a6ff]' },
+      { text: 'stack:core', className: 'text-[#d2a8ff] font-medium' },
+      { text: ' 3 production apps + schema engine... ', className: 'text-[#8b949e]' },
+      { text: '[ OK ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 220 },
     ],
-    postDelayMs: 300,
+    postDelayMs: 130,
   },
   {
     id: 4,
     spans: [
-      { text: '[  0.1190 ] ', className: 'text-[#58a6ff]' },
-      { text: 'network:edge', className: 'text-[#d2a8ff] font-medium' },
-      { text: ' routing traffic via ', className: 'text-[#8b949e]' },
-      { text: 'Cloudflare Global Anycast', className: 'text-[#79c0ff]' },
-      { text: '... ', className: 'text-[#8b949e]' },
-      { text: '[ 200 OK ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 500 },
+      { text: '[ 0.119s ] ', className: 'text-[#58a6ff]' },
+      { text: 'net:edge', className: 'text-[#d2a8ff] font-medium' },
+      { text: ' routing via Cloudflare Global Anycast... ', className: 'text-[#8b949e]' },
+      { text: '[ 200 ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 240 },
     ],
-    postDelayMs: 340,
+    postDelayMs: 140,
   },
   {
     id: 5,
     spans: [
-      { text: '[  0.1904 ] ', className: 'text-[#58a6ff]' },
-      { text: 'git:origin', className: 'text-[#d2a8ff] font-medium' },
-      { text: ' syncing tree ', className: 'text-[#8b949e]' },
-      { text: 'github.com/jsbalabat/portfolio', className: 'text-[#ff7b72]' },
-      { text: ' (650+ commits)... ', className: 'text-[#e3b341]' },
-      { text: '[ VERIFIED ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 380 },
+      { text: '[ 0.190s ] ', className: 'text-[#58a6ff]' },
+      { text: 'git:tree', className: 'text-[#d2a8ff] font-medium' },
+      { text: ' synced github.com/jsbalabat/portfolio... ', className: 'text-[#8b949e]' },
+      { text: '[ OK ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 200 },
     ],
-    postDelayMs: 280,
+    postDelayMs: 120,
   },
   {
     id: 6,
     spans: [
-      { text: '[  0.2670 ] ', className: 'text-[#58a6ff]' },
+      { text: '[ 0.267s ] ', className: 'text-[#58a6ff]' },
       { text: 'auth:daemon', className: 'text-[#d2a8ff] font-medium' },
-      { text: ' interlock safety daemon armed on ', className: 'text-[#8b949e]' },
-      { text: '/dev/interlock0', className: 'text-[#79c0ff]' },
-      { text: '... ', className: 'text-[#8b949e]' },
-      { text: '[ ARMED ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 350 },
+      { text: ' interlock safety armed on /dev/interlock0... ', className: 'text-[#8b949e]' },
+      { text: '[ ARMED ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 190 },
     ],
-    postDelayMs: 320,
+    postDelayMs: 130,
   },
   {
     id: 7,
     spans: [
       { text: '[  OK  ] ', className: 'text-[#7ee787] font-bold' },
-      { text: 'Production environment ready. Target: ', className: 'text-[#c9d1d9]' },
-      { text: 'https://marcbalabat.tech', className: 'text-[#79c0ff] underline decoration-[#79c0ff]/40' },
+      { text: 'Production environment ready: ', className: 'text-[#c9d1d9]' },
+      { text: 'marcbalabat.tech', className: 'text-[#79c0ff] underline decoration-[#79c0ff]/40' },
     ],
-    postDelayMs: 400,
+    postDelayMs: 180,
   },
 ];
 
@@ -104,7 +94,7 @@ export default function TerminalHandshakeSplash() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Typewriter state
+  // Robotic typewriter state
   const [completedLines, setCompletedLines] = useState<BootLine[]>([]);
   const [activeLineIndex, setActiveLineIndex] = useState(0);
   const [activeSpans, setActiveSpans] = useState<TextSpan[]>([]);
@@ -179,7 +169,7 @@ export default function TerminalHandshakeSplash() {
     triggerUnlock();
   }, [triggerUnlock]);
 
-  // Typewriter engine with variable load times & per-character streaming
+  // Robotic, crisp letter-by-letter typewriter engine
   useEffect(() => {
     if (!isVisible || isBootComplete) return;
 
@@ -198,7 +188,7 @@ export default function TerminalHandshakeSplash() {
       if (isCancelled) return;
 
       if (spanIdx >= currentLine.spans.length) {
-        // Line complete: wait postDelayMs, then move to next line
+        // Line complete: short pause, then advance to next line
         timeoutId = window.setTimeout(() => {
           if (isCancelled) return;
           setCompletedLines((prev) => [...prev, currentLine]);
@@ -210,19 +200,17 @@ export default function TerminalHandshakeSplash() {
 
       const currentSpan = currentLine.spans[spanIdx];
 
-      // Check if entering a new span with a designated load pause
+      // Load pause before specific text segments (e.g. before '[ OK ]')
       if (charIdx === 0 && currentSpan.pauseBeforeMs && currentSpan.pauseBeforeMs > 0) {
         const pauseTime = currentSpan.pauseBeforeMs;
-        // Temporarily nullify pause to avoid repeating
         currentSpan.pauseBeforeMs = 0;
         timeoutId = window.setTimeout(streamNextChar, pauseTime);
         return;
       }
 
-      // Advance one character
+      // Append strictly one letter at a time for robotic terminal feel
       charIdx++;
 
-      // Construct partial spans for render
       const renderedSpans: TextSpan[] = [];
       for (let i = 0; i < spanIdx; i++) {
         renderedSpans.push(currentLine.spans[i]);
@@ -238,8 +226,8 @@ export default function TerminalHandshakeSplash() {
         charIdx = 0;
       }
 
-      // Deliberate typewriter typing cadence (20ms per char)
-      timeoutId = window.setTimeout(streamNextChar, 20);
+      // Robotic 10ms per letter rate
+      timeoutId = window.setTimeout(streamNextChar, 10);
     };
 
     streamNextChar();
@@ -250,24 +238,24 @@ export default function TerminalHandshakeSplash() {
     };
   }, [isVisible, isBootComplete, activeLineIndex]);
 
-  // Staggered uneven activation of buttons once boot sequence completes
+  // Staggered uneven activation of buttons once boot completes
   useEffect(() => {
     if (!isBootComplete) return;
 
     // Stage 1: Power the slider rail
     const t1 = window.setTimeout(() => {
       setActivationStage('power_rail');
-    }, 120);
+    }, 100);
 
     // Stage 2: Power the slider knob
     const t2 = window.setTimeout(() => {
       setActivationStage('power_knob');
-    }, 280);
+    }, 240);
 
     // Stage 3: Enable bypass and activate ready status
     const t3 = window.setTimeout(() => {
       setActivationStage('ready');
-    }, 450);
+    }, 380);
 
     return () => {
       window.clearTimeout(t1);
@@ -276,7 +264,7 @@ export default function TerminalHandshakeSplash() {
     };
   }, [isBootComplete]);
 
-  // Pointer drag physics for slider
+  // Pointer drag physics for slider (button sits inside with 6px padding)
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (activationStage !== 'ready' || isUnlocked) return;
     setIsDragging(true);
@@ -288,8 +276,8 @@ export default function TerminalHandshakeSplash() {
     if (!trackRef.current) return;
     const rect = trackRef.current.getBoundingClientRect();
     const thumbWidth = 44;
-    const padding = 4;
-    const maxTravel = rect.width - thumbWidth - padding * 2;
+    const padding = 6;
+    const maxTravel = Math.max(60, rect.width - thumbWidth - padding * 2);
     const pointerOffset = clientX - rect.left - padding - thumbWidth / 2;
     const clampedOffset = Math.max(0, Math.min(maxTravel, pointerOffset));
     const progress = maxTravel > 0 ? clampedOffset / maxTravel : 0;
@@ -324,17 +312,17 @@ export default function TerminalHandshakeSplash() {
       // ignore
     }
 
-    // If released before 100% hold completed, snap back to start
+    // If released before hold finishes, snap back to start
     cancelHold();
     setIsAtEnd(false);
     setSliderProgress(0);
   };
 
-  // Hold action that takes place strictly after sliding left to right (slowed down to 850ms)
+  // Hold action: 650ms (balanced between first 450ms and previous 850ms)
   const startHold = () => {
     if (holdTimerRef.current) clearInterval(holdTimerRef.current);
     holdStartTimeRef.current = Date.now();
-    const holdDuration = 850; // ms (smooth, deliberate load time)
+    const holdDuration = 650; // ms
 
     holdTimerRef.current = window.setInterval(() => {
       if (!holdStartTimeRef.current) return;
@@ -380,8 +368,8 @@ export default function TerminalHandshakeSplash() {
 
   const trackWidth = trackRef.current ? trackRef.current.clientWidth : 500;
   const thumbWidth = 44;
-  const padding = 4;
-  const maxTravel = Math.max(100, trackWidth - thumbWidth - padding * 2);
+  const padding = 6;
+  const maxTravel = Math.max(60, trackWidth - thumbWidth - padding * 2);
   const currentThumbX = sliderProgress * maxTravel;
 
   const isRailPowered = activationStage === 'power_rail' || activationStage === 'power_knob' || activationStage === 'ready';
@@ -399,7 +387,7 @@ export default function TerminalHandshakeSplash() {
           : 'scale-100 opacity-100'
       }`}
     >
-      {/* CLI Sharp Blink Keyframes (no smooth fade, hard on/off like real terminal) */}
+      {/* CLI Sharp Blink Keyframes (hard step toggle, no smooth transition) */}
       <style>{`
         @keyframes cli-sharp-blink {
           0%, 49% {
@@ -413,7 +401,7 @@ export default function TerminalHandshakeSplash() {
         }
         .cli-prompt-blink {
           display: inline-block;
-          animation: cli-sharp-blink 0.85s steps(1, end) infinite;
+          animation: cli-sharp-blink 0.75s steps(1, end) infinite;
         }
       `}</style>
 
@@ -449,11 +437,11 @@ export default function TerminalHandshakeSplash() {
           </div>
         </div>
 
-        {/* Terminal Log Screen (Typewriter character stream with VS Code colors) */}
-        <div className="p-5 sm:p-6 space-y-1.5 text-xs min-h-[220px] flex flex-col justify-start">
+        {/* Terminal Log Screen (Strict single line per entry; no wrapping or overflow) */}
+        <div className="p-5 sm:p-6 space-y-1.5 text-[11px] sm:text-xs min-h-[220px] flex flex-col justify-start overflow-hidden">
           {/* Completed lines */}
           {completedLines.map((line) => (
-            <div key={line.id} className="leading-relaxed font-mono">
+            <div key={line.id} className="leading-relaxed font-mono whitespace-nowrap overflow-hidden text-ellipsis">
               {line.spans.map((span, sIdx) => (
                 <span key={sIdx} className={span.className}>
                   {span.text}
@@ -462,9 +450,9 @@ export default function TerminalHandshakeSplash() {
             </div>
           ))}
 
-          {/* Currently typing line (no trailing cursor; character stream only) */}
+          {/* Currently typing line (robotic per-letter streaming; strictly one line) */}
           {!isBootComplete && (
-            <div className="leading-relaxed font-mono">
+            <div className="leading-relaxed font-mono whitespace-nowrap overflow-hidden text-ellipsis">
               {activeSpans.map((span, sIdx) => (
                 <span key={sIdx} className={span.className}>
                   {span.text}
@@ -473,9 +461,9 @@ export default function TerminalHandshakeSplash() {
             </div>
           )}
 
-          {/* Terminal Prompt Line: the chevron '>' blinks sharply like an authentic CLI */}
-          <div className="pt-2 flex items-center gap-1 text-xs font-mono">
-            <span className="cli-prompt-blink font-bold text-accent mr-1">&gt;</span>
+          {/* Terminal Prompt Line: '>' blinks sharply with zero smooth fade */}
+          <div className="pt-2 flex items-center gap-1 text-[11px] sm:text-xs font-mono whitespace-nowrap overflow-hidden text-ellipsis">
+            <span className="cli-prompt-blink font-bold text-accent mr-1 shrink-0">&gt;</span>
             {!isBootComplete ? (
               <span className="text-text-muted">
                 System boot sequence in progress...
@@ -494,14 +482,14 @@ export default function TerminalHandshakeSplash() {
 
         {/* Handshake Controls Panel */}
         <div className="p-4 sm:p-5 bg-surface/50 border-t border-border/80 flex flex-col gap-3">
-          {/* Slider Rail */}
+          {/* Slider Rail: Button sits inside with uniform 6px padding on all sides */}
           <div
             ref={trackRef}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
-            className={`h-12 rounded-xl border relative overflow-hidden flex items-center p-1 select-none transition-colors duration-200 ${
+            className={`h-14 rounded-2xl border relative overflow-hidden flex items-center p-1.5 select-none transition-colors duration-200 ${
               !isRailPowered
                 ? 'opacity-30 border-border/40 bg-surface-raised/30 pointer-events-none cursor-not-allowed'
                 : isUnlocked
@@ -511,20 +499,24 @@ export default function TerminalHandshakeSplash() {
                 : 'border-border/60 bg-surface-raised/60'
             }`}
           >
-            {/* Dynamic Slider Progress Fill (100% synced with thumb knob position) */}
+            {/* Dynamic Slider Progress Fill (completely inside the track with 6px inset) */}
             <div
-              className={`absolute top-0 bottom-0 left-0 border-r transition-none ${
+              className={`absolute border-r transition-none ${
                 isUnlocked
                   ? 'bg-emerald-500/20 border-emerald-500'
                   : 'bg-accent/25 border-accent'
               }`}
               style={{
-                width: isDragging || isAtEnd ? `${currentThumbX + thumbWidth / 2}px` : '0px',
+                left: '6px',
+                top: '6px',
+                bottom: '6px',
+                width: isDragging || isAtEnd ? `${currentThumbX + thumbWidth}px` : '0px',
+                borderRadius: '10px',
                 transition: isDragging ? 'none' : 'width 0.25s ease-out',
               }}
             />
 
-            {/* Slider Track Prompt Text (Stationary glyph; no bounce) */}
+            {/* Slider Track Prompt Text */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-xs font-mono">
               {!isFullyReady ? (
                 <span className="text-text-muted/50 text-[11px]">
@@ -546,15 +538,15 @@ export default function TerminalHandshakeSplash() {
               )}
             </div>
 
-            {/* Slider Knob */}
+            {/* Slider Knob Button (strictly nested inside track, 44px height in 56px track) */}
             <div
-              className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-xs shadow-md relative z-10 select-none ${
+              className={`w-11 h-11 rounded-xl flex items-center justify-center font-bold text-xs shadow-sm relative z-10 select-none ${
                 !isKnobPowered
                   ? 'bg-border/60 text-text-muted/40 cursor-not-allowed'
                   : isUnlocked
                   ? 'bg-emerald-500 text-white'
                   : isAtEnd
-                  ? 'bg-accent text-accent-text ring-2 ring-accent/60 scale-105'
+                  ? 'bg-accent text-accent-text brightness-110'
                   : 'bg-accent text-accent-text hover:brightness-105'
               }`}
               style={{
