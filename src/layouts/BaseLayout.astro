@@ -3,6 +3,7 @@ import '../styles/global.css';
 import CommandPalette from '../components/pitched/CommandPalette';
 import TldrToggle from '../components/TldrToggle';
 import ContactModal from '../components/ContactModal';
+import BackToTop from '../components/BackToTop.astro';
 import TransitionOpener from '../components/TransitionOpener.astro';
 
 interface Props {
@@ -119,7 +120,7 @@ const isHomepage = Astro.url.pathname === '/' || Astro.url.pathname === '';
           <button
             type="button"
             onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
-            class="hover:text-text transition-colors cursor-pointer"
+            class="hover:text-text transition-all active:scale-[0.96] cursor-pointer"
           >
             Contact
           </button>
@@ -133,7 +134,7 @@ const isHomepage = Astro.url.pathname === '/' || Astro.url.pathname === '';
             type="button"
             aria-label="Toggle color theme (System, Light, Dark)"
             title="Theme: System (default), Light, Dark"
-            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-surface-raised border border-border text-xs font-mono text-text transition-colors cursor-pointer"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-surface-raised active:scale-[0.96] border border-border text-xs font-mono text-text transition-all cursor-pointer"
           >
             <span id="theme-toggle-icon" class="text-accent">◐</span>
             <span id="theme-toggle-text">System</span>
@@ -175,21 +176,8 @@ const isHomepage = Astro.url.pathname === '/' || Astro.url.pathname === '';
       </footer>
     </div>
 
-    <!-- Floating TLDR Active Indicator Toast -->
-    <div
-      id="tldr-toast"
-      class="tldr-banner fixed bottom-6 left-1/2 -translate-x-1/2 z-40 px-4 py-2 rounded-full border border-accent/70 bg-surface/90 backdrop-blur-md shadow-lg text-xs font-mono items-center gap-3"
-    >
-      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-      <span class="text-text font-medium">TLDR Active: High-signal metrics and outcomes highlighted</span>
-      <button
-        id="tldr-toast-dismiss"
-        type="button"
-        class="text-accent underline hover:opacity-80 font-semibold cursor-pointer"
-      >
-        Turn Off
-      </button>
-    </div>
+    <!-- Floating Back to Top Button -->
+    <BackToTop />
 
     <!-- Contact Email Modal Popup -->
     <ContactModal client:load />
@@ -261,16 +249,6 @@ const isHomepage = Astro.url.pathname === '/' || Astro.url.pathname === '';
       window.addEventListener('theme-preference-change', () => {
         updateThemeToggleUI();
       });
-
-      const toastDismiss = document.getElementById('tldr-toast-dismiss');
-      if (toastDismiss) {
-        toastDismiss.addEventListener('click', () => {
-          document.body.classList.remove('tldr-active');
-          localStorage.setItem('portfolio_tldr_active', 'false');
-          // Dispatch custom event to sync react toggle button state if needed
-          window.dispatchEvent(new Event('tldr-state-change'));
-        });
-      }
 
       // Dynamic header fade-in: 0-100 halfway through cover page onwards
       const header = document.getElementById('site-header');

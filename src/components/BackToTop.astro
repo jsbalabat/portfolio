@@ -1,0 +1,94 @@
+---
+// src/components/BackToTop.astro
+// Floating back-to-top button that fades in matching header scroll threshold
+---
+
+<button
+  id="back-to-top"
+  type="button"
+  aria-label="Back to top"
+  title="Back to top"
+  class="fixed bottom-6 right-6 z-40 sm:bottom-8 sm:right-8 flex items-center justify-center h-10 sm:h-11 px-3 sm:px-3.5 rounded-full bg-surface-raised/90 hover:bg-surface-raised active:scale-[0.96] backdrop-blur-md border border-border/80 hover:border-accent/50 text-text-muted hover:text-accent shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer opacity-0 pointer-events-none translate-y-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent group overflow-hidden"
+>
+  <span class="max-w-0 overflow-hidden whitespace-nowrap opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-hover:mr-1.5 transition-all duration-200 text-xs font-mono font-medium text-accent">
+    back to top
+  </span>
+  <svg
+    viewBox="0 0 24 24"
+    class="w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M18 15l-6-6-6 6"></path>
+  </svg>
+</button>
+
+<script>
+  const backToTop = document.getElementById('back-to-top');
+  const cover = document.getElementById('cover');
+
+  if (backToTop) {
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
+    });
+
+    const updateBackToTop = () => {
+      const scrollY = window.scrollY || window.pageYOffset || 0;
+
+      if (cover) {
+        // On pages with cover hero (homepage): fade in past halfway mark just like the header
+        const coverHeight = cover.offsetHeight || window.innerHeight;
+        const halfway = coverHeight * 0.5;
+
+        if (scrollY <= halfway) {
+          backToTop.style.opacity = '0';
+          backToTop.style.pointerEvents = 'none';
+          backToTop.style.transform = 'translateY(8px)';
+        } else if (scrollY >= coverHeight) {
+          backToTop.style.opacity = '1';
+          backToTop.style.pointerEvents = 'auto';
+          backToTop.style.transform = 'translateY(0)';
+        } else {
+          const progress = (scrollY - halfway) / (coverHeight - halfway);
+          const clamped = Math.max(0, Math.min(1, progress));
+          backToTop.style.opacity = clamped.toFixed(3);
+          backToTop.style.pointerEvents = clamped > 0.15 ? 'auto' : 'none';
+          const translateY = (8 * (1 - clamped)).toFixed(1);
+          backToTop.style.transform = `translateY(${translateY}px)`;
+        }
+      } else {
+        // On interior pages without cover hero (case studies): fade in after scrolling past 200px
+        const threshold = 200;
+        const fullyVisible = 400;
+
+        if (scrollY <= threshold) {
+          backToTop.style.opacity = '0';
+          backToTop.style.pointerEvents = 'none';
+          backToTop.style.transform = 'translateY(8px)';
+        } else if (scrollY >= fullyVisible) {
+          backToTop.style.opacity = '1';
+          backToTop.style.pointerEvents = 'auto';
+          backToTop.style.transform = 'translateY(0)';
+        } else {
+          const progress = (scrollY - threshold) / (fullyVisible - threshold);
+          const clamped = Math.max(0, Math.min(1, progress));
+          backToTop.style.opacity = clamped.toFixed(3);
+          backToTop.style.pointerEvents = clamped > 0.15 ? 'auto' : 'none';
+          const translateY = (8 * (1 - clamped)).toFixed(1);
+          backToTop.style.transform = `translateY(${translateY}px)`;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', updateBackToTop, { passive: true });
+    window.addEventListener('resize', updateBackToTop, { passive: true });
+    updateBackToTop();
+  }
+</script>
