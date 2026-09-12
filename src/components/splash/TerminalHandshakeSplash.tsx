@@ -135,6 +135,9 @@ export default function TerminalHandshakeSplash() {
     }
 
     const handleReopen = () => {
+      try {
+        sessionStorage.removeItem('portfolio_unlocked');
+      } catch (e) {}
       setIsExiting(false);
       setIsUnlocked(false);
       setSplashPhase('pc_boot');

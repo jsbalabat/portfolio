@@ -94,7 +94,7 @@ export default function CommandPalette() {
     {
       id: 'section-about',
       title: 'About Engineering Background',
-      subtitle: 'Ownership philosophy and production track record',
+      subtitle: 'Ownership philosophy and technical background',
       category: 'Navigation',
       icon: 'compass',
       action: () => {
@@ -111,9 +111,14 @@ export default function CommandPalette() {
       icon: 'document',
       action: () => {
         closePalette();
-        setTimeout(() => {
-          window.dispatchEvent(new CustomEvent('open-splash-gate'));
-        }, 150);
+        sessionStorage.removeItem('portfolio_unlocked');
+        if (window.location.pathname !== '/' && window.location.pathname !== '') {
+          window.location.href = '/';
+        } else {
+          setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('open-splash-gate'));
+          }, 150);
+        }
       },
       shortcut: 'B',
     },
