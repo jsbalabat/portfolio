@@ -124,10 +124,10 @@ const isProduction = gitBranch === 'main';
           <!-- TLDR Interactive Toggle Button -->
           <TldrToggle client:load />
 
-          <a href="/#work" class="hover:text-text transition-colors">Case Studies</a>
-          <a href="/#architecture" class="hover:text-text transition-colors">Architecture</a>
-          <a href="/#skills" class="hover:text-text transition-colors">Stack</a>
-          <a href="/#about" class="hover:text-text transition-colors">About</a>
+          <a href="/#work" class="hover:text-text transition-all active:scale-[0.96] inline-block">Case Studies</a>
+          <a href="/#architecture" class="hover:text-text transition-all active:scale-[0.96] inline-block">Architecture</a>
+          <a href="/#skills" class="hover:text-text transition-all active:scale-[0.96] inline-block">Stack</a>
+          <a href="/#about" class="hover:text-text transition-all active:scale-[0.96] inline-block">About</a>
           <button
             type="button"
             onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"

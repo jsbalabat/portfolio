@@ -52,7 +52,7 @@ export default function TldrToggle() {
         />
         <span>TLDR</span>
         <span
-          className={`text-[10px] px-1.5 py-0.2 rounded font-semibold tabular-nums ${
+          className={`text-[10px] px-1.5 py-0.5 rounded font-semibold tabular-nums ${
             isActive
               ? 'bg-black/20 text-accent-text'
               : 'bg-surface-raised text-text-muted border border-border/60'

@@ -296,7 +296,7 @@ const keyOutcomes: Record<string, { badge: string; text: string }> = {
               {keyOutcomes[study.id] && (
                 <div
                   class="tldr-highlight mb-4 px-3.5 py-2.5 rounded-xl bg-surface-raised/70 border border-border/80 flex items-center gap-2.5 text-xs text-text overflow-hidden shadow-2xs"
-                  title={`${keyOutcomes[study.id].badge} — ${keyOutcomes[study.id].text}`}
+                  title={`${keyOutcomes[study.id].badge}: ${keyOutcomes[study.id].text}`}
                 >
                   <div class="shrink-0 flex items-center text-xs font-mono font-bold text-accent">
                     <span>Outcome:</span>

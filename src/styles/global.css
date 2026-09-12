@@ -172,6 +172,7 @@ html.splash-locked body {
 }
 
 html.splash-locked #site-header,
+html.splash-locked #back-to-top,
 html.splash-locked #back-to-top-btn {
   opacity: 0 !important;
   visibility: hidden !important;

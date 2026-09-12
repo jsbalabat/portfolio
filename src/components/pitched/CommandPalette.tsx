@@ -92,6 +92,37 @@ export default function CommandPalette() {
       shortcut: 'S',
     },
     {
+      id: 'section-about',
+      title: 'About Engineering Background',
+      subtitle: 'Ownership philosophy and technical background',
+      category: 'Navigation',
+      icon: 'compass',
+      action: () => {
+        window.location.href = '/#about';
+        setIsOpen(false);
+      },
+      shortcut: 'A',
+    },
+    {
+      id: 'action-reopen-splash',
+      title: 'Replay Boot Terminal Handshake',
+      subtitle: 'Re-trigger the engineering bootloader splash gate',
+      category: 'Actions',
+      icon: 'document',
+      action: () => {
+        closePalette();
+        sessionStorage.removeItem('portfolio_unlocked');
+        if (window.location.pathname !== '/' && window.location.pathname !== '') {
+          window.location.href = '/';
+        } else {
+          setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('open-splash-gate'));
+          }, 150);
+        }
+      },
+      shortcut: 'B',
+    },
+    {
       id: 'toggle-tldr',
       title: 'Toggle TLDR Mode',
       subtitle: 'Highlight high-signal metrics & outcomes across the page',

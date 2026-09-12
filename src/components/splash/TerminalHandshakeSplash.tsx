@@ -119,10 +119,12 @@ export default function TerminalHandshakeSplash() {
   const textLeftOffsetRef = useRef<number | null>(null);
   const holdTimerRef = useRef<number | null>(null);
   const holdStartTimeRef = useRef<number | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   // Check initial session storage on mount
   useEffect(() => {
     setMounted(true);
+
     const unlocked = sessionStorage.getItem('portfolio_unlocked') === 'true';
 
     if (!unlocked) {
@@ -133,6 +135,9 @@ export default function TerminalHandshakeSplash() {
     }
 
     const handleReopen = () => {
+      try {
+        sessionStorage.removeItem('portfolio_unlocked');
+      } catch (e) {}
       setIsExiting(false);
       setIsUnlocked(false);
       setSplashPhase('pc_boot');
@@ -147,6 +152,7 @@ export default function TerminalHandshakeSplash() {
       setActivationStage('booting');
       setIsVisible(true);
       textLeftOffsetRef.current = null;
+      document.documentElement.classList.remove('splash-revealing');
       document.documentElement.classList.add('splash-locked');
     };
 
@@ -158,8 +164,14 @@ export default function TerminalHandshakeSplash() {
 
   const isFullyReady = activationStage === 'ready';
 
+  // Finalize splash exit: unmount component and release page scroll lock
+  const finishExit = useCallback(() => {
+    setIsVisible(false);
+    document.documentElement.classList.remove('splash-locked');
+  }, []);
+
   // Unlock sequence: Refined cinematic transition to reveal portfolio
-  const triggerUnlock = useCallback(() => {
+  const triggerUnlock = useCallback((isBypass = false) => {
     if (isUnlocked) return;
     setIsUnlocked(true);
     sessionStorage.setItem('portfolio_unlocked', 'true');
@@ -167,14 +179,16 @@ export default function TerminalHandshakeSplash() {
     // Remove lockout class to reveal background content immediately
     document.documentElement.classList.remove('splash-locked');
 
-    setTimeout(() => {
-      setIsExiting(true);
-    }, 180);
+    const confirmationDelay = isBypass ? 80 : 180;
 
     setTimeout(() => {
-      setIsVisible(false);
-    }, 760);
-  }, [isUnlocked]);
+      setIsExiting(true);
+    }, confirmationDelay);
+
+    setTimeout(() => {
+      finishExit();
+    }, confirmationDelay + 580);
+  }, [isUnlocked, finishExit]);
 
   // Measure text position relative to track container when ready and on resize
   useEffect(() => {
@@ -196,7 +210,7 @@ export default function TerminalHandshakeSplash() {
   // Bypass strictly only allowed when loading finishes
   const handleBypass = useCallback(() => {
     if (!isFullyReady || isUnlocked) return;
-    triggerUnlock();
+    triggerUnlock(true);
   }, [isFullyReady, isUnlocked, triggerUnlock]);
 
   // PC Bootloader animation (pre-CLI program loader: ~450ms)
@@ -235,6 +249,7 @@ export default function TerminalHandshakeSplash() {
     let isCancelled = false;
     let spanIdx = 0;
     let charIdx = 0;
+    let hasPausedCurrentSpan = false;
     let timeoutId: number;
 
     const streamNextChar = () => {
@@ -252,10 +267,9 @@ export default function TerminalHandshakeSplash() {
 
       const currentSpan = currentLine.spans[spanIdx];
 
-      if (charIdx === 0 && currentSpan.pauseBeforeMs && currentSpan.pauseBeforeMs > 0) {
-        const pauseTime = currentSpan.pauseBeforeMs;
-        currentSpan.pauseBeforeMs = 0;
-        timeoutId = window.setTimeout(streamNextChar, pauseTime);
+      if (charIdx === 0 && !hasPausedCurrentSpan && currentSpan.pauseBeforeMs && currentSpan.pauseBeforeMs > 0) {
+        hasPausedCurrentSpan = true;
+        timeoutId = window.setTimeout(streamNextChar, currentSpan.pauseBeforeMs);
         return;
       }
 
@@ -274,6 +288,7 @@ export default function TerminalHandshakeSplash() {
       if (charIdx >= currentSpan.text.length) {
         spanIdx++;
         charIdx = 0;
+        hasPausedCurrentSpan = false;
       }
 
       // Fast robotic 7ms per letter rate
@@ -399,7 +414,17 @@ export default function TerminalHandshakeSplash() {
     }
   };
 
-  // Keyboard shortcut: Escape to bypass strictly ONLY after loading finishes
+  // Clear interval on unmount
+  useEffect(() => {
+    return () => {
+      if (holdTimerRef.current) {
+        clearInterval(holdTimerRef.current);
+        holdTimerRef.current = null;
+      }
+    };
+  }, []);
+
+  // Keyboard navigation & accessibility: Escape to bypass and Tab cyclic focus trap
   useEffect(() => {
     if (!isVisible) return;
 
@@ -408,6 +433,21 @@ export default function TerminalHandshakeSplash() {
         e.preventDefault();
         if (isFullyReady && !isUnlocked) {
           handleBypass();
+        }
+      } else if (e.key === 'Tab' && dialogRef.current) {
+        const focusables = dialogRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusables.length > 0) {
+          const first = focusables[0];
+          const last = focusables[focusables.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
         }
       }
     };
@@ -437,11 +477,19 @@ export default function TerminalHandshakeSplash() {
   const isRailPowered = activationStage === 'power_rail' || activationStage === 'power_knob' || activationStage === 'ready';
   const isKnobPowered = activationStage === 'power_knob' || activationStage === 'ready';
 
+  const handleTransitionEnd = (e: React.TransitionEvent<HTMLDivElement>) => {
+    if (e.target === dialogRef.current && e.propertyName === 'transform' && isExiting) {
+      finishExit();
+    }
+  };
+
   return (
     <div
+      ref={dialogRef}
       role="dialog"
       aria-modal="true"
       aria-label="Engineering boot terminal handshake"
+      onTransitionEnd={handleTransitionEnd}
       style={{
         transform: isExiting ? 'translateY(-100%)' : 'translateY(0)',
         transition: 'transform 540ms cubic-bezier(0.16, 1, 0.3, 1)',
@@ -468,6 +516,11 @@ export default function TerminalHandshakeSplash() {
         .cli-prompt-blink {
           display: inline-block;
           animation: cli-sharp-blink 0.75s steps(1, end) infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .cli-prompt-blink {
+            animation: none !important;
+          }
         }
       `}</style>
 
@@ -625,7 +678,7 @@ export default function TerminalHandshakeSplash() {
                   </span>
                 ) : isAtEnd ? (
                   <span className="text-accent font-bold tracking-wide">
-                    Hold to proceed ({Math.round(holdProgress * 100)}%)
+                    Hold to proceed (<span className="tabular-nums">{Math.round(holdProgress * 100)}%</span>)
                   </span>
                 ) : null}
 
@@ -646,7 +699,33 @@ export default function TerminalHandshakeSplash() {
 
               {/* Slider Knob Button (strictly nested inside track with 6px padding & concentric 10px radius) */}
               <div
-                className={`w-11 h-11 rounded-[10px] flex items-center justify-center font-bold text-xs shadow-sm relative z-10 select-none ${
+                role="slider"
+                tabIndex={isKnobPowered && !isUnlocked ? 0 : -1}
+                aria-label="Handshake slider to unlock portfolio"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.round(sliderProgress * 100)}
+                onKeyDown={(e) => {
+                  if (!isFullyReady || isUnlocked) return;
+                  if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    const next = Math.min(1, sliderProgress + 0.2);
+                    setSliderProgress(next);
+                    if (next >= 0.96 && !isAtEnd) {
+                      setIsAtEnd(true);
+                      startHold();
+                    }
+                  } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    const next = Math.max(0, sliderProgress - 0.2);
+                    setSliderProgress(next);
+                    if (next < 0.96 && isAtEnd) {
+                      setIsAtEnd(false);
+                      cancelHold();
+                    }
+                  }
+                }}
+                className={`w-11 h-11 rounded-[10px] flex items-center justify-center font-bold text-xs shadow-sm relative z-10 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                   !isKnobPowered
                     ? 'bg-border/60 text-text-muted/40 cursor-not-allowed'
                     : isUnlocked
@@ -663,7 +742,7 @@ export default function TerminalHandshakeSplash() {
                 {isUnlocked ? (
                   '✓'
                 ) : isAtEnd ? (
-                  `${Math.round(holdProgress * 100)}%`
+                  <span className="tabular-nums">{Math.round(holdProgress * 100)}%</span>
                 ) : (
                   <span className="inline-block transform translate-x-[0.5px]">➔</span>
                 )}
