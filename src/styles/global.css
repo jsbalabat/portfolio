@@ -25,6 +25,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-y: scroll;
   scrollbar-gutter: stable;
 }
 
@@ -161,23 +162,24 @@ body.tldr-active .tldr-dim {
 }
 
 /* ==========================================================================
-   Splash Gate Strict Lockout & Seamless Transition
+   Splash Gate Strict Lockout & Zero-Shift Clean Reveal
    ========================================================================== */
 
-#main-content-wrapper {
-  transition: opacity 0.35s ease-out;
-}
-
-html.splash-locked,
 html.splash-locked body {
   overflow: hidden !important;
-  height: 100vh !important;
-  max-height: 100vh !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
 }
 
 html.splash-locked #site-header,
-html.splash-locked #main-content-wrapper,
 html.splash-locked #back-to-top-btn {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+html.splash-locked #main-content-wrapper {
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;

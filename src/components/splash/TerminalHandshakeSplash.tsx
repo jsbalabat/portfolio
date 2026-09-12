@@ -158,7 +158,7 @@ export default function TerminalHandshakeSplash() {
 
   const isFullyReady = activationStage === 'ready';
 
-  // Unlock sequence: Smooth curtain transition to reveal portfolio
+  // Unlock sequence: Refined cinematic transition to reveal portfolio
   const triggerUnlock = useCallback(() => {
     if (isUnlocked) return;
     setIsUnlocked(true);
@@ -169,11 +169,11 @@ export default function TerminalHandshakeSplash() {
 
     setTimeout(() => {
       setIsExiting(true);
-    }, 160);
+    }, 180);
 
     setTimeout(() => {
       setIsVisible(false);
-    }, 700);
+    }, 760);
   }, [isUnlocked]);
 
   // Measure text position relative to track container when ready and on resize
@@ -443,14 +443,16 @@ export default function TerminalHandshakeSplash() {
       aria-modal="true"
       aria-label="Engineering boot terminal handshake"
       style={{
-        transition: 'transform 500ms cubic-bezier(0.16, 1, 0.3, 1)',
+        transform: isExiting ? 'translateY(-100%)' : 'translateY(0)',
+        transition: 'transform 540ms cubic-bezier(0.16, 1, 0.3, 1)',
+        willChange: isExiting ? 'transform' : 'auto',
       }}
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-bg p-4 sm:p-6 select-none overflow-hidden shadow-2xl ${
-        isExiting
-          ? '-translate-y-full pointer-events-none'
-          : 'translate-y-0'
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-bg p-4 sm:p-6 select-none overflow-hidden border-b border-border/80 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.7)] ${
+        isExiting ? 'pointer-events-none' : ''
       }`}
     >
+      {/* Precision laser sweep line at the bottom bezel of the retracting visor */}
+      <div className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-accent/50 to-transparent pointer-events-none" />
       {/* CLI Sharp Blink Keyframes (hard step toggle, no smooth transition) */}
       <style>{`
         @keyframes cli-sharp-blink {
@@ -491,7 +493,15 @@ export default function TerminalHandshakeSplash() {
 
       {/* STAGE 2: Terminal Window & Handshake Controls */}
       {splashPhase === 'cli_terminal' && (
-        <div className="w-full max-w-2xl rounded-2xl border border-border bg-[#0d1117] text-[#c9d1d9] shadow-2xl overflow-hidden font-mono flex flex-col">
+        <div
+          style={{
+            transform: isExiting ? 'translateY(-24px) scale(0.98)' : 'translateY(0) scale(1)',
+            opacity: isExiting ? 0 : 1,
+            transition: 'transform 320ms cubic-bezier(0.16, 1, 0.3, 1), opacity 280ms ease-out',
+            willChange: isExiting ? 'transform, opacity' : 'auto',
+          }}
+          className="w-full max-w-2xl rounded-2xl border border-border/80 bg-[#0d1117] text-[#c9d1d9] shadow-[0_24px_60px_-12px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,255,255,0.06)] overflow-hidden font-mono flex flex-col"
+        >
           {/* Terminal Titlebar */}
           <div className="px-4 py-3 bg-surface-raised border-b border-border/80 flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -554,8 +564,9 @@ export default function TerminalHandshakeSplash() {
                   System boot sequence in progress...
                 </span>
               ) : isUnlocked ? (
-                <span className="text-emerald-400 font-bold">
-                  Handshake verified. Launching workspace...
+                <span className="text-emerald-400 font-bold flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                  Handshake verified [200 OK]. Launching workspace...
                 </span>
               ) : (
                 <span className="text-text font-medium">
@@ -633,23 +644,29 @@ export default function TerminalHandshakeSplash() {
                 )}
               </div>
 
-              {/* Slider Knob Button (strictly nested inside track with 6px padding) */}
+              {/* Slider Knob Button (strictly nested inside track with 6px padding & concentric 10px radius) */}
               <div
-                className={`w-11 h-11 rounded-xl flex items-center justify-center font-bold text-xs shadow-sm relative z-10 select-none ${
+                className={`w-11 h-11 rounded-[10px] flex items-center justify-center font-bold text-xs shadow-sm relative z-10 select-none ${
                   !isKnobPowered
                     ? 'bg-border/60 text-text-muted/40 cursor-not-allowed'
                     : isUnlocked
                     ? 'bg-emerald-500 text-white'
                     : isAtEnd
                     ? 'bg-accent text-accent-text brightness-110'
-                    : 'bg-accent text-accent-text hover:brightness-105'
+                    : 'bg-accent text-accent-text hover:brightness-105 active:brightness-95'
                 }`}
                 style={{
-                  transform: `translateX(${currentThumbX}px)`,
-                  transition: isDragging ? 'none' : 'transform 0.25s ease-out',
+                  transform: `translateX(${currentThumbX}px) ${isDragging ? 'scale(0.96)' : 'scale(1)'}`,
+                  transition: isDragging ? 'none' : 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
                 }}
               >
-                {isUnlocked ? '✓' : isAtEnd ? `${Math.round(holdProgress * 100)}%` : '➔'}
+                {isUnlocked ? (
+                  '✓'
+                ) : isAtEnd ? (
+                  `${Math.round(holdProgress * 100)}%`
+                ) : (
+                  <span className="inline-block transform translate-x-[0.5px]">➔</span>
+                )}
               </div>
             </div>
 
@@ -683,7 +700,8 @@ export default function TerminalHandshakeSplash() {
                 type="button"
                 disabled={!isFullyReady || isUnlocked}
                 onClick={handleBypass}
-                className={`ml-auto px-3.5 py-1.5 rounded-xl border text-xs font-mono transition-all flex items-center gap-2 ${
+                aria-label="Bypass splash terminal gate and proceed directly to portfolio"
+                className={`ml-auto px-3.5 py-1.5 rounded-xl border text-xs font-mono transition-all flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-accent ${
                   isFullyReady
                     ? 'border-border/80 bg-surface hover:bg-surface-raised active:scale-[0.96] text-text-muted hover:text-text cursor-pointer opacity-100'
                     : 'opacity-0 pointer-events-none cursor-not-allowed'
@@ -691,7 +709,7 @@ export default function TerminalHandshakeSplash() {
                 title="Skip splash gate directly"
               >
                 <span>Bypass</span>
-                <kbd className="text-[10px] px-1 py-0.5 rounded bg-surface-raised border border-border/60 text-text-muted">
+                <kbd className="text-[10px] px-1.5 py-0.5 rounded-[6px] bg-surface-raised border border-border/60 text-text-muted">
                   ESC
                 </kbd>
               </button>
