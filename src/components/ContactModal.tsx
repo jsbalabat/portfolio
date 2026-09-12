@@ -103,9 +103,15 @@ export default function ContactModal() {
     setStatus('submitting');
     setErrorMessage('');
 
-    const accessKey =
-      import.meta.env.PUBLIC_WEB3FORMS_KEY ||
-      'e2170536-6acd-4b20-9b41-5c53846340d2';
+    const accessKey = import.meta.env.PUBLIC_WEB3FORMS_KEY;
+
+    if (!accessKey) {
+      setStatus('error');
+      setErrorMessage(
+        'Contact service access key is not configured. Please use the direct email link below.'
+      );
+      return;
+    }
 
     try {
       const response = await fetch('https://api.web3forms.com/submit', {
