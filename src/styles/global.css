@@ -159,3 +159,28 @@ body.tldr-active .tldr-dim {
   filter: grayscale(40%) !important;
   transition: opacity 0.3s ease, filter 0.3s ease;
 }
+
+/* ==========================================================================
+   Splash Gate Strict Lockout
+   ========================================================================== */
+
+html.splash-locked,
+html.splash-locked body {
+  overflow: hidden !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+}
+
+html.splash-locked #site-header,
+html.splash-locked #main-content-wrapper,
+html.splash-locked #back-to-top-btn {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+#main-content-wrapper {
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+

@@ -4,7 +4,7 @@ import CommandPalette from '../components/pitched/CommandPalette';
 import TldrToggle from '../components/TldrToggle';
 import ContactModal from '../components/ContactModal';
 import BackToTop from '../components/BackToTop.astro';
-import TransitionOpener from '../components/TransitionOpener.astro';
+import TerminalHandshakeSplash from '../components/splash/TerminalHandshakeSplash';
 
 interface Props {
   title?: string;
@@ -93,11 +93,17 @@ const isProduction = gitBranch === 'main';
           document.body.classList.add('tldr-active');
         });
       }
+
+      // Strict splash lockout check before paint on homepage
+      const isHome = window.location.pathname === '/' || window.location.pathname === '';
+      if (isHome && typeof sessionStorage !== 'undefined' && sessionStorage.getItem('portfolio_unlocked') !== 'true') {
+        document.documentElement.classList.add('splash-locked');
+      }
     </script>
   </head>
   <body class="min-h-screen bg-bg text-text antialiased selection:bg-accent/20 selection:text-accent">
-    <!-- Top Transition Opener Curtain Reveal -->
-    <TransitionOpener />
+    <!-- Interactive Engineering Boot Terminal + Handshake Splash Gate -->
+    {isHomepage && <TerminalHandshakeSplash client:load />}
 
     <!-- Site Navigation (Fixed, backdrop-blurred, 0-100 fade halfway through cover page) -->
     <header
@@ -149,7 +155,7 @@ const isProduction = gitBranch === 'main';
     </header>
 
     <!-- Maximized Full-Width Container (eliminating excess lateral whitespace) -->
-    <div class="w-full max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12 flex flex-col min-h-screen">
+    <div id="main-content-wrapper" class="w-full max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12 flex flex-col min-h-screen">
       <!-- Main Page Content -->
       <main class={`flex-1 ${isHomepage ? '' : 'pt-20 sm:pt-24 py-6 sm:py-8'}`}>
         <slot />
