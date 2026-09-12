@@ -180,7 +180,3 @@ html.splash-locked #back-to-top-btn {
   user-select: none !important;
 }
 
-#main-content-wrapper {
-  transition: opacity 0.4s ease, visibility 0.4s ease;
-}
-

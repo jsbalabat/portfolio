@@ -493,7 +493,7 @@ export default function ArchitectureDiffSlider() {
                   key={line.num}
                   className={`flex items-start gap-3 py-0.5 px-1.5 rounded ${
                     line.type === 'removed'
-                      ? 'bg-rose-950/50 text-rose-200 border-l-2 border-rose-500'
+                      ? 'bg-rose-950/50 text-rose-200'
                       : line.type === 'comment'
                       ? 'text-slate-400'
                       : 'text-slate-200'
@@ -555,7 +555,7 @@ export default function ArchitectureDiffSlider() {
                   key={line.num}
                   className={`flex items-start gap-3 py-0.5 px-1.5 rounded ${
                     line.type === 'added'
-                      ? 'bg-emerald-950/50 text-emerald-200 border-l-2 border-emerald-500'
+                      ? 'bg-emerald-950/50 text-emerald-200'
                       : line.type === 'comment'
                       ? 'text-slate-400'
                       : 'text-slate-200'

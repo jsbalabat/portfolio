@@ -23,7 +23,7 @@ const BOOT_LINES: BootLine[] = [
       { text: 'cloudflare:edge', className: 'text-[#e3b341]' },
       { text: ' (v0.1.0)...', className: 'text-[#d2a8ff]' },
     ],
-    postDelayMs: 140,
+    postDelayMs: 90,
   },
   {
     id: 2,
@@ -31,9 +31,9 @@ const BOOT_LINES: BootLine[] = [
       { text: '[ 0.014s ] ', className: 'text-[#58a6ff]' },
       { text: 'runtime:v8', className: 'text-[#d2a8ff] font-medium' },
       { text: ' isolate sandbox & wasm memory... ', className: 'text-[#8b949e]' },
-      { text: '[ OK ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 180 },
+      { text: '[ OK ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 110 },
     ],
-    postDelayMs: 120,
+    postDelayMs: 80,
   },
   {
     id: 3,
@@ -41,9 +41,9 @@ const BOOT_LINES: BootLine[] = [
       { text: '[ 0.061s ] ', className: 'text-[#58a6ff]' },
       { text: 'stack:core', className: 'text-[#d2a8ff] font-medium' },
       { text: ' 3 production apps + schema engine... ', className: 'text-[#8b949e]' },
-      { text: '[ OK ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 220 },
+      { text: '[ OK ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 130 },
     ],
-    postDelayMs: 130,
+    postDelayMs: 90,
   },
   {
     id: 4,
@@ -51,9 +51,9 @@ const BOOT_LINES: BootLine[] = [
       { text: '[ 0.119s ] ', className: 'text-[#58a6ff]' },
       { text: 'net:edge', className: 'text-[#d2a8ff] font-medium' },
       { text: ' routing via Cloudflare Global Anycast... ', className: 'text-[#8b949e]' },
-      { text: '[ 200 ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 240 },
+      { text: '[ 200 ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 140 },
     ],
-    postDelayMs: 140,
+    postDelayMs: 90,
   },
   {
     id: 5,
@@ -61,9 +61,9 @@ const BOOT_LINES: BootLine[] = [
       { text: '[ 0.190s ] ', className: 'text-[#58a6ff]' },
       { text: 'git:tree', className: 'text-[#d2a8ff] font-medium' },
       { text: ' synced github.com/jsbalabat/portfolio... ', className: 'text-[#8b949e]' },
-      { text: '[ OK ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 200 },
+      { text: '[ OK ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 120 },
     ],
-    postDelayMs: 120,
+    postDelayMs: 80,
   },
   {
     id: 6,
@@ -71,9 +71,9 @@ const BOOT_LINES: BootLine[] = [
       { text: '[ 0.267s ] ', className: 'text-[#58a6ff]' },
       { text: 'auth:daemon', className: 'text-[#d2a8ff] font-medium' },
       { text: ' interlock safety armed on /dev/interlock0... ', className: 'text-[#8b949e]' },
-      { text: '[ ARMED ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 190 },
+      { text: '[ ARMED ]', className: 'text-[#7ee787] font-bold', pauseBeforeMs: 120 },
     ],
-    postDelayMs: 130,
+    postDelayMs: 90,
   },
   {
     id: 7,
@@ -82,7 +82,7 @@ const BOOT_LINES: BootLine[] = [
       { text: 'Production environment ready: ', className: 'text-[#c9d1d9]' },
       { text: 'marcbalabat.tech', className: 'text-[#79c0ff] underline decoration-[#79c0ff]/40' },
     ],
-    postDelayMs: 180,
+    postDelayMs: 120,
   },
 ];
 
@@ -153,35 +153,38 @@ export default function TerminalHandshakeSplash() {
     };
   }, []);
 
-  // Unlock sequence
+  const isFullyReady = activationStage === 'ready';
+
+  // Unlock sequence: Solid program change transition (no fade)
   const triggerUnlock = useCallback(() => {
     if (isUnlocked) return;
     setIsUnlocked(true);
     sessionStorage.setItem('portfolio_unlocked', 'true');
 
-    // Remove lockout class to reveal background content smoothly
+    // Remove lockout class to reveal background content immediately
     document.documentElement.classList.remove('splash-locked');
 
     setTimeout(() => {
       setIsExiting(true);
-    }, 280);
+    }, 180);
 
     setTimeout(() => {
       setIsVisible(false);
-    }, 600);
+    }, 420);
   }, [isUnlocked]);
 
-  // Bypass directly
+  // Bypass strictly only allowed when loading finishes
   const handleBypass = useCallback(() => {
+    if (!isFullyReady || isUnlocked) return;
     triggerUnlock();
-  }, [triggerUnlock]);
+  }, [isFullyReady, isUnlocked, triggerUnlock]);
 
-  // PC Bootloader animation (pre-CLI program loader: ~650ms)
+  // PC Bootloader animation (pre-CLI program loader: ~450ms)
   useEffect(() => {
     if (!isVisible || splashPhase !== 'pc_boot') return;
 
     const startTime = Date.now();
-    const duration = 500; // ms (fast, responsive simple loader)
+    const duration = 450; // ms
 
     const timer = window.setInterval(() => {
       const elapsed = Date.now() - startTime;
@@ -192,14 +195,14 @@ export default function TerminalHandshakeSplash() {
         clearInterval(timer);
         setTimeout(() => {
           setSplashPhase('cli_terminal');
-        }, 120);
+        }, 100);
       }
-    }, 24);
+    }, 20);
 
     return () => clearInterval(timer);
   }, [isVisible, splashPhase]);
 
-  // Robotic, crisp letter-by-letter typewriter engine (runs during cli_terminal phase)
+  // Fast robotic letter-by-letter typewriter engine (7ms cadence)
   useEffect(() => {
     if (!isVisible || splashPhase !== 'cli_terminal' || isBootComplete) return;
 
@@ -253,7 +256,8 @@ export default function TerminalHandshakeSplash() {
         charIdx = 0;
       }
 
-      timeoutId = window.setTimeout(streamNextChar, 10);
+      // Fast robotic 7ms per letter rate
+      timeoutId = window.setTimeout(streamNextChar, 7);
     };
 
     streamNextChar();
@@ -271,17 +275,17 @@ export default function TerminalHandshakeSplash() {
     // Stage 1: Power the slider rail
     const t1 = window.setTimeout(() => {
       setActivationStage('power_rail');
-    }, 100);
+    }, 90);
 
     // Stage 2: Power the slider knob
     const t2 = window.setTimeout(() => {
       setActivationStage('power_knob');
-    }, 240);
+    }, 200);
 
     // Stage 3: Enable bypass and activate ready status
     const t3 = window.setTimeout(() => {
       setActivationStage('ready');
-    }, 380);
+    }, 320);
 
     return () => {
       window.clearTimeout(t1);
@@ -292,7 +296,7 @@ export default function TerminalHandshakeSplash() {
 
   // Pointer drag physics for slider (button sits inside with 6px padding)
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (activationStage !== 'ready' || isUnlocked) return;
+    if (!isFullyReady || isUnlocked) return;
     setIsDragging(true);
     updateSliderPosition(e.clientX);
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
@@ -344,11 +348,11 @@ export default function TerminalHandshakeSplash() {
     setSliderProgress(0);
   };
 
-  // Hold action: 650ms (balanced between first 450ms and previous 850ms)
+  // Hold action: 480ms (crisp, faster hold time)
   const startHold = () => {
     if (holdTimerRef.current) clearInterval(holdTimerRef.current);
     holdStartTimeRef.current = Date.now();
-    const holdDuration = 650; // ms
+    const holdDuration = 480; // ms
 
     holdTimerRef.current = window.setInterval(() => {
       if (!holdStartTimeRef.current) return;
@@ -375,20 +379,22 @@ export default function TerminalHandshakeSplash() {
     }
   };
 
-  // Keyboard shortcut: Escape to bypass anytime
+  // Keyboard shortcut: Escape to bypass strictly ONLY after loading finishes
   useEffect(() => {
     if (!isVisible) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault();
-        handleBypass();
+        if (isFullyReady && !isUnlocked) {
+          handleBypass();
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isVisible, handleBypass]);
+  }, [isVisible, isFullyReady, isUnlocked, handleBypass]);
 
   if (!mounted || !isVisible) return null;
 
@@ -400,17 +406,16 @@ export default function TerminalHandshakeSplash() {
 
   const isRailPowered = activationStage === 'power_rail' || activationStage === 'power_knob' || activationStage === 'ready';
   const isKnobPowered = activationStage === 'power_knob' || activationStage === 'ready';
-  const isFullyReady = activationStage === 'ready';
 
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-label="Engineering boot terminal handshake"
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-bg p-4 sm:p-6 select-none overflow-hidden transition-all duration-300 ease-out ${
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-bg p-4 sm:p-6 select-none overflow-hidden transition-transform duration-200 ease-in-out ${
         isExiting
-          ? 'scale-105 opacity-0 pointer-events-none'
-          : 'scale-100 opacity-100'
+          ? '-translate-y-full pointer-events-none'
+          : 'translate-y-0'
       }`}
     >
       {/* CLI Sharp Blink Keyframes (hard step toggle, no smooth transition) */}
@@ -431,7 +436,7 @@ export default function TerminalHandshakeSplash() {
         }
       `}</style>
 
-      {/* STAGE 1: Simple Progress Loader Initializing (Runs before CLI) */}
+      {/* STAGE 1: Simple Progress Loader Initializing (Runs before CLI; no bypass allowed during loading) */}
       {splashPhase === 'pc_boot' && (
         <div className="max-w-xs w-full font-mono flex flex-col items-center text-center gap-3.5 px-4 select-none">
           {/* Status line: Initializing... xx% */}
@@ -448,15 +453,6 @@ export default function TerminalHandshakeSplash() {
               style={{ width: `${pcBootProgress}%` }}
             />
           </div>
-
-          {/* Subtle Bypass */}
-          <button
-            type="button"
-            onClick={handleBypass}
-            className="text-[11px] text-text-muted/50 hover:text-text cursor-pointer transition-colors pt-1"
-          >
-            Skip (ESC)
-          </button>
         </div>
       )}
 
@@ -517,7 +513,7 @@ export default function TerminalHandshakeSplash() {
               </div>
             )}
 
-            {/* Terminal Prompt Line: '>' blinks sharply with zero smooth fade */}
+            {/* Terminal Prompt Line: '>' blinks sharply with zero smooth fade; updated prompt text */}
             <div className="pt-2 flex items-center gap-1 text-[11px] sm:text-xs font-mono whitespace-nowrap overflow-hidden text-ellipsis">
               <span className="cli-prompt-blink font-bold text-accent mr-1 shrink-0">&gt;</span>
               {!isBootComplete ? (
@@ -530,7 +526,7 @@ export default function TerminalHandshakeSplash() {
                 </span>
               ) : (
                 <span className="text-text font-medium">
-                  Slide right and hold to authenticate:
+                  Slide right to proceed:
                 </span>
               )}
             </div>
@@ -573,7 +569,7 @@ export default function TerminalHandshakeSplash() {
                 />
               )}
 
-              {/* Slider Track Prompt Text */}
+              {/* Slider Track Prompt Text (Hides when dragging past text unless authenticating hold at the end) */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-xs font-mono">
                 {!isFullyReady ? (
                   <span className="text-text-muted/50 text-[11px]">
@@ -581,15 +577,15 @@ export default function TerminalHandshakeSplash() {
                   </span>
                 ) : isUnlocked ? (
                   <span className="text-emerald-400 font-bold tracking-wider">
-                    ✓ HANDSHAKE ACCEPTED
+                    ✓ ACCESS GRANTED
                   </span>
                 ) : isAtEnd ? (
                   <span className="text-accent font-bold tracking-wide">
-                    Hold to authenticate ({Math.round(holdProgress * 100)}%)
+                    Hold to proceed ({Math.round(holdProgress * 100)}%)
                   </span>
-                ) : (
+                ) : isDragging ? null : (
                   <span className="text-text-muted flex items-center gap-2">
-                    <span>Slide right and hold</span>
+                    <span>Slide right to proceed</span>
                     <span className="text-accent">➔</span>
                   </span>
                 )}
@@ -635,19 +631,20 @@ export default function TerminalHandshakeSplash() {
                     : isAtEnd
                     ? 'Holding latch...'
                     : isFullyReady
-                    ? 'Slide to right end and hold to authenticate'
+                    ? 'Slide to right end and hold to proceed'
                     : 'Awaiting boot sequence'}
                 </span>
               </div>
 
-              {/* Far-Right Bypass Button */}
+              {/* Far-Right Bypass Button: Strictly disabled & hidden until loading finishes */}
               <button
                 type="button"
+                disabled={!isFullyReady || isUnlocked}
                 onClick={handleBypass}
-                className={`ml-auto px-3.5 py-1.5 rounded-xl border text-xs font-mono transition-all cursor-pointer flex items-center gap-2 ${
+                className={`ml-auto px-3.5 py-1.5 rounded-xl border text-xs font-mono transition-all flex items-center gap-2 ${
                   isFullyReady
-                    ? 'border-border/80 bg-surface hover:bg-surface-raised active:scale-[0.96] text-text-muted hover:text-text'
-                    : 'opacity-40 border-border/40 text-text-muted/50 hover:opacity-70'
+                    ? 'border-border/80 bg-surface hover:bg-surface-raised active:scale-[0.96] text-text-muted hover:text-text cursor-pointer opacity-100'
+                    : 'opacity-0 pointer-events-none cursor-not-allowed'
                 }`}
                 title="Skip splash gate directly"
               >
