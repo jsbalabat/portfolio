@@ -161,26 +161,26 @@ body.tldr-active .tldr-dim {
 }
 
 /* ==========================================================================
-   Splash Gate Strict Lockout & Seamless Transition
+   Splash Gate Strict Lockout & Physical Curtain Reveal
    ========================================================================== */
-
-#main-content-wrapper {
-  transition: opacity 0.35s ease-out;
-}
 
 html.splash-locked,
 html.splash-locked body {
   overflow: hidden !important;
-  height: 100vh !important;
-  max-height: 100vh !important;
 }
 
-html.splash-locked #site-header,
-html.splash-locked #main-content-wrapper,
-html.splash-locked #back-to-top-btn {
+html.splash-locked:not(.splash-revealing) #site-header,
+html.splash-locked:not(.splash-revealing) #main-content-wrapper,
+html.splash-locked:not(.splash-revealing) #back-to-top {
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
   user-select: none !important;
+}
+
+html.splash-revealing #main-content-wrapper {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: none !important;
 }
 
