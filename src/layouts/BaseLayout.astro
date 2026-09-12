@@ -4,7 +4,7 @@ import CommandPalette from '../components/pitched/CommandPalette';
 import TldrToggle from '../components/TldrToggle';
 import ContactModal from '../components/ContactModal';
 import BackToTop from '../components/BackToTop.astro';
-import TransitionOpener from '../components/TransitionOpener.astro';
+import PersonaLensSplash from '../components/splash/PersonaLensSplash';
 
 interface Props {
   title?: string;
@@ -96,8 +96,8 @@ const isProduction = gitBranch === 'main';
     </script>
   </head>
   <body class="min-h-screen bg-bg text-text antialiased selection:bg-accent/20 selection:text-accent">
-    <!-- Top Transition Opener Curtain Reveal -->
-    <TransitionOpener />
+    <!-- Concept 1: Interactive Persona Lens Selector Gate -->
+    {isHomepage && <PersonaLensSplash client:load />}
 
     <!-- Site Navigation (Fixed, backdrop-blurred, 0-100 fade halfway through cover page) -->
     <header
