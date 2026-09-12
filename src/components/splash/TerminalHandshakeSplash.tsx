@@ -181,7 +181,7 @@ export default function TerminalHandshakeSplash() {
     if (!isVisible || splashPhase !== 'pc_boot') return;
 
     const startTime = Date.now();
-    const duration = 650; // ms
+    const duration = 500; // ms (fast, responsive simple loader)
 
     const timer = window.setInterval(() => {
       const elapsed = Date.now() - startTime;
@@ -431,53 +431,32 @@ export default function TerminalHandshakeSplash() {
         }
       `}</style>
 
-      {/* STAGE 1: PC Program Bootloader Screen (Runs before CLI) */}
+      {/* STAGE 1: Simple Progress Loader Initializing (Runs before CLI) */}
       {splashPhase === 'pc_boot' && (
-        <div className="w-full max-w-xl rounded-2xl border border-border bg-[#0a0d13] text-[#c9d1d9] shadow-2xl p-6 sm:p-8 font-mono flex flex-col gap-4">
-          <div className="flex items-center justify-between border-b border-border/70 pb-3 text-xs text-text-muted">
-            <span className="text-[#79c0ff] font-bold tracking-wide">MARC-BIOS v2.41</span>
-            <span className="text-emerald-400 font-semibold">[POST OK]</span>
+        <div className="max-w-xs w-full font-mono flex flex-col items-center text-center gap-3.5 px-4 select-none">
+          {/* Status line: Initializing... xx% */}
+          <div className="flex items-center gap-2 text-xs text-text-muted">
+            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+            <span className="text-text font-medium tracking-wide">Initializing...</span>
+            <span className="text-accent font-semibold tabular-nums">{pcBootProgress}%</span>
           </div>
 
-          <div className="space-y-1.5 text-xs text-text-muted leading-relaxed">
-            <div className="text-text font-semibold">
-              Edge Infrastructure Bootloader (x86_64)
-            </div>
-            <div>CPU: 16x V8 Edge Isolates @ Cloudflare Anycast Fabric</div>
-            <div>Memory Test: 64MB Verified OK</div>
-            <div>Primary Drive: /dev/cf-workers0 (Mounted)</div>
+          {/* Simple Minimal Progress Bar */}
+          <div className="w-64 sm:w-72 h-1.5 rounded-full bg-surface-raised border border-border/80 overflow-hidden">
+            <div
+              className="h-full bg-accent rounded-full transition-all duration-75 ease-out"
+              style={{ width: `${pcBootProgress}%` }}
+            />
           </div>
 
-          <div className="pt-2">
-            <div className="flex items-center justify-between text-xs font-mono mb-2">
-              <span className="text-text font-medium flex items-center gap-1.5">
-                <span>Booting program:</span>
-                <span className="text-[#79c0ff] font-bold">marcbalabat.tech</span>
-              </span>
-              <span className="text-accent font-bold tabular-nums">
-                {pcBootProgress}%
-              </span>
-            </div>
-
-            {/* Retro PC Loading Bar */}
-            <div className="w-full h-3 rounded-full bg-surface-raised border border-border/80 overflow-hidden p-0.5">
-              <div
-                className="h-full bg-accent rounded-full transition-all duration-75"
-                style={{ width: `${pcBootProgress}%` }}
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between pt-2 text-[11px] text-text-muted/60 border-t border-border/50">
-            <span>Starting terminal CLI environment...</span>
-            <button
-              type="button"
-              onClick={handleBypass}
-              className="text-text-muted hover:text-text cursor-pointer underline decoration-text-muted/40"
-            >
-              Skip (ESC)
-            </button>
-          </div>
+          {/* Subtle Bypass */}
+          <button
+            type="button"
+            onClick={handleBypass}
+            className="text-[11px] text-text-muted/50 hover:text-text cursor-pointer transition-colors pt-1"
+          >
+            Skip (ESC)
+          </button>
         </div>
       )}
 
