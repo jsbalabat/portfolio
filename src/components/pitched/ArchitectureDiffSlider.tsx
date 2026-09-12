@@ -228,6 +228,9 @@ export default function ArchitectureDiffSlider() {
 
     const onPointerMove = (e: MouseEvent | TouchEvent) => {
       if (!containerRef.current) return;
+      if ('touches' in e && e.cancelable) {
+        e.preventDefault();
+      }
       const clientX = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
       const rect = containerRef.current.getBoundingClientRect();
       const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
@@ -308,7 +311,7 @@ export default function ArchitectureDiffSlider() {
             </span>
           </div>
           <h3 className="text-base sm:text-lg font-bold text-text tracking-tight">
-            {scenario.project} — {scenario.title}
+            {scenario.project}: {scenario.title}
           </h3>
           <p className="text-xs text-text-muted mt-0.5 max-w-2xl">
             {scenario.summary}
