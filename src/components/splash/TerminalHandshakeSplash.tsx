@@ -1,20 +1,16 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
-interface BootLog {
-  id: number;
-  command?: boolean;
-  text: string;
-  status?: string;
-  delayMs: number;
-}
-
-const BOOT_LOGS: BootLog[] = [
-  { id: 1, command: true, text: 'marc-sys --init --env=production', delayMs: 120 },
-  { id: 2, text: 'Edge runtime: connected (Cloudflare Workers Edge)', status: 'OK', delayMs: 260 },
-  { id: 3, text: 'Commercial systems: 3 apps · 6 companies · 150 invoices/day', status: 'OK', delayMs: 280 },
-  { id: 4, text: 'Engineering history: 650+ verified commits across 14 months', status: 'OK', delayMs: 260 },
-  { id: 5, text: 'Schema engine: relational migrations normalized & online', status: 'OK', delayMs: 240 },
+const BOOT_SCRIPT_LINES = [
+  'booting vmlinuz-6.8.0-edge (x86_64)...',
+  '[  0.012491] Initializing V8 isolate runtime... OK',
+  '[  0.048102] Loading ACPI tables and hardware drivers... OK',
+  '[  0.089410] Mounting rootfs /dev/cf-workers0 (read-only)... OK',
+  '[  0.134820] Initializing network stack: IPv4/IPv6 socket layer... OK',
+  '[  0.189201] Launching systemd-handshake.service: socket listening... OK',
+  '[  0.241032] Reached target System Initialization.',
 ];
+
+type ActivationStage = 'booting' | 'power_rail' | 'power_knob' | 'ready';
 
 export default function TerminalHandshakeSplash() {
   const [isVisible, setIsVisible] = useState(false);
@@ -22,19 +18,24 @@ export default function TerminalHandshakeSplash() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Boot animation state
-  const [displayedLogs, setDisplayedLogs] = useState<BootLog[]>([]);
+  // Typewriter animation state
+  const [completedLines, setCompletedLines] = useState<string[]>([]);
+  const [currentLineIndex, setCurrentLineIndex] = useState(0);
+  const [currentLineText, setCurrentLineText] = useState('');
   const [isBootComplete, setIsBootComplete] = useState(false);
 
-  // Slider state
+  // Staggered uneven activation
+  const [activationStage, setActivationStage] = useState<ActivationStage>('booting');
+
+  // Slider & Hold state
   const [sliderProgress, setSliderProgress] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const startXRef = useRef(0);
-
-  // Hold-to-enter state
+  const [isAtEnd, setIsAtEnd] = useState(false);
   const [holdProgress, setHoldProgress] = useState(0);
-  const holdIntervalRef = useRef<number | null>(null);
+
+  const trackRef = useRef<HTMLDivElement>(null);
+  const holdTimerRef = useRef<number | null>(null);
+  const holdStartTimeRef = useRef<number | null>(null);
 
   // Initialize and check sessionStorage
   useEffect(() => {
@@ -52,7 +53,13 @@ export default function TerminalHandshakeSplash() {
       setIsExiting(false);
       setIsUnlocked(false);
       setSliderProgress(0);
+      setIsAtEnd(false);
       setHoldProgress(0);
+      setCompletedLines([]);
+      setCurrentLineIndex(0);
+      setCurrentLineText('');
+      setIsBootComplete(false);
+      setActivationStage('booting');
       setIsVisible(true);
       document.documentElement.classList.add('splash-locked');
     };
@@ -63,43 +70,13 @@ export default function TerminalHandshakeSplash() {
     };
   }, []);
 
-  // Run sequential booting animation
-  useEffect(() => {
-    if (!isVisible || isBootComplete) return;
-
-    let currentIndex = 0;
-    let timeoutId: number;
-
-    const scheduleNextLog = () => {
-      if (currentIndex < BOOT_LOGS.length) {
-        const nextLog = BOOT_LOGS[currentIndex];
-        timeoutId = window.setTimeout(() => {
-          setDisplayedLogs((prev) => [...prev, nextLog]);
-          currentIndex++;
-          scheduleNextLog();
-        }, nextLog.delayMs);
-      } else {
-        // Final transition to ready state
-        timeoutId = window.setTimeout(() => {
-          setIsBootComplete(true);
-        }, 250);
-      }
-    };
-
-    scheduleNextLog();
-
-    return () => {
-      window.clearTimeout(timeoutId);
-    };
-  }, [isVisible, isBootComplete]);
-
   // Unlock sequence
   const triggerUnlock = useCallback(() => {
     if (isUnlocked) return;
     setIsUnlocked(true);
     sessionStorage.setItem('portfolio_unlocked', 'true');
 
-    // Remove lockout class to unveil background content smoothly
+    // Remove lockout class to reveal background content
     document.documentElement.classList.remove('splash-locked');
 
     setTimeout(() => {
@@ -111,37 +88,103 @@ export default function TerminalHandshakeSplash() {
     }, 600);
   }, [isUnlocked]);
 
-  // Bypass immediately
+  // Bypass directly
   const handleBypass = useCallback(() => {
     triggerUnlock();
   }, [triggerUnlock]);
 
-  // Slider drag mechanics
-  const getMaxTravel = () => {
-    if (!trackRef.current) return 200;
-    return Math.max(100, trackRef.current.clientWidth - 54);
-  };
+  // Typewriter streaming effect (left to right character stream)
+  useEffect(() => {
+    if (!isVisible || isBootComplete) return;
 
+    if (currentLineIndex >= BOOT_SCRIPT_LINES.length) {
+      setIsBootComplete(true);
+      return;
+    }
+
+    const targetLine = BOOT_SCRIPT_LINES[currentLineIndex];
+
+    if (currentLineText.length < targetLine.length) {
+      // Stream characters at high terminal cadence
+      const charChunk = targetLine.slice(0, currentLineText.length + 3);
+      const timer = window.setTimeout(() => {
+        setCurrentLineText(charChunk);
+      }, 12);
+      return () => window.clearTimeout(timer);
+    } else {
+      // Line complete: add to completed lines, brief pause, advance to next
+      const timer = window.setTimeout(() => {
+        setCompletedLines((prev) => [...prev, targetLine]);
+        setCurrentLineText('');
+        setCurrentLineIndex((prev) => prev + 1);
+      }, 65);
+      return () => window.clearTimeout(timer);
+    }
+  }, [isVisible, isBootComplete, currentLineIndex, currentLineText]);
+
+  // Staggered / uneven activation of controls once boot completes
+  useEffect(() => {
+    if (!isBootComplete) return;
+
+    // Stage 1: Power the slider rail
+    const t1 = window.setTimeout(() => {
+      setActivationStage('power_rail');
+    }, 120);
+
+    // Stage 2: Power the slider knob
+    const t2 = window.setTimeout(() => {
+      setActivationStage('power_knob');
+    }, 280);
+
+    // Stage 3: Enable bypass and flip ready status
+    const t3 = window.setTimeout(() => {
+      setActivationStage('ready');
+    }, 440);
+
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+      window.clearTimeout(t3);
+    };
+  }, [isBootComplete]);
+
+  // Handle pointer drag physics for slider
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isBootComplete || isUnlocked) return;
+    if (activationStage !== 'ready' || isUnlocked) return;
     setIsDragging(true);
-    startXRef.current = e.clientX - sliderProgress * getMaxTravel();
+    updateSliderPosition(e.clientX);
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
   };
 
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDragging || !isBootComplete || isUnlocked) return;
-    const maxTravel = getMaxTravel();
-    const currentDelta = e.clientX - startXRef.current;
-    const clampedDelta = Math.max(0, Math.min(maxTravel, currentDelta));
-    const progress = clampedDelta / maxTravel;
+  const updateSliderPosition = (clientX: number) => {
+    if (!trackRef.current) return;
+    const rect = trackRef.current.getBoundingClientRect();
+    const thumbWidth = 44;
+    const padding = 4;
+    const maxTravel = rect.width - thumbWidth - padding * 2;
+    const pointerOffset = clientX - rect.left - padding - thumbWidth / 2;
+    const clampedOffset = Math.max(0, Math.min(maxTravel, pointerOffset));
+    const progress = maxTravel > 0 ? clampedOffset / maxTravel : 0;
+
     setSliderProgress(progress);
 
-    if (progress >= 0.88) {
-      setIsDragging(false);
-      setSliderProgress(1);
-      triggerUnlock();
+    // Check if slider reached the far right (>= 96%)
+    if (progress >= 0.96) {
+      if (!isAtEnd) {
+        setIsAtEnd(true);
+        startHold();
+      }
+    } else {
+      if (isAtEnd) {
+        setIsAtEnd(false);
+        cancelHold();
+      }
     }
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging || isUnlocked) return;
+    updateSliderPosition(e.clientX);
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -152,40 +195,45 @@ export default function TerminalHandshakeSplash() {
     } catch {
       // ignore
     }
-    if (sliderProgress < 0.88) {
-      setSliderProgress(0);
-    }
+
+    // If released before hold completed, snap back to origin
+    cancelHold();
+    setIsAtEnd(false);
+    setSliderProgress(0);
   };
 
-  // Hold-to-enter mechanics
+  // Hold action that takes place strictly after sliding left to right
   const startHold = () => {
-    if (!isBootComplete || isUnlocked) return;
-    const startTime = Date.now();
-    const duration = 500;
+    if (holdTimerRef.current) clearInterval(holdTimerRef.current);
+    holdStartTimeRef.current = Date.now();
+    const holdDuration = 450; // ms
 
-    holdIntervalRef.current = window.setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const p = Math.min(1, elapsed / duration);
-      setHoldProgress(p);
+    holdTimerRef.current = window.setInterval(() => {
+      if (!holdStartTimeRef.current) return;
+      const elapsed = Date.now() - holdStartTimeRef.current;
+      const progress = Math.min(1, elapsed / holdDuration);
+      setHoldProgress(progress);
 
-      if (p >= 1) {
-        if (holdIntervalRef.current) clearInterval(holdIntervalRef.current);
+      if (progress >= 1) {
+        if (holdTimerRef.current) clearInterval(holdTimerRef.current);
+        holdTimerRef.current = null;
         triggerUnlock();
       }
     }, 16);
   };
 
-  const endHold = () => {
-    if (holdIntervalRef.current) {
-      clearInterval(holdIntervalRef.current);
-      holdIntervalRef.current = null;
+  const cancelHold = () => {
+    if (holdTimerRef.current) {
+      clearInterval(holdTimerRef.current);
+      holdTimerRef.current = null;
     }
+    holdStartTimeRef.current = null;
     if (!isUnlocked) {
       setHoldProgress(0);
     }
   };
 
-  // Keyboard accessibility
+  // Keyboard shortcuts (Escape to bypass anytime)
   useEffect(() => {
     if (!isVisible) return;
 
@@ -193,43 +241,31 @@ export default function TerminalHandshakeSplash() {
       if (e.key === 'Escape') {
         e.preventDefault();
         handleBypass();
-      } else if (isBootComplete && !isUnlocked) {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          triggerUnlock();
-        } else if (e.key === ' ' && !e.repeat) {
-          e.preventDefault();
-          startHold();
-        }
-      }
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === ' ' && isBootComplete) {
-        e.preventDefault();
-        endHold();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [isVisible, isBootComplete, isUnlocked, triggerUnlock, handleBypass]);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isVisible, handleBypass]);
 
   if (!mounted || !isVisible) return null;
 
-  const maxTravel = getMaxTravel();
-  const thumbTranslateX = sliderProgress * maxTravel;
+  const trackWidth = trackRef.current ? trackRef.current.clientWidth : 500;
+  const thumbWidth = 44;
+  const padding = 4;
+  const maxTravel = Math.max(100, trackWidth - thumbWidth - padding * 2);
+  const currentThumbX = sliderProgress * maxTravel;
+
+  const isRailPowered = activationStage === 'power_rail' || activationStage === 'power_knob' || activationStage === 'ready';
+  const isKnobPowered = activationStage === 'power_knob' || activationStage === 'ready';
+  const isFullyReady = activationStage === 'ready';
 
   return (
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Terminal authentication handshake"
-      className={`fixed inset-0 z-50 flex items-center justify-center bg-bg p-4 sm:p-6 md:p-8 select-none overflow-hidden transition-all duration-300 ease-out ${
+      aria-label="Engineering boot terminal handshake"
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-bg p-4 sm:p-6 select-none overflow-hidden transition-all duration-300 ease-out ${
         isExiting
           ? 'scale-105 opacity-0 pointer-events-none'
           : 'scale-100 opacity-100'
@@ -253,7 +289,7 @@ export default function TerminalHandshakeSplash() {
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
                 AUTHORIZED
               </span>
-            ) : isBootComplete ? (
+            ) : isFullyReady ? (
               <span className="text-emerald-400 font-semibold flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 READY
@@ -267,153 +303,148 @@ export default function TerminalHandshakeSplash() {
           </div>
         </div>
 
-        {/* Terminal Log Screen */}
-        <div className="p-5 sm:p-6 space-y-2 text-xs sm:text-sm min-h-[190px] flex flex-col justify-start">
-          {displayedLogs.map((log) => (
-            <div key={log.id} className="flex items-start gap-2 leading-relaxed">
-              {log.command ? (
-                <div className="flex items-center gap-2 text-text font-semibold">
-                  <span className="text-accent">$</span>
-                  <span>{log.text}</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2 text-text-muted">
-                  <span className="text-emerald-400 font-bold">✓</span>
-                  <span>{log.text}</span>
-                </div>
-              )}
+        {/* Terminal Log Output (Typewriter Left to Right) */}
+        <div className="p-5 sm:p-6 space-y-1.5 text-xs min-h-[210px] flex flex-col justify-start">
+          {completedLines.map((line, idx) => (
+            <div key={idx} className="text-text-muted leading-relaxed font-mono">
+              {line}
             </div>
           ))}
 
-          {/* Current cursor / prompt state */}
-          <div className="pt-2 flex items-center gap-2 text-xs font-mono">
-            <span className="text-accent font-bold">❯</span>
-            {!isBootComplete ? (
-              <span className="text-text-muted animate-pulse flex items-center gap-1">
-                <span>Executing boot sequence</span>
-                <span className="inline-block w-1.5 h-3 bg-accent animate-pulse" />
-              </span>
-            ) : isUnlocked ? (
-              <span className="text-emerald-400 font-bold animate-pulse">
-                Handshake verified. Launching workspace...
-              </span>
-            ) : (
-              <span className="text-text font-medium">
-                Boot sequence complete. Slide or press below to authenticate:
-              </span>
-            )}
-          </div>
+          {/* Currently Typing Line with Blinking Cursor */}
+          {!isBootComplete && (
+            <div className="text-text font-mono leading-relaxed flex items-center gap-0.5">
+              <span>{currentLineText}</span>
+              <span className="inline-block w-2 h-3.5 bg-accent animate-pulse ml-0.5" />
+            </div>
+          )}
+
+          {/* Prompt Status Once Boot Sequence Finishes */}
+          {isBootComplete && (
+            <div className="pt-2 flex items-center gap-2 text-xs font-mono">
+              <span className="text-accent font-bold">❯</span>
+              {isUnlocked ? (
+                <span className="text-emerald-400 font-bold">
+                  Handshake verified. Launching workspace...
+                </span>
+              ) : (
+                <span className="text-text flex items-center gap-1">
+                  <span>Slide right and hold to authenticate:</span>
+                  <span className="inline-block w-2 h-3.5 bg-accent animate-pulse" />
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* Handshake Controls Panel */}
+        {/* Handshake Panel with Uneven Activation & Slide-then-Hold */}
         <div className="p-4 sm:p-5 bg-surface/50 border-t border-border/80 flex flex-col gap-3">
-          {/* Slide-to-Unlock Rail */}
+          {/* Slider Rail */}
           <div
             ref={trackRef}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerUp}
-            className={`h-12 rounded-xl border relative overflow-hidden flex items-center p-1 select-none transition-all duration-300 ${
-              !isBootComplete
-                ? 'opacity-40 border-border/50 bg-surface-raised/40 pointer-events-none cursor-not-allowed'
+            className={`h-12 rounded-xl border relative overflow-hidden flex items-center p-1 select-none transition-colors duration-200 ${
+              !isRailPowered
+                ? 'opacity-30 border-border/40 bg-surface-raised/30 pointer-events-none cursor-not-allowed'
                 : isUnlocked
                 ? 'border-emerald-500 bg-emerald-500/10'
-                : 'border-border bg-surface-raised cursor-grab active:cursor-grabbing hover:border-accent/60'
+                : isFullyReady
+                ? 'border-border bg-surface-raised cursor-grab active:cursor-grabbing hover:border-accent/60'
+                : 'border-border/60 bg-surface-raised/60'
             }`}
           >
-            {/* Dynamic Slider Progress Fill */}
+            {/* Dynamic Slider Progress Fill (100% synced with thumb position) */}
             <div
-              className="absolute top-0 bottom-0 left-0 bg-accent/25 border-r border-accent transition-none"
-              style={{ width: `${sliderProgress * 100}%` }}
+              className={`absolute top-0 bottom-0 left-0 border-r transition-none ${
+                isUnlocked
+                  ? 'bg-emerald-500/20 border-emerald-500'
+                  : 'bg-accent/25 border-accent'
+              }`}
+              style={{
+                width: isDragging || isAtEnd ? `${currentThumbX + thumbWidth / 2}px` : '0px',
+                transition: isDragging ? 'none' : 'width 0.25s ease-out',
+              }}
             />
 
-            {/* Slider Text Prompt */}
+            {/* Slider Track Static Prompt Text (No bouncing arrow) */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-xs font-mono">
-              {!isBootComplete ? (
-                <span className="text-text-muted/60">
-                  [ Initializing CLI... Handshake locked ]
+              {!isFullyReady ? (
+                <span className="text-text-muted/50 text-[11px]">
+                  [ System initializing... handshake offline ]
                 </span>
               ) : isUnlocked ? (
-                <span className="text-emerald-400 font-bold tracking-wider animate-pulse">
+                <span className="text-emerald-400 font-bold tracking-wider">
                   ✓ HANDSHAKE ACCEPTED
+                </span>
+              ) : isAtEnd ? (
+                <span className="text-accent font-bold tracking-wide">
+                  Hold to authenticate ({Math.round(holdProgress * 100)}%)
                 </span>
               ) : (
                 <span className="text-text-muted flex items-center gap-2">
-                  <span>Slide right to authenticate</span>
-                  <span className="text-accent animate-bounce">➔</span>
+                  <span>Slide right and hold</span>
+                  <span className="text-accent">➔</span>
                 </span>
               )}
             </div>
 
             {/* Slider Knob */}
             <div
-              className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-xs shadow-md transition-transform duration-75 relative z-10 ${
-                !isBootComplete
-                  ? 'bg-border text-text-muted/50 cursor-not-allowed'
+              className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-xs shadow-md relative z-10 select-none ${
+                !isKnobPowered
+                  ? 'bg-border/60 text-text-muted/40 cursor-not-allowed'
                   : isUnlocked
                   ? 'bg-emerald-500 text-white'
-                  : 'bg-accent text-accent-text'
+                  : isAtEnd
+                  ? 'bg-accent text-accent-text ring-2 ring-accent/60 scale-105'
+                  : 'bg-accent text-accent-text hover:brightness-105'
               }`}
               style={{
-                transform: `translateX(${thumbTranslateX}px)`,
+                transform: `translateX(${currentThumbX}px)`,
+                transition: isDragging ? 'none' : 'transform 0.25s ease-out',
               }}
             >
-              {isUnlocked ? '✓' : '➔'}
+              {isUnlocked ? '✓' : isAtEnd ? `${Math.round(holdProgress * 100)}%` : '➔'}
             </div>
           </div>
 
-          {/* Action Row: Hold/Enter Button + Far-Right Bypass Button */}
-          <div className="flex items-center gap-3">
-            {/* Hold to Enter / Fast Click */}
-            <button
-              type="button"
-              disabled={!isBootComplete || isUnlocked}
-              onMouseDown={startHold}
-              onMouseUp={endHold}
-              onMouseLeave={endHold}
-              onTouchStart={startHold}
-              onTouchEnd={endHold}
-              className={`relative overflow-hidden py-2 px-4 rounded-xl border text-xs font-mono font-medium transition-all text-center cursor-pointer ${
-                !isBootComplete || isUnlocked
-                  ? 'opacity-40 border-border/50 bg-surface-raised/40 pointer-events-none cursor-not-allowed text-text-muted'
-                  : 'border-border bg-surface hover:bg-surface-raised hover:border-accent/60 text-text active:scale-[0.96]'
-              }`}
-            >
-              {/* Hold Progress Bar */}
-              <div
-                className="absolute inset-0 bg-accent/20 transition-all duration-75 pointer-events-none"
-                style={{ width: `${holdProgress * 100}%` }}
+          {/* Controls Row: Live Hold State + Far-Right Bypass Button (Enter button removed) */}
+          <div className="flex items-center justify-between gap-3 pt-1">
+            <div className="text-[11px] font-mono text-text-muted flex items-center gap-2">
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  isUnlocked
+                    ? 'bg-emerald-400'
+                    : isAtEnd
+                    ? 'bg-accent animate-ping'
+                    : isFullyReady
+                    ? 'bg-emerald-400'
+                    : 'bg-text-muted/40'
+                }`}
               />
-              <span className="relative z-10 flex items-center gap-2">
-                <span
-                  className={`w-1.5 h-1.5 rounded-full ${
-                    isBootComplete ? 'bg-accent animate-pulse' : 'bg-text-muted'
-                  }`}
-                />
-                <span>Hold (0.5s)</span>
+              <span>
+                {isUnlocked
+                  ? 'Access authorized'
+                  : isAtEnd
+                  ? 'Holding latch...'
+                  : isFullyReady
+                  ? 'Slide to right end to trigger hold'
+                  : 'Awaiting boot sequence'}
               </span>
-            </button>
-
-            {/* Quick Enter Key Hint */}
-            <button
-              type="button"
-              disabled={!isBootComplete || isUnlocked}
-              onClick={triggerUnlock}
-              className={`py-2 px-3.5 rounded-xl border text-xs font-mono transition-all cursor-pointer ${
-                !isBootComplete || isUnlocked
-                  ? 'opacity-40 border-border/50 text-text-muted/50 pointer-events-none cursor-not-allowed'
-                  : 'border-border/80 bg-surface hover:bg-surface-raised active:scale-[0.96] text-text-muted hover:text-text'
-              }`}
-            >
-              Press <kbd className="font-semibold text-text">↵ Enter</kbd>
-            </button>
+            </div>
 
             {/* Far-Right Bypass Button */}
             <button
               type="button"
               onClick={handleBypass}
-              className="ml-auto px-3.5 py-2 rounded-xl border border-border/70 hover:border-border bg-surface hover:bg-surface-raised active:scale-[0.96] text-xs font-mono text-text-muted hover:text-text transition-all cursor-pointer flex items-center gap-2"
+              className={`ml-auto px-3.5 py-1.5 rounded-xl border text-xs font-mono transition-all cursor-pointer flex items-center gap-2 ${
+                isFullyReady
+                  ? 'border-border/80 bg-surface hover:bg-surface-raised active:scale-[0.96] text-text-muted hover:text-text'
+                  : 'opacity-40 border-border/40 text-text-muted/50 hover:opacity-70'
+              }`}
               title="Skip splash gate directly"
             >
               <span>Bypass</span>
