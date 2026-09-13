@@ -27,6 +27,84 @@ html {
   scroll-behavior: smooth;
   overflow-y: scroll;
   scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.4s ease;
+}
+
+html.is-scrolling {
+  scrollbar-color: var(--color-border) transparent;
+}
+
+/* Custom overlay-style scrollbar: disappears with zero shift when no vertical movement */
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 9999px;
+  border: 1.5px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 0.4s ease;
+}
+
+html.is-scrolling::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+}
+
+html.is-scrolling::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-text-muted);
+}
+
+/* ==========================================================================
+   Minimalist Theme Cursors (Pointer devices only)
+   Dark mode: darker-than-theme-green outline (#0f1612), white body (#ffffff)
+   Light mode: white outline (#ffffff), darker-than-theme-green body (#0f1612)
+   ========================================================================== */
+
+@media (pointer: fine) {
+  /* Fallback / Neutral Pointer */
+  html,
+  body {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M4 3 L4 18.5 L8.5 14.8 L12.2 21.2 L14.7 19.8 L11 13.5 L17.5 13.5 Z' fill='%230f1612' stroke='%23ffffff' stroke-width='1.5' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") 4 3, auto;
+  }
+
+  /* Dark Theme Default Pointer */
+  html[data-theme="dark"],
+  html[data-theme="dark"] body {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M4 3 L4 18.5 L8.5 14.8 L12.2 21.2 L14.7 19.8 L11 13.5 L17.5 13.5 Z' fill='%23ffffff' stroke='%230f1612' stroke-width='1.5' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") 4 3, auto;
+  }
+
+  /* Dark Theme Interactive Elements */
+  html[data-theme="dark"] a,
+  html[data-theme="dark"] button,
+  html[data-theme="dark"] [role="button"],
+  html[data-theme="dark"] input[type="button"],
+  html[data-theme="dark"] input[type="submit"],
+  html[data-theme="dark"] .cursor-pointer {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M4 3 L4 18.5 L8.5 14.8 L12.2 21.2 L14.7 19.8 L11 13.5 L17.5 13.5 Z' fill='%23ffffff' stroke='%230f1612' stroke-width='1.5' stroke-linejoin='round' stroke-linecap='round'/%3E%3Ccircle cx='17.5' cy='17.5' r='2.5' fill='%234a6353'/%3E%3C/svg%3E") 4 3, pointer;
+  }
+
+  /* Light Theme Default Pointer */
+  html[data-theme="light"],
+  html[data-theme="light"] body {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M4 3 L4 18.5 L8.5 14.8 L12.2 21.2 L14.7 19.8 L11 13.5 L17.5 13.5 Z' fill='%230f1612' stroke='%23ffffff' stroke-width='1.5' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") 4 3, auto;
+  }
+
+  /* Light Theme Interactive Elements */
+  html[data-theme="light"] a,
+  html[data-theme="light"] button,
+  html[data-theme="light"] [role="button"],
+  html[data-theme="light"] input[type="button"],
+  html[data-theme="light"] input[type="submit"],
+  html[data-theme="light"] .cursor-pointer {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M4 3 L4 18.5 L8.5 14.8 L12.2 21.2 L14.7 19.8 L11 13.5 L17.5 13.5 Z' fill='%230f1612' stroke='%23ffffff' stroke-width='1.5' stroke-linejoin='round' stroke-linecap='round'/%3E%3Ccircle cx='17.5' cy='17.5' r='2.5' fill='%232e3e34'/%3E%3C/svg%3E") 4 3, pointer;
+  }
 }
 
 /* ==========================================================================

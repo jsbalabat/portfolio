@@ -174,7 +174,7 @@ export default function ContactModal() {
     >
       <div
         ref={dialogRef}
-        className={`relative w-full max-w-lg rounded-2xl border border-border bg-surface p-6 sm:p-7 shadow-2xl text-text ${
+        className={`relative w-full max-w-lg max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-border bg-surface p-5 sm:p-7 shadow-2xl text-text ${
           isClosing ? 'animate-modal-content-out' : 'animate-modal-content'
         }`}
       >
@@ -182,7 +182,7 @@ export default function ContactModal() {
         <div className="flex items-start justify-between gap-4 mb-5 pb-3 border-b border-border/60">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-500"></span>
               <h2 id="contact-modal-title" className="text-lg font-bold tracking-tight text-text">
                 Get in Touch
               </h2>
@@ -196,7 +196,7 @@ export default function ContactModal() {
           <button
             type="button"
             onClick={closeModal}
-            aria-label="Close contact modal"
+            aria-label="Close modal"
             className="p-1 rounded-lg text-text-muted hover:text-text hover:bg-surface-raised active:scale-[0.96] transition-all text-lg leading-none cursor-pointer"
           >
             ✕
@@ -206,7 +206,7 @@ export default function ContactModal() {
         {/* Modal Body / Form States */}
         {status === 'success' ? (
           <div className="py-6 text-center space-y-4">
-            <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 mx-auto flex items-center justify-center text-xl font-bold">
+            <div className="w-12 h-12 rounded-full bg-emerald-900/15 dark:bg-emerald-500/10 border border-emerald-700/30 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-400 mx-auto flex items-center justify-center text-xl font-bold">
               ✓
             </div>
             <div>

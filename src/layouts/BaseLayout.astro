@@ -19,7 +19,7 @@ const {
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://marcbalabat.tech');
 const isHomepage = Astro.url.pathname === '/' || Astro.url.pathname === '';
 
-const appVersion = import.meta.env.PUBLIC_APP_VERSION || '0.1.0';
+const appVersion = import.meta.env.PUBLIC_APP_VERSION || '0.2.0';
 const gitSha = import.meta.env.PUBLIC_GIT_SHA || 'dev';
 const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || 'main';
 const isProduction = gitBranch === 'main';
@@ -112,15 +112,15 @@ const isProduction = gitBranch === 'main';
       style={isHomepage ? "opacity: 0;" : "opacity: 1; pointer-events: auto;"}
     >
       <div class="w-full max-w-[1500px] mx-auto px-4 sm:px-8 lg:px-12 py-3.5 sm:py-4 flex items-center justify-between gap-4">
-        <a href="/" class="group flex items-center gap-2.5 font-mono text-sm tracking-tight text-text">
-          <span class="inline-block w-2.5 h-2.5 rounded-full bg-accent group-hover:scale-125 transition-transform duration-200"></span>
-          <span class="font-bold text-lg tracking-tight">Marc</span>
-          <span class="text-text-muted">/</span>
-          <span class="text-text-muted text-xs font-mono">full-stack engineer</span>
+        <a href="/" class="group flex items-center gap-2 font-mono text-sm tracking-tight text-text shrink-0">
+          <span class="inline-block w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-accent group-hover:scale-125 transition-transform duration-200 shrink-0"></span>
+          <span class="font-bold text-base sm:text-lg tracking-tight">Marc</span>
+          <span class="text-text-muted hidden sm:inline">/</span>
+          <span class="text-text-muted text-xs font-mono hidden sm:inline">full-stack engineer</span>
         </a>
 
-        <!-- Middle / Right Nav items -->
-        <nav class="flex items-center gap-3 sm:gap-5 text-sm font-medium text-text-muted">
+        <!-- Desktop Navigation Items (Visible on large screens) -->
+        <nav class="hidden lg:flex items-center gap-3 xl:gap-5 text-xs xl:text-sm font-medium text-text-muted">
           <!-- TLDR Interactive Toggle Button -->
           <TldrToggle client:load />
 
@@ -145,12 +145,97 @@ const isProduction = gitBranch === 'main';
             type="button"
             aria-label="Toggle color theme (System, Light, Dark)"
             title="Theme: System (default), Light, Dark"
-            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-surface-raised active:scale-[0.96] border border-border text-xs font-mono text-text transition-all cursor-pointer"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-surface-raised active:scale-[0.96] border border-border text-xs font-mono text-text transition-all cursor-pointer shrink-0"
           >
             <span id="theme-toggle-icon" class="text-accent">◐</span>
             <span id="theme-toggle-text">System</span>
           </button>
         </nav>
+
+        <!-- Mobile / Tablet Action Bar (< 1024px) -->
+        <div class="flex lg:hidden items-center gap-1.5 sm:gap-2 shrink-0">
+          <!-- TLDR Interactive Toggle Button -->
+          <TldrToggle client:load />
+
+          <!-- Command Palette Trigger -->
+          <CommandPalette client:load />
+
+          <!-- Mobile Theme Toggle -->
+          <button
+            id="theme-toggle-mobile"
+            type="button"
+            aria-label="Toggle color theme"
+            title="Theme: System (default), Light, Dark"
+            class="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg hover:bg-surface-raised active:scale-[0.96] border border-border text-xs font-mono text-text transition-all cursor-pointer"
+          >
+            <span id="theme-toggle-mobile-icon" class="text-accent text-sm">◐</span>
+          </button>
+
+          <!-- Mobile Menu Drawer Toggle Button -->
+          <button
+            id="mobile-menu-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="mobile-menu"
+            aria-label="Toggle mobile navigation menu"
+            class="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg border border-border bg-surface hover:bg-surface-raised active:scale-[0.96] text-text transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          >
+            <svg id="hamburger-icon-open" class="w-4 h-4 text-text block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="4" x2="20" y1="6" y2="6" />
+              <line x1="4" x2="20" y1="12" y2="12" />
+              <line x1="4" x2="20" y1="18" y2="18" />
+            </svg>
+            <svg id="hamburger-icon-close" class="w-4 h-4 text-text hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Navigation Drawer -->
+      <div
+        id="mobile-menu"
+        class="hidden lg:hidden w-full border-t border-border/70 bg-bg/95 backdrop-blur-xl px-4 py-3 shadow-xl transition-all duration-200"
+      >
+        <div class="flex flex-col space-y-1 text-sm font-medium font-mono text-text max-w-[1500px] mx-auto">
+          <a
+            href="/#work"
+            class="mobile-nav-link flex items-center justify-between px-3.5 py-2.5 rounded-xl hover:bg-surface-raised active:scale-[0.98] transition-all min-h-[44px]"
+          >
+            <span>Case Studies</span>
+            <span class="text-xs text-text-muted">➔</span>
+          </a>
+          <a
+            href="/#architecture"
+            class="mobile-nav-link flex items-center justify-between px-3.5 py-2.5 rounded-xl hover:bg-surface-raised active:scale-[0.98] transition-all min-h-[44px]"
+          >
+            <span>Architecture Diff</span>
+            <span class="text-xs text-text-muted">➔</span>
+          </a>
+          <a
+            href="/#skills"
+            class="mobile-nav-link flex items-center justify-between px-3.5 py-2.5 rounded-xl hover:bg-surface-raised active:scale-[0.98] transition-all min-h-[44px]"
+          >
+            <span>Stack & Tools</span>
+            <span class="text-xs text-text-muted">➔</span>
+          </a>
+          <a
+            href="/#about"
+            class="mobile-nav-link flex items-center justify-between px-3.5 py-2.5 rounded-xl hover:bg-surface-raised active:scale-[0.98] transition-all min-h-[44px]"
+          >
+            <span>About</span>
+            <span class="text-xs text-text-muted">➔</span>
+          </a>
+          <button
+            type="button"
+            id="mobile-contact-btn"
+            class="mobile-nav-link w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl hover:bg-surface-raised active:scale-[0.98] transition-all text-accent cursor-pointer min-h-[44px]"
+          >
+            <span>Contact</span>
+            <span class="text-xs">✉</span>
+          </button>
+        </div>
       </div>
     </header>
 
@@ -162,8 +247,8 @@ const isProduction = gitBranch === 'main';
       </main>
 
       <!-- Site Footer -->
-      <footer class="py-6 sm:py-8 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-text-muted">
-        <div class="flex flex-wrap items-center gap-3">
+      <footer class="py-6 sm:py-8 border-t border-border/60 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono text-text-muted">
+        <div class="flex flex-wrap items-center justify-center md:justify-start gap-2.5 sm:gap-3 text-center md:text-left">
           <span>© {new Date().getFullYear()} Marc (jsbalabat).</span>
           <!-- Dynamic Version & Git SHA Status Pill -->
           <a
@@ -173,7 +258,7 @@ const isProduction = gitBranch === 'main';
             class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border border-border/70 bg-surface hover:bg-surface-raised hover:border-border text-[11px] font-mono text-text-muted hover:text-text transition-all active:scale-[0.96]"
             title={`Deployed from ${gitBranch} branch (${gitSha})`}
           >
-            <span class={`w-1.5 h-1.5 rounded-full ${isProduction ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
+            <span class={`w-1.5 h-1.5 rounded-full ${isProduction ? 'bg-emerald-600 dark:bg-emerald-500' : 'bg-amber-500'}`}></span>
             <span>v{appVersion}</span>
             <span class="text-text-muted/40">·</span>
             <span class="text-text font-medium">{gitSha}</span>
@@ -182,7 +267,7 @@ const isProduction = gitBranch === 'main';
             )}
           </a>
         </div>
-        <div class="flex items-center gap-4">
+        <div class="flex flex-wrap items-center justify-center md:justify-end gap-x-3 sm:gap-x-4 gap-y-2 text-center md:text-right">
           <button
             type="button"
             onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
@@ -191,12 +276,13 @@ const isProduction = gitBranch === 'main';
           >
             johnfelixmarc@gmail.com
           </button>
-          <span>•</span>
+          <span class="hidden sm:inline text-border" aria-hidden="true">•</span>
           <a href="https://github.com/jsbalabat" target="_blank" rel="noopener noreferrer" class="hover:text-text transition-colors">GitHub</a>
-          <span>•</span>
+          <span class="hidden sm:inline text-border" aria-hidden="true">•</span>
           <a href="https://www.linkedin.com/in/marc-balabat" target="_blank" rel="noopener noreferrer" class="hover:text-text transition-colors">LinkedIn</a>
-          <span>•</span>
+          <span class="hidden sm:inline text-border" aria-hidden="true">•</span>
           <span class="inline-flex items-center gap-1.5 text-accent font-medium">
+            <span class="w-1.5 h-1.5 rounded-full bg-accent/60"></span>
             Cloudflare Workers Runtime
           </span>
         </div>
@@ -226,20 +312,57 @@ const isProduction = gitBranch === 'main';
         const iconEl = document.getElementById('theme-toggle-icon');
         const textEl = document.getElementById('theme-toggle-text');
         const btn = document.getElementById('theme-toggle');
-        if (!iconEl || !textEl || !btn) return;
 
-        if (pref === 'system') {
-          iconEl.textContent = '◐';
-          textEl.textContent = 'System';
-          btn.setAttribute('title', 'Theme: System (Default Auto)');
-        } else if (pref === 'light') {
-          iconEl.textContent = '☼';
-          textEl.textContent = 'Light';
-          btn.setAttribute('title', 'Theme: Light');
-        } else {
-          iconEl.textContent = '☾';
-          textEl.textContent = 'Dark';
-          btn.setAttribute('title', 'Theme: Dark');
+        if (iconEl && textEl && btn) {
+          if (pref === 'system') {
+            iconEl.textContent = '◐';
+            textEl.textContent = 'System';
+            btn.setAttribute('title', 'Theme: System (Default Auto)');
+          } else if (pref === 'light') {
+            iconEl.textContent = '☼';
+            textEl.textContent = 'Light';
+            btn.setAttribute('title', 'Theme: Light');
+          } else {
+            iconEl.textContent = '☾';
+            textEl.textContent = 'Dark';
+            btn.setAttribute('title', 'Theme: Dark');
+          }
+        }
+
+        const iconMobileEl = document.getElementById('theme-toggle-mobile-icon');
+        const btnMobile = document.getElementById('theme-toggle-mobile');
+
+        if (iconMobileEl && btnMobile) {
+          if (pref === 'system') {
+            iconMobileEl.textContent = '◐';
+            btnMobile.setAttribute('title', 'Theme: System (Default Auto)');
+          } else if (pref === 'light') {
+            iconMobileEl.textContent = '☼';
+            btnMobile.setAttribute('title', 'Theme: Light');
+          } else {
+            iconMobileEl.textContent = '☾';
+            btnMobile.setAttribute('title', 'Theme: Dark');
+          }
+        }
+
+        const iconLandingEl = document.getElementById('theme-toggle-landing-icon');
+        const textLandingEl = document.getElementById('theme-toggle-landing-text');
+        const btnLanding = document.getElementById('theme-toggle-landing');
+
+        if (iconLandingEl && btnLanding) {
+          if (pref === 'system') {
+            iconLandingEl.textContent = '◐';
+            if (textLandingEl) textLandingEl.textContent = 'System';
+            btnLanding.setAttribute('title', 'Theme: System (Default Auto)');
+          } else if (pref === 'light') {
+            iconLandingEl.textContent = '☼';
+            if (textLandingEl) textLandingEl.textContent = 'Light';
+            btnLanding.setAttribute('title', 'Theme: Light');
+          } else {
+            iconLandingEl.textContent = '☾';
+            if (textLandingEl) textLandingEl.textContent = 'Dark';
+            btnLanding.setAttribute('title', 'Theme: Dark');
+          }
         }
       };
 
@@ -258,28 +381,124 @@ const isProduction = gitBranch === 'main';
         window.dispatchEvent(new CustomEvent('theme-preference-change', { detail: nextPref }));
       };
 
+      const cycleTheme = () => {
+        const currentPref = getActiveThemePreference();
+        const cycle: Record<string, string> = {
+          system: 'light',
+          light: 'dark',
+          dark: 'system',
+        };
+        const next = cycle[currentPref] || 'system';
+        applyThemePreference(next);
+      };
+
       const toggle = document.getElementById('theme-toggle');
       if (toggle) {
-        updateThemeToggleUI();
-        toggle.addEventListener('click', () => {
-          const currentPref = getActiveThemePreference();
-          const cycle: Record<string, string> = {
-            system: 'light',
-            light: 'dark',
-            dark: 'system',
-          };
-          const next = cycle[currentPref] || 'system';
-          applyThemePreference(next);
-        });
+        toggle.addEventListener('click', cycleTheme);
       }
+
+      const toggleMobile = document.getElementById('theme-toggle-mobile');
+      if (toggleMobile) {
+        toggleMobile.addEventListener('click', cycleTheme);
+      }
+
+      const toggleLanding = document.getElementById('theme-toggle-landing');
+      if (toggleLanding) {
+        toggleLanding.addEventListener('click', cycleTheme);
+      }
+
+      // Initial theme toggle UI update
+      updateThemeToggleUI();
 
       window.addEventListener('theme-preference-change', () => {
         updateThemeToggleUI();
       });
 
-      // Dynamic header fade-in: 0-100 halfway through cover page onwards
+      // Mobile Drawer Menu State & Handlers
+      const menuToggle = document.getElementById('mobile-menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const openIcon = document.getElementById('hamburger-icon-open');
+      const closeIcon = document.getElementById('hamburger-icon-close');
+      const mobileContactBtn = document.getElementById('mobile-contact-btn');
+
+      const closeMobileMenu = () => {
+        if (!mobileMenu || !menuToggle) return;
+        mobileMenu.classList.add('hidden');
+        menuToggle.setAttribute('aria-expanded', 'false');
+        openIcon?.classList.remove('hidden');
+        openIcon?.classList.add('block');
+        closeIcon?.classList.remove('block');
+        closeIcon?.classList.add('hidden');
+      };
+
+      const openMobileMenu = () => {
+        if (!mobileMenu || !menuToggle) return;
+        mobileMenu.classList.remove('hidden');
+        menuToggle.setAttribute('aria-expanded', 'true');
+        openIcon?.classList.remove('block');
+        openIcon?.classList.add('hidden');
+        closeIcon?.classList.remove('hidden');
+        closeIcon?.classList.add('block');
+      };
+
+      if (menuToggle && mobileMenu) {
+        menuToggle.addEventListener('click', () => {
+          const isExpanded = menuToggle.getAttribute('aria-expanded') === 'true';
+          if (isExpanded) {
+            closeMobileMenu();
+          } else {
+            openMobileMenu();
+          }
+        });
+
+        // Close on link click
+        const links = mobileMenu.querySelectorAll('.mobile-nav-link');
+        links.forEach((link) => {
+          link.addEventListener('click', () => {
+            closeMobileMenu();
+          });
+        });
+
+        // Close on Escape key
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && menuToggle.getAttribute('aria-expanded') === 'true') {
+            closeMobileMenu();
+            menuToggle.focus();
+          }
+        });
+
+        // Close on outside click
+        document.addEventListener('click', (e) => {
+          const target = e.target as HTMLElement | null;
+          if (
+            menuToggle.getAttribute('aria-expanded') === 'true' &&
+            target &&
+            !mobileMenu.contains(target) &&
+            !menuToggle.contains(target)
+          ) {
+            closeMobileMenu();
+          }
+        });
+
+        // Auto-close on resize to desktop (>= 1024px)
+        window.matchMedia('(min-width: 1024px)').addEventListener('change', (e) => {
+          if (e.matches) {
+            closeMobileMenu();
+          }
+        });
+      }
+
+      if (mobileContactBtn) {
+        mobileContactBtn.addEventListener('click', () => {
+          closeMobileMenu();
+          window.dispatchEvent(new CustomEvent('open-contact-modal'));
+        });
+      }
+
+      // Dynamic header fade-in and collision detection
       const header = document.getElementById('site-header');
       const cover = document.getElementById('cover');
+      const bottomAnchor = document.getElementById('cover-bottom-anchor');
 
       if (header && cover) {
         const updateHeader = () => {
@@ -287,9 +506,26 @@ const isProduction = gitBranch === 'main';
           const halfway = coverHeight * 0.5;
           const scrollY = window.scrollY || window.pageYOffset || 0;
 
+          // Disappear ONLY when header collides/overlaps with the bottom anchor on-screen
+          if (bottomAnchor) {
+            const headerRect = header.getBoundingClientRect();
+            const anchorRect = bottomAnchor.getBoundingClientRect();
+            const headerBottom = headerRect.bottom > 0 ? headerRect.bottom : (header.offsetHeight || 60);
+
+            if (anchorRect.top <= headerBottom) {
+              bottomAnchor.style.opacity = '0';
+              bottomAnchor.style.pointerEvents = 'none';
+            } else {
+              bottomAnchor.style.opacity = '1';
+              bottomAnchor.style.pointerEvents = 'auto';
+            }
+          }
+
           if (scrollY <= halfway) {
             header.style.opacity = '0';
             header.style.pointerEvents = 'none';
+            // Also close mobile menu if scrolling back to top of cover
+            closeMobileMenu();
           } else if (scrollY >= coverHeight) {
             header.style.opacity = '1';
             header.style.pointerEvents = 'auto';
@@ -308,6 +544,18 @@ const isProduction = gitBranch === 'main';
         header.style.opacity = '1';
         header.style.pointerEvents = 'auto';
       }
+
+      // Vertical scrollbar fade: visible only during vertical page movement (mouse movement not counted)
+      let scrollbarFadeTimer: number | undefined;
+      const onVerticalPageMovement = () => {
+        document.documentElement.classList.add('is-scrolling');
+        if (scrollbarFadeTimer) clearTimeout(scrollbarFadeTimer);
+        scrollbarFadeTimer = window.setTimeout(() => {
+          document.documentElement.classList.remove('is-scrolling');
+        }, 1000);
+      };
+
+      window.addEventListener('scroll', onVerticalPageMovement, { passive: true });
     </script>
   </body>
 </html>

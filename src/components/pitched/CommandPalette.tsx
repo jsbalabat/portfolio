@@ -429,7 +429,7 @@ export default function CommandPalette() {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="group inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border/80 bg-surface hover:bg-surface-raised active:scale-[0.96] hover:border-border transition-all duration-200 text-xs font-mono text-text-muted hover:text-text shadow-xs cursor-pointer"
+        className="group inline-flex items-center justify-center gap-1.5 sm:gap-2 h-8 sm:h-9 w-8 sm:w-auto px-0 sm:px-3 rounded-lg border border-border/80 bg-surface hover:bg-surface-raised active:scale-[0.96] hover:border-border transition-all duration-200 text-xs font-mono text-text-muted hover:text-text shadow-xs cursor-pointer"
         aria-label="Open Command Palette"
         title="Search projects, navigation, and actions"
       >
@@ -440,13 +440,13 @@ export default function CommandPalette() {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="w-3.5 h-3.5 text-accent opacity-80 group-hover:opacity-100"
+          className="w-3.5 h-3.5 text-accent opacity-80 group-hover:opacity-100 shrink-0"
         >
           <circle cx="11" cy="11" r="8" />
           <path d="m21 21-4.3-4.3" />
         </svg>
-        <span className="hidden sm:inline">Search</span>
-        <kbd className="px-1.5 py-0.5 rounded bg-surface-raised border border-border/80 text-[10px] text-text-muted font-mono group-hover:text-text transition-colors">
+        <span className="hidden md:inline">Search</span>
+        <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-surface-raised border border-border/80 text-[10px] text-text-muted font-mono group-hover:text-text transition-colors">
           {isMac ? '⌘K' : 'Ctrl K'}
         </kbd>
       </button>
@@ -457,7 +457,7 @@ export default function CommandPalette() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="command-palette-input"
-          className={`fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-black/60 backdrop-blur-xs ${
+          className={`fixed inset-0 z-50 flex items-start justify-center pt-6 sm:pt-24 px-3 sm:px-4 bg-black/60 backdrop-blur-xs ${
             isClosing ? 'animate-modal-backdrop-out' : 'animate-modal-backdrop'
           }`}
           onMouseDown={(e) => {
@@ -472,7 +472,7 @@ export default function CommandPalette() {
           }}
         >
           <div
-            className={`w-full max-w-xl rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden font-mono text-sm text-text ${
+            className={`w-full max-w-xl max-h-[calc(100dvh-3rem)] flex flex-col rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden font-mono text-sm text-text ${
               isClosing ? 'animate-modal-content-out' : 'animate-modal-content'
             }`}
             onMouseDown={(e) => e.stopPropagation()}
@@ -536,7 +536,7 @@ export default function CommandPalette() {
                       type="button"
                       onClick={() => cmd.action()}
                       onMouseEnter={() => setSelectedIndex(idx)}
-                      className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center justify-between transition-all duration-150 active:scale-[0.98] cursor-pointer relative group border ${
+                      className={`w-full text-left px-3 py-2.5 min-h-[44px] rounded-lg flex items-center justify-between transition-all duration-150 active:scale-[0.98] cursor-pointer relative group border ${
                         isSelected
                           ? 'bg-accent/15 text-text border-accent/40 shadow-xs'
                           : 'text-text-muted hover:bg-surface-raised border-transparent'

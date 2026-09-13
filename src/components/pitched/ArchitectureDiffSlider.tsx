@@ -319,7 +319,7 @@ export default function ArchitectureDiffSlider() {
         </div>
 
         {/* Scenario Tab Buttons */}
-        <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl border border-border bg-surface text-xs font-mono self-start lg:self-auto">
+        <div className="flex items-center gap-1.5 p-1 rounded-xl border border-border bg-surface text-xs font-mono w-full sm:w-auto overflow-x-auto">
           {(['unitko', 'ledgerly', 'tell-health'] as ScenarioId[]).map((id) => (
             <button
               key={id}
@@ -328,7 +328,7 @@ export default function ArchitectureDiffSlider() {
                 setActiveScenario(id);
                 setSliderPos(50);
               }}
-              className={`px-3 py-1.5 rounded-lg transition-all active:scale-[0.96] cursor-pointer font-medium ${
+              className={`px-3 py-1.5 rounded-lg transition-all active:scale-[0.96] cursor-pointer font-medium whitespace-nowrap shrink-0 ${
                 activeScenario === id
                   ? 'bg-accent text-accent-text shadow-xs'
                   : 'text-text-muted hover:text-text hover:bg-surface-raised'
@@ -341,18 +341,18 @@ export default function ArchitectureDiffSlider() {
       </div>
 
       {/* Editor Window Chrome */}
-      <div className="px-4 py-2.5 border-b border-border/60 bg-[#101613] flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+      <div className="px-3 sm:px-4 py-2.5 border-b border-border/60 bg-[#101613] flex flex-wrap items-center justify-between gap-2.5 text-xs font-mono">
         {/* File Tab & Window Dots */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 pr-2 border-r border-border/40">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="flex items-center gap-1.5 pr-2 border-r border-border/40 shrink-0">
             <span className="w-2.5 h-2.5 rounded-full bg-[#e57373]/80"></span>
             <span className="w-2.5 h-2.5 rounded-full bg-[#ffb74d]/80"></span>
             <span className="w-2.5 h-2.5 rounded-full bg-[#81c784]/80"></span>
           </div>
-          <div className="flex items-center gap-2 text-slate-200">
-            <span className="w-2 h-2 rounded-full bg-accent/80"></span>
-            <span className="font-semibold">{scenario.fileName}</span>
-            <span className="text-[10px] text-slate-400 uppercase">({scenario.language})</span>
+          <div className="flex items-center gap-1.5 sm:gap-2 text-slate-200 truncate">
+            <span className="w-2 h-2 rounded-full bg-accent/80 shrink-0"></span>
+            <span className="font-semibold truncate text-[11px] sm:text-xs">{scenario.fileName}</span>
+            <span className="text-[10px] text-slate-400 uppercase shrink-0">({scenario.language})</span>
           </div>
         </div>
 
@@ -468,13 +468,12 @@ export default function ArchitectureDiffSlider() {
         </div>
       </div>
 
-      {/* Code Workspace: Dual-Pane Conforming Diff (Text on BOTH sides conforms to its own pane, never clipped in the middle of a line) */}
+      {/* Code Workspace: Dual-Pane Conforming Diff */}
       <div
         ref={containerRef}
         onMouseDown={(e) => handlePointerDown(e.clientX)}
-        onTouchStart={(e) => handlePointerDown(e.touches[0].clientX)}
-        className="relative w-full h-[360px] sm:h-[400px] overflow-hidden select-none bg-[#131a16] text-[#f5e4d7] flex cursor-ew-resize"
-        style={{ touchAction: 'none' }}
+        className="relative w-full h-[360px] sm:h-[400px] overflow-hidden select-none bg-[#131a16] text-[#f5e4d7] flex"
+        style={{ touchAction: 'pan-y' }}
       >
         {/* BEFORE PANE (Left Column: v1.0 Flawed) */}
         {(viewMode === 'split' || viewMode === 'before') && (
@@ -483,6 +482,7 @@ export default function ArchitectureDiffSlider() {
             style={{
               width: viewMode === 'before' ? '100%' : `${sliderPos}%`,
               display: viewMode === 'split' && sliderPos === 0 ? 'none' : 'block',
+              touchAction: 'pan-y',
             }}
           >
             <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-rose-950/80 border border-rose-800/80 text-rose-300 font-semibold text-[11px] mb-3 sticky top-0 z-10 backdrop-blur-xs">
@@ -512,7 +512,7 @@ export default function ArchitectureDiffSlider() {
           </div>
         )}
 
-        {/* Tactile Resizing Divider Handle (Accessible slider) */}
+        {/* Tactile Resizing Divider Handle (Accessible slider with dedicated touch-slop) */}
         {viewMode === 'split' && (
           <div
             role="slider"
@@ -526,14 +526,36 @@ export default function ArchitectureDiffSlider() {
             className="absolute top-0 bottom-0 pointer-events-none z-20 focus:outline-none"
             style={{ left: `${sliderPos}%` }}
           >
-            {/* Divider Line */}
-            <div className="absolute top-0 bottom-0 w-1 -ml-0.5 bg-accent shadow-md"></div>
+            {/* Divider Line with touch hit-slop */}
+            <div
+              className="absolute top-0 bottom-0 w-8 -ml-4 flex items-center justify-center pointer-events-auto cursor-ew-resize group"
+              style={{ touchAction: 'none' }}
+              onMouseDown={(e) => {
+                e.stopPropagation();
+                handlePointerDown(e.clientX);
+              }}
+              onTouchStart={(e) => {
+                e.stopPropagation();
+                handlePointerDown(e.touches[0].clientX);
+              }}
+            >
+              <div className="w-1 h-full bg-accent shadow-md group-hover:w-1.5 transition-all"></div>
+            </div>
 
             {/* Handle Grip Center Pill */}
             <div
-              className="absolute top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-accent text-accent-text shadow-2xl flex items-center justify-center text-xs font-bold ring-4 ring-black/70 pointer-events-auto cursor-ew-resize -translate-x-1/2 hover:scale-110 active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-accent transition-transform"
+              style={{ touchAction: 'none' }}
+              onMouseDown={(e) => {
+                e.stopPropagation();
+                handlePointerDown(e.clientX);
+              }}
+              onTouchStart={(e) => {
+                e.stopPropagation();
+                handlePointerDown(e.touches[0].clientX);
+              }}
+              className="absolute top-1/2 -translate-y-1/2 w-9 h-9 sm:w-8 sm:h-8 rounded-full bg-accent text-accent-text shadow-2xl flex items-center justify-center text-xs font-bold ring-4 ring-black/70 pointer-events-auto cursor-ew-resize -translate-x-1/2 hover:scale-110 active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-accent transition-transform select-none"
             >
-              <span className="select-none">↔</span>
+              <span>↔</span>
             </div>
           </div>
         )}
@@ -545,6 +567,7 @@ export default function ArchitectureDiffSlider() {
             style={{
               width: viewMode === 'after' ? '100%' : `${100 - sliderPos}%`,
               display: viewMode === 'split' && sliderPos === 100 ? 'none' : 'block',
+              touchAction: 'pan-y',
             }}
           >
             <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-emerald-950/80 border border-emerald-800/80 text-emerald-300 font-semibold text-[11px] mb-3 sticky top-0 z-10 backdrop-blur-xs">
@@ -589,9 +612,9 @@ export default function ArchitectureDiffSlider() {
         </div>
 
         {/* Architectural Result (v2.0) */}
-        <div className="p-4 rounded-xl bg-emerald-500/10 dark:bg-emerald-950/40 border border-emerald-500/30 dark:border-emerald-700/50 shadow-xs">
-          <div className="flex items-center gap-2 mb-2 text-emerald-700 dark:text-emerald-300 font-bold font-mono text-xs uppercase tracking-wider">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+        <div className="p-4 rounded-xl bg-emerald-900/15 dark:bg-emerald-950/40 border border-emerald-800/30 dark:border-emerald-700/50 shadow-xs">
+          <div className="flex items-center gap-2 mb-2 text-emerald-800 dark:text-emerald-300 font-bold font-mono text-xs uppercase tracking-wider">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 dark:bg-emerald-500"></span>
             <span>v2.0 Architectural Result</span>
           </div>
           <p className="text-text font-normal leading-relaxed text-xs">

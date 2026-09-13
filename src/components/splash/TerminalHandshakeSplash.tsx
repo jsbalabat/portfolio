@@ -12,6 +12,8 @@ interface BootLine {
   postDelayMs: number;
 }
 
+const APP_VERSION = import.meta.env.PUBLIC_APP_VERSION || '0.2.0';
+
 const BOOT_LINES: BootLine[] = [
   {
     id: 1,
@@ -21,7 +23,7 @@ const BOOT_LINES: BootLine[] = [
       { text: 'marcbalabat.tech', className: 'text-[#79c0ff] font-semibold' },
       { text: ' on ', className: 'text-[#8b949e]' },
       { text: 'cloudflare:edge', className: 'text-[#e3b341]' },
-      { text: ' (v0.1.0)...', className: 'text-[#d2a8ff]' },
+      { text: ` (v${APP_VERSION})...`, className: 'text-[#d2a8ff]' },
     ],
     postDelayMs: 90,
   },
@@ -115,10 +117,12 @@ export default function TerminalHandshakeSplash() {
   const [holdProgress, setHoldProgress] = useState(0);
 
   const trackRef = useRef<HTMLDivElement>(null);
+  const knobRef = useRef<HTMLDivElement>(null);
   const promptTextRef = useRef<HTMLSpanElement>(null);
   const textLeftOffsetRef = useRef<number | null>(null);
   const holdTimerRef = useRef<number | null>(null);
   const holdStartTimeRef = useRef<number | null>(null);
+  const grabOffsetRef = useRef<number>(22);
   const dialogRef = useRef<HTMLDivElement>(null);
 
   // Check initial session storage on mount
@@ -138,6 +142,10 @@ export default function TerminalHandshakeSplash() {
       try {
         sessionStorage.removeItem('portfolio_unlocked');
       } catch (e) {}
+      if (holdTimerRef.current) {
+        clearInterval(holdTimerRef.current);
+        holdTimerRef.current = null;
+      }
       setIsExiting(false);
       setIsUnlocked(false);
       setSplashPhase('pc_boot');
@@ -329,65 +337,11 @@ export default function TerminalHandshakeSplash() {
     };
   }, [isBootComplete]);
 
-  // Pointer drag physics for slider (button sits inside with 6px padding)
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isFullyReady || isUnlocked) return;
-    setIsDragging(true);
-    updateSliderPosition(e.clientX);
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
-  };
-
-  const updateSliderPosition = (clientX: number) => {
-    if (!trackRef.current) return;
-    const rect = trackRef.current.getBoundingClientRect();
-    const thumbWidth = 44;
-    const padding = 6;
-    const maxTravel = Math.max(60, rect.width - thumbWidth - padding * 2);
-    const pointerOffset = clientX - rect.left - padding - thumbWidth / 2;
-    const clampedOffset = Math.max(0, Math.min(maxTravel, pointerOffset));
-    const progress = maxTravel > 0 ? clampedOffset / maxTravel : 0;
-
-    setSliderProgress(progress);
-
-    // Slide reached the right edge (>= 96%) -> initiate hold sequence
-    if (progress >= 0.96) {
-      if (!isAtEnd) {
-        setIsAtEnd(true);
-        startHold();
-      }
-    } else {
-      if (isAtEnd) {
-        setIsAtEnd(false);
-        cancelHold();
-      }
-    }
-  };
-
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDragging || isUnlocked) return;
-    updateSliderPosition(e.clientX);
-  };
-
-  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDragging || isUnlocked) return;
-    setIsDragging(false);
-    try {
-      (e.target as HTMLElement).releasePointerCapture(e.pointerId);
-    } catch {
-      // ignore
-    }
-
-    // If released before hold finishes, snap back to start
-    cancelHold();
-    setIsAtEnd(false);
-    setSliderProgress(0);
-  };
-
-  // Hold action: 480ms (crisp, faster hold time)
-  const startHold = () => {
+  // Hold action: 400ms hold at the right end to authenticate and unlock
+  const startHold = useCallback(() => {
     if (holdTimerRef.current) clearInterval(holdTimerRef.current);
     holdStartTimeRef.current = Date.now();
-    const holdDuration = 480; // ms
+    const holdDuration = 400; // ms
 
     holdTimerRef.current = window.setInterval(() => {
       if (!holdStartTimeRef.current) return;
@@ -401,9 +355,9 @@ export default function TerminalHandshakeSplash() {
         triggerUnlock();
       }
     }, 16);
-  };
+  }, [triggerUnlock]);
 
-  const cancelHold = () => {
+  const cancelHold = useCallback(() => {
     if (holdTimerRef.current) {
       clearInterval(holdTimerRef.current);
       holdTimerRef.current = null;
@@ -412,7 +366,97 @@ export default function TerminalHandshakeSplash() {
     if (!isUnlocked) {
       setHoldProgress(0);
     }
+  }, [isUnlocked]);
+
+  const updateSliderPosition = useCallback((clientX: number) => {
+    if (!trackRef.current) return;
+    const trackRect = trackRef.current.getBoundingClientRect();
+    const thumbWidth = 44;
+    const padding = 6;
+    const maxTravel = Math.max(60, trackRect.width - thumbWidth - padding * 2);
+
+    // Match the horizontal point on the screen where the user is pressing
+    const grabOffset = grabOffsetRef.current ?? (thumbWidth / 2);
+    const knobX = clientX - trackRect.left - padding - grabOffset;
+    const clampedX = Math.max(0, Math.min(maxTravel, knobX));
+    const progress = maxTravel > 0 ? clampedX / maxTravel : 0;
+
+    setSliderProgress(progress);
+
+    // When slider reaches the right edge (>= 96%) -> initiate hold sequence
+    if (progress >= 0.96) {
+      if (!isAtEnd) {
+        setIsAtEnd(true);
+        startHold();
+      }
+    } else {
+      if (isAtEnd) {
+        setIsAtEnd(false);
+        cancelHold();
+      }
+    }
+  }, [isAtEnd, startHold, cancelHold]);
+
+  // Pointer drag on knob: slider movement is triggered exclusively by pressing/holding the knob button
+  const handleKnobPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isFullyReady || isUnlocked) return;
+    if (e.button !== 0) return; // Only main button / primary touch
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    setIsDragging(true);
+
+    if (trackRef.current && knobRef.current) {
+      const trackRect = trackRef.current.getBoundingClientRect();
+      const knobRect = knobRef.current.getBoundingClientRect();
+      const thumbWidth = 44;
+      const padding = 6;
+      const maxTravel = Math.max(60, trackRect.width - thumbWidth - padding * 2);
+
+      // Record grab offset relative to knob left so knob stays locked to touch point
+      const offsetWithinKnob = e.clientX - knobRect.left;
+      grabOffsetRef.current = Math.max(0, Math.min(thumbWidth, offsetWithinKnob));
+
+      // Calculate initial position matching where the user is pressing
+      const knobX = e.clientX - trackRect.left - padding - grabOffsetRef.current;
+      const clampedX = Math.max(0, Math.min(maxTravel, knobX));
+      const progress = maxTravel > 0 ? clampedX / maxTravel : 0;
+      setSliderProgress(progress);
+
+      if (progress >= 0.96) {
+        setIsAtEnd(true);
+        startHold();
+      }
+    }
   };
+
+  // Window-level pointer tracking: ensures slider follows horizontal pressing point across entire screen
+  useEffect(() => {
+    if (!isDragging || isUnlocked) return;
+
+    const onPointerMove = (e: PointerEvent) => {
+      e.preventDefault();
+      updateSliderPosition(e.clientX);
+    };
+
+    const onPointerUp = () => {
+      setIsDragging(false);
+      cancelHold();
+      setIsAtEnd(false);
+      setSliderProgress(0);
+    };
+
+    window.addEventListener('pointermove', onPointerMove, { passive: false });
+    window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerUp);
+
+    return () => {
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointercancel', onPointerUp);
+    };
+  }, [isDragging, isUnlocked, updateSliderPosition, cancelHold]);
 
   // Clear interval on unmount
   useEffect(() => {
@@ -562,7 +606,7 @@ export default function TerminalHandshakeSplash() {
               <span className="w-3 h-3 rounded-full bg-[#ffbd2e] inline-block" />
               <span className="w-3 h-3 rounded-full bg-[#27c93f] inline-block" />
             </div>
-            <div className="text-xs text-text-muted font-medium">
+            <div className="text-[11px] sm:text-xs text-text-muted font-medium truncate max-w-[120px] xs:max-w-[180px] sm:max-w-none text-center">
               marc@marcbalabat.tech:~ (zsh)
             </div>
             <div className="flex items-center gap-1.5 text-[11px]">
@@ -586,7 +630,7 @@ export default function TerminalHandshakeSplash() {
           </div>
 
           {/* Terminal Log Screen (Strict single line per entry; no wrapping or overflow) */}
-          <div className="p-5 sm:p-6 space-y-1.5 text-[11px] sm:text-xs min-h-[220px] flex flex-col justify-start overflow-hidden">
+          <div className="p-4 sm:p-6 space-y-1.5 text-[11px] sm:text-xs min-h-[200px] sm:min-h-[220px] flex flex-col justify-start overflow-hidden">
             {/* Completed lines */}
             {completedLines.map((line) => (
               <div key={line.id} className="leading-relaxed font-mono whitespace-nowrap overflow-hidden text-ellipsis">
@@ -630,30 +674,26 @@ export default function TerminalHandshakeSplash() {
           </div>
 
           {/* Handshake Controls Panel */}
-          <div className="p-4 sm:p-5 bg-surface/50 border-t border-border/80 flex flex-col gap-3">
+          <div className="p-3.5 sm:p-5 bg-surface/50 border-t border-border/80 flex flex-col gap-2.5 sm:gap-3">
             {/* Slider Rail: Button sits inside with uniform 6px padding on all sides */}
             <div
               ref={trackRef}
-              onPointerDown={handlePointerDown}
-              onPointerMove={handlePointerMove}
-              onPointerUp={handlePointerUp}
-              onPointerCancel={handlePointerUp}
-              className={`h-14 rounded-2xl border relative overflow-hidden flex items-center p-1.5 select-none transition-colors duration-200 ${
+              className={`h-14 rounded-2xl border relative overflow-hidden flex items-center p-1.5 select-none touch-none transition-colors duration-200 ${
                 !isRailPowered
                   ? 'opacity-30 border-border/40 bg-surface-raised/30 pointer-events-none cursor-not-allowed'
                   : isUnlocked
-                  ? 'border-emerald-500 bg-emerald-500/10'
+                  ? 'border-emerald-700/60 dark:border-emerald-500 bg-emerald-900/15 dark:bg-emerald-500/10'
                   : isFullyReady
-                  ? 'border-border bg-surface-raised cursor-grab active:cursor-grabbing hover:border-accent/60'
+                  ? 'border-border bg-surface-raised hover:border-accent/60'
                   : 'border-border/60 bg-surface-raised/60'
               }`}
             >
-              {/* Dynamic Slider Progress Fill: ONLY rendered when pressing or holding (hidden otherwise) */}
-              {(isDragging || isAtEnd) && (
+              {/* Dynamic Slider Progress Fill: ONLY rendered when pressing, dragging, or holding */}
+              {(isDragging || isAtEnd || sliderProgress > 0) && (
                 <div
                   className={`absolute border-r transition-none ${
                     isUnlocked
-                      ? 'bg-emerald-500/20 border-emerald-500'
+                      ? 'bg-emerald-900/25 dark:bg-emerald-500/20 border-emerald-700/60 dark:border-emerald-500'
                       : 'bg-accent/25 border-accent'
                   }`}
                   style={{
@@ -699,17 +739,26 @@ export default function TerminalHandshakeSplash() {
 
               {/* Slider Knob Button (strictly nested inside track with 6px padding & concentric 10px radius) */}
               <div
-                role="slider"
+                ref={knobRef}
+                role="button"
                 tabIndex={isKnobPowered && !isUnlocked ? 0 : -1}
-                aria-label="Handshake slider to unlock portfolio"
+                aria-label="Handshake slider button: hold and slide to unlock portfolio"
                 aria-valuemin={0}
                 aria-valuemax={100}
                 aria-valuenow={Math.round(sliderProgress * 100)}
+                onPointerDown={handleKnobPointerDown}
                 onKeyDown={(e) => {
                   if (!isFullyReady || isUnlocked) return;
-                  if (e.key === 'ArrowRight') {
+                  if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    const next = Math.min(1, sliderProgress + 0.2);
+                    setIsDragging(false);
+                    setIsAtEnd(true);
+                    setSliderProgress(1);
+                    setHoldProgress(1);
+                    setTimeout(() => triggerUnlock(), 260);
+                  } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    const next = Math.min(1, sliderProgress + 0.25);
                     setSliderProgress(next);
                     if (next >= 0.96 && !isAtEnd) {
                       setIsAtEnd(true);
@@ -717,7 +766,7 @@ export default function TerminalHandshakeSplash() {
                     }
                   } else if (e.key === 'ArrowLeft') {
                     e.preventDefault();
-                    const next = Math.max(0, sliderProgress - 0.2);
+                    const next = Math.max(0, sliderProgress - 0.25);
                     setSliderProgress(next);
                     if (next < 0.96 && isAtEnd) {
                       setIsAtEnd(false);
@@ -725,14 +774,14 @@ export default function TerminalHandshakeSplash() {
                     }
                   }
                 }}
-                className={`w-11 h-11 rounded-[10px] flex items-center justify-center font-bold text-xs shadow-sm relative z-10 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                className={`w-11 h-11 rounded-[10px] flex items-center justify-center font-bold text-xs shadow-sm relative z-10 select-none touch-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                   !isKnobPowered
                     ? 'bg-border/60 text-text-muted/40 cursor-not-allowed'
                     : isUnlocked
-                    ? 'bg-emerald-500 text-white'
+                    ? 'bg-emerald-700 dark:bg-emerald-500 text-white'
                     : isAtEnd
-                    ? 'bg-accent text-accent-text brightness-110'
-                    : 'bg-accent text-accent-text hover:brightness-105 active:brightness-95'
+                    ? 'bg-accent text-accent-text brightness-110 cursor-grab active:cursor-grabbing'
+                    : 'bg-accent text-accent-text hover:brightness-105 active:brightness-95 cursor-grab active:cursor-grabbing'
                 }`}
                 style={{
                   transform: `translateX(${currentThumbX}px) ${isDragging ? 'scale(0.96)' : 'scale(1)'}`,
@@ -769,7 +818,7 @@ export default function TerminalHandshakeSplash() {
                     : isAtEnd
                     ? 'Holding latch...'
                     : isFullyReady
-                    ? 'Slide to right end and hold to proceed'
+                    ? 'Hold and slide button to right end to proceed'
                     : 'Awaiting boot sequence'}
                 </span>
               </div>

@@ -57,124 +57,147 @@ const keyOutcomes: Record<string, { badge: string; text: string }> = {
 ---
 
 <BaseLayout>
-  <!-- Full-Height Editorial Cover Page (True 100vh Hero Cover with zero header offset) -->
-  <section id="cover" class="min-h-[100svh] py-6 sm:py-10 lg:py-12 border-b border-border/60 flex flex-col justify-between">
+  <!-- Full-Height Editorial Cover Page (Fluid full-screen on desktop, fitted on mobile) -->
+  <section id="cover" class="min-h-[100dvh] py-3 sm:py-8 lg:py-12 border-b border-border/60 flex flex-col justify-between">
     <!-- Top Row: Cover Page Identity + Top-Right TLDR Toggle -->
     <div class="flex items-center justify-between w-full pt-1 pb-2">
       <div class="flex items-center gap-2 font-mono text-xs text-text-muted">
         <span class="inline-block w-2 h-2 rounded-full bg-accent"></span>
         <span class="font-bold text-sm tracking-tight text-text">Marc</span>
         <span class="text-text-muted/60">/</span>
-        <span>systems & engineering</span>
+        <span class="hidden xs:inline">systems & engineering</span>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 sm:gap-2.5">
         <TldrToggle client:load />
+        <!-- Landing Page Theme Toggle (Cycles: System -> Light -> Dark) -->
+        <button
+          id="theme-toggle-landing"
+          type="button"
+          aria-label="Toggle color theme (System, Light, Dark)"
+          title="Theme: System (default), Light, Dark"
+          class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-surface-raised active:scale-[0.96] border border-border text-xs font-mono text-text transition-all cursor-pointer shrink-0"
+        >
+          <span id="theme-toggle-landing-icon" class="text-accent">◐</span>
+          <span id="theme-toggle-landing-text" class="hidden xs:inline">System</span>
+        </button>
       </div>
     </div>
 
     <!-- Middle Content -->
-    <div class="my-auto py-4">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
+    <div class="my-auto py-2 sm:py-4">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8 items-center">
         
         <!-- Left Column: Picture, Identity, Headline, and CTAs -->
-        <div class="lg:col-span-8 flex flex-col items-start">
-          <div class="flex items-center gap-2 px-3 py-1 rounded-md border border-border/80 bg-surface text-xs font-mono text-text-muted shadow-2xs mb-5">
+        <div class="lg:col-span-8 flex flex-col items-start text-left">
+          <div class="flex items-center gap-2 px-3 py-1 rounded-md border border-border/80 bg-surface text-xs font-mono text-text-muted shadow-2xs mb-3 sm:mb-5">
             <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
-            <span>Full-stack software engineer • Sole developer</span>
+            <span class="text-[11px] sm:text-xs">Full-stack software engineer • Sole developer</span>
           </div>
 
-          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8 mb-6 w-full">
-            <!-- Portrait Image (Expanded & Prominent) -->
-            <div class="relative shrink-0">
-              <div class="w-36 h-36 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-60 lg:h-60 rounded-2xl overflow-hidden border border-border shadow-sm bg-surface-raised relative group">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8 mb-4 sm:mb-6 w-full">
+            <!-- Portrait Image (Full width on mobile, fluid square on tablet/desktop, toggles color on press) -->
+            <div class="w-full sm:w-auto shrink-0">
+              <button
+                type="button"
+                id="profile-picture-toggle"
+                aria-label="Toggle profile photo color"
+                aria-pressed="false"
+                title="Click or tap to toggle photo color"
+                class="w-full sm:w-44 md:w-52 lg:w-56 aspect-[4/3] sm:aspect-square rounded-2xl overflow-hidden border border-border shadow-sm bg-surface-raised relative group cursor-pointer active:scale-[0.98] transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent text-left block p-0"
+              >
                 <img
+                  id="profile-picture-img"
                   src="/images/profile.jpg"
                   alt="Marc - Full-Stack Engineer"
-                  class="w-full h-full object-cover object-center filter grayscale contrast-105 group-hover:grayscale-0 transition-all duration-300"
+                  class="w-full h-full object-cover object-[center_60%] sm:object-center filter grayscale contrast-105 group-hover:grayscale-0 transition-all duration-300 pointer-events-none select-none"
                   loading="eager"
                 />
-              </div>
+              </button>
             </div>
 
             <!-- Main Title -->
-            <div class="flex-1">
-              <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-text leading-[1.1] text-balance">
+            <div class="flex-1 text-left">
+              <h1 class="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-text leading-[1.15] sm:leading-[1.1] text-balance">
                 I build production systems that replace manual workflows.
               </h1>
             </div>
           </div>
 
-          <p class="text-sm sm:text-base text-text-muted leading-relaxed mb-6 max-w-3xl text-pretty tldr-dim">
+          <p class="text-xs sm:text-base text-text-muted leading-relaxed mb-4 sm:mb-6 max-w-3xl text-pretty tldr-dim text-left">
             Sole engineer across three shipped products in 14 months with 650+ commits. I design systems where correctness and edge cases matter: replacing Excel billing for distribution companies, fixing schema normalization bugs, and building reliable offline-first pipelines.
           </p>
 
-          <div class="flex flex-wrap items-center gap-3 text-sm font-medium">
+          <div class="grid grid-cols-2 sm:flex sm:flex-wrap sm:items-center gap-2 sm:gap-3 text-sm font-medium w-full sm:w-auto">
             <a
               href="#work"
-              class="px-5 py-2.5 rounded-xl bg-accent text-accent-text hover:opacity-90 active:scale-[0.96] transition-all shadow-xs flex items-center gap-2 font-medium"
+              class="col-span-2 sm:col-auto px-4 sm:px-5 py-2.5 rounded-xl bg-accent text-accent-text hover:opacity-90 active:scale-[0.96] transition-all shadow-xs flex items-center justify-center gap-2 font-medium text-xs sm:text-sm text-center"
             >
               <span>Explore Case Studies</span>
               <span class="text-xs">↓</span>
             </a>
             <a
               href="#architecture"
-              class="px-4 py-2.5 rounded-xl border border-border hover:bg-surface-raised active:scale-[0.96] text-text transition-all"
+              class="col-span-1 sm:col-auto px-3 sm:px-4 py-2.5 rounded-xl border border-border hover:bg-surface-raised active:scale-[0.96] text-text transition-all text-xs sm:text-sm flex items-center justify-center text-center"
             >
-              Schema Diff Playground
+              <span class="sm:hidden">Schema Diff</span>
+              <span class="hidden sm:inline">Schema Diff Playground</span>
             </a>
             <button
               type="button"
               onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
-              class="px-4 py-2.5 rounded-xl border border-border hover:bg-surface-raised active:scale-[0.96] text-text transition-all cursor-pointer flex items-center gap-2"
+              class="col-span-1 sm:col-auto px-3 sm:px-4 py-2.5 rounded-xl border border-border hover:bg-surface-raised active:scale-[0.96] text-text transition-all cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
             >
-              <TechIcon name="mail" class="w-4 h-4 text-accent" />
+              <TechIcon name="mail" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent shrink-0" />
               <span>Get in Touch</span>
             </button>
             <a
               href="https://github.com/jsbalabat"
               target="_blank"
               rel="noopener noreferrer"
-              class="px-3.5 py-2.5 rounded-xl border border-border/70 hover:border-border hover:bg-surface-raised active:scale-[0.96] text-text-muted hover:text-text transition-all flex items-center gap-1.5 text-xs font-mono"
+              class="col-span-1 sm:col-auto px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-border/70 hover:border-border hover:bg-surface-raised active:scale-[0.96] text-text-muted hover:text-text transition-all flex items-center justify-center gap-1.5 text-xs font-mono"
             >
-              <TechIcon name="github" class="w-3.5 h-3.5 text-accent" />
+              <TechIcon name="github" class="w-3.5 h-3.5 text-accent shrink-0" />
               <span>GitHub</span>
             </a>
             <a
               href="https://www.linkedin.com/in/marc-balabat"
               target="_blank"
               rel="noopener noreferrer"
-              class="px-3.5 py-2.5 rounded-xl border border-border/70 hover:border-border hover:bg-surface-raised active:scale-[0.96] text-text-muted hover:text-text transition-all flex items-center gap-1.5 text-xs font-mono"
+              class="col-span-1 sm:col-auto px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-border/70 hover:border-border hover:bg-surface-raised active:scale-[0.96] text-text-muted hover:text-text transition-all flex items-center justify-center gap-1.5 text-xs font-mono"
             >
-              <TechIcon name="linkedin" class="w-3.5 h-3.5 text-accent" />
+              <TechIcon name="linkedin" class="w-3.5 h-3.5 text-accent shrink-0" />
               <span>LinkedIn</span>
             </a>
           </div>
         </div>
 
         <!-- Right Column: Key Metrics Callout (Highlights in TLDR Mode) -->
-        <div class="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3.5">
-          <div class="tldr-highlight flex-1 p-5 rounded-2xl border border-border bg-surface shadow-xs transition-all duration-200">
-            <span class="text-[11px] font-mono uppercase tracking-wider text-accent font-semibold block mb-1">
-              Shipped Products
+        <div class="lg:col-span-4 grid grid-cols-3 lg:grid-cols-1 gap-2 sm:gap-3.5 w-full">
+          <div class="tldr-highlight p-2.5 xs:p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-border bg-surface shadow-xs transition-all duration-200 text-center sm:text-left">
+            <span class="text-[9px] xs:text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-accent font-semibold block mb-0.5 sm:mb-1 truncate">
+              <span class="hidden xs:inline">Shipped </span>Products
             </span>
-            <p class="text-2xl sm:text-3xl font-extrabold text-text tracking-tight tabular-nums">3 Applications</p>
-            <p class="text-xs text-text-muted mt-1 leading-relaxed">Sole engineer from architecture to deployment.</p>
+            <p class="text-sm xs:text-base sm:text-2xl lg:text-3xl font-extrabold text-text tracking-tight tabular-nums">
+              <span class="sm:hidden">3 Apps</span>
+              <span class="hidden sm:inline">3 Applications</span>
+            </p>
+            <p class="hidden sm:block text-[11px] sm:text-xs text-text-muted mt-0.5 sm:mt-1 leading-relaxed">Sole engineer from architecture to deployment.</p>
           </div>
 
-          <div class="tldr-highlight flex-1 p-5 rounded-2xl border border-border bg-surface shadow-xs transition-all duration-200">
-            <span class="text-[11px] font-mono uppercase tracking-wider text-accent font-semibold block mb-1">
-              Commercial Adoption
+          <div class="tldr-highlight p-2.5 xs:p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-border bg-surface shadow-xs transition-all duration-200 text-center sm:text-left">
+            <span class="text-[9px] xs:text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-accent font-semibold block mb-0.5 sm:mb-1 truncate">
+              <span class="hidden xs:inline">Commercial </span>Adoption
             </span>
-            <p class="text-2xl sm:text-3xl font-extrabold text-text tracking-tight tabular-nums">6 Companies</p>
-            <p class="text-xs text-text-muted mt-1 leading-relaxed">Cleared ~150 invoices/day replacing Excel billing.</p>
+            <p class="text-sm xs:text-base sm:text-2xl lg:text-3xl font-extrabold text-text tracking-tight tabular-nums">6 Companies</p>
+            <p class="hidden sm:block text-[11px] sm:text-xs text-text-muted mt-0.5 sm:mt-1 leading-relaxed">Cleared ~150 invoices/day replacing Excel billing.</p>
           </div>
 
-          <div class="tldr-highlight flex-1 p-5 rounded-2xl border border-border bg-surface shadow-xs transition-all duration-200">
-            <span class="text-[11px] font-mono uppercase tracking-wider text-accent font-semibold block mb-1">
-              Verified Git History
+          <div class="tldr-highlight p-2.5 xs:p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-border bg-surface shadow-xs transition-all duration-200 text-center sm:text-left">
+            <span class="text-[9px] xs:text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-accent font-semibold block mb-0.5 sm:mb-1 truncate">
+              <span class="hidden xs:inline">Verified </span>Git History
             </span>
-            <p class="text-2xl sm:text-3xl font-extrabold text-text tracking-tight tabular-nums">650+ Commits</p>
-            <p class="text-xs text-text-muted mt-1 leading-relaxed">Continuous delivery over 14 months.</p>
+            <p class="text-sm xs:text-base sm:text-2xl lg:text-3xl font-extrabold text-text tracking-tight tabular-nums">650+ Commits</p>
+            <p class="hidden sm:block text-[11px] sm:text-xs text-text-muted mt-0.5 sm:mt-1 leading-relaxed">Continuous delivery over 14 months.</p>
           </div>
         </div>
 
@@ -182,20 +205,24 @@ const keyOutcomes: Record<string, { badge: string; text: string }> = {
     </div>
 
     <!-- Editorial Bottom Anchor / Scroll Prompt -->
-    <div class="pt-6 pb-2 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border/40 text-xs font-mono text-text-muted">
-      <div class="flex items-center gap-2">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-        <span>Open to full-stack, frontend, or backend roles</span>
+    <div
+      id="cover-bottom-anchor"
+      class="pt-3 sm:pt-6 pb-1 sm:pb-2 flex items-center justify-between gap-2 border-t border-border/40 text-[11px] sm:text-xs font-mono text-text-muted transition-opacity duration-300"
+    >
+      <div id="open-to-roles-badge" class="flex items-center gap-1.5 sm:gap-2 truncate transition-opacity duration-300">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-500 shrink-0"></span>
+        <span class="truncate">Open to full-stack, frontend, or backend roles</span>
       </div>
       <a
+        id="cover-explore-btn"
         href="#skills"
         aria-label="Explore stack and tools"
-        class="group flex items-center gap-2 px-3 py-1.5 rounded-lg border border-transparent hover:border-border hover:bg-surface-raised active:scale-[0.96] transition-all duration-200 cursor-pointer text-text-muted hover:text-text"
+        class="group flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-transparent hover:border-border hover:bg-surface-raised active:scale-[0.96] transition-all duration-200 cursor-pointer text-text-muted hover:text-text shrink-0"
       >
         <span class="max-w-0 overflow-hidden whitespace-nowrap opacity-0 group-hover:max-w-xs group-hover:opacity-100 transition-all duration-200 text-xs font-mono font-medium text-accent">
           explore
         </span>
-        <svg viewBox="0 0 24 24" class="w-4 h-4 text-text-muted group-hover:text-accent group-hover:translate-y-0.5 transition-all duration-200" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-text-muted group-hover:text-accent group-hover:translate-y-0.5 transition-all duration-200" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M6 9l6 6 6-6"/>
         </svg>
       </a>
@@ -214,15 +241,15 @@ const keyOutcomes: Record<string, { badge: string; text: string }> = {
       </p>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
       {Object.entries(skills).map(([category, items]) => (
-        <div class="p-4 sm:p-5 rounded-2xl border border-border bg-surface shadow-xs hover:border-accent/40 hover:shadow-sm transition-all duration-200 flex flex-col">
-          <h3 class="text-xs font-mono font-bold text-accent uppercase tracking-wider mb-3 pb-1.5 border-b border-border/50">
+        <div class="p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-border bg-surface shadow-xs hover:border-accent/40 hover:shadow-sm transition-all duration-200 flex flex-col">
+          <h3 class="text-xs font-mono font-bold text-accent uppercase tracking-wider mb-2.5 sm:mb-3 pb-1.5 border-b border-border/50">
             {category}
           </h3>
           <ul class="space-y-1.5 text-sm flex-1">
             {items.map((item) => (
-              <li class={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg transition-all duration-200 ${item.highlight ? 'tldr-highlight' : 'tldr-dim'}`}>
+              <li class={`flex items-center gap-2.5 px-2 py-1.5 rounded-lg transition-all duration-200 ${item.highlight ? 'tldr-highlight' : 'tldr-dim'}`}>
                 <span class="w-7 h-7 rounded-md bg-surface-raised border border-border/60 flex items-center justify-center shrink-0 text-accent shadow-2xs">
                   <TechIcon name={item.name} class="w-3.5 h-3.5" />
                 </span>
@@ -250,14 +277,14 @@ const keyOutcomes: Record<string, { badge: string; text: string }> = {
       </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-5">
       {caseStudies.map((study, index) => {
         const isPrimary = index === 0;
         const colSpan = isPrimary ? 'md:col-span-12' : 'md:col-span-6';
 
         return (
           <article
-            class={`${colSpan} tldr-highlight rounded-2xl border border-border bg-surface p-5 sm:p-7 flex flex-col justify-between hover:border-accent/60 transition-all duration-200 group shadow-xs`}
+            class={`${colSpan} tldr-highlight rounded-xl sm:rounded-2xl border border-border bg-surface p-4 sm:p-7 flex flex-col justify-between hover:border-accent/60 transition-all duration-200 group shadow-xs`}
           >
             <div>
               <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
@@ -269,8 +296,8 @@ const keyOutcomes: Record<string, { badge: string; text: string }> = {
                   <span>{study.data.role}</span>
                 </div>
                 {study.data.liveUrl && (
-                  <span class="inline-flex items-center gap-1.5 text-[11px] font-mono text-emerald-600 dark:text-emerald-400">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  <span class="inline-flex items-center gap-1.5 text-[11px] font-mono text-emerald-700 dark:text-emerald-400">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-500"></span>
                     Production
                   </span>
                 )}
@@ -391,36 +418,36 @@ const keyOutcomes: Record<string, { badge: string; text: string }> = {
     </div>
   </section>
 
-  <!-- Contact Section (Compact Padding) -->
+  <!-- Contact Section (Responsive Padding & Touch Targets) -->
   <section id="contact" class="py-8 sm:py-10">
-    <div class="p-6 sm:p-8 rounded-2xl border border-border bg-surface flex flex-col md:flex-row items-start md:items-center justify-between gap-5 shadow-xs">
+    <div class="p-5 sm:p-8 rounded-xl sm:rounded-2xl border border-border bg-surface flex flex-col md:flex-row items-start md:items-center justify-between gap-5 shadow-xs">
       <div>
         <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-text mb-1 text-balance">Let's discuss engineering opportunities</h2>
         <p class="text-xs text-text-muted max-w-xl text-pretty">
           Open to full-stack, frontend, or backend engineering positions. Direct contact:
         </p>
       </div>
-      <div class="flex flex-wrap items-center gap-3 font-medium text-sm">
+      <div class="flex flex-wrap items-center gap-2.5 sm:gap-3 font-medium text-sm w-full md:w-auto">
         <button
           type="button"
           onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
-          class="px-5 py-2.5 rounded-lg bg-accent text-accent-text hover:opacity-90 active:scale-[0.96] transition-all shadow-sm cursor-pointer flex items-center gap-2"
+          class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-accent text-accent-text hover:opacity-90 active:scale-[0.96] transition-all shadow-sm cursor-pointer flex items-center justify-center gap-2 text-xs sm:text-sm font-medium"
         >
           <TechIcon name="mail" class="w-4 h-4 text-accent-text" />
           <span>Send Message</span>
         </button>
         <a
           href="mailto:johnfelixmarc@gmail.com"
-          class="px-4 py-2.5 rounded-lg border border-border hover:bg-surface-raised active:scale-[0.96] text-text-muted hover:text-text text-xs font-mono transition-all"
+          class="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-border hover:bg-surface-raised active:scale-[0.96] text-text-muted hover:text-text text-xs font-mono transition-all flex items-center gap-1.5"
           title="Direct mailto: link"
         >
-          johnfelixmarc@gmail.com
+          <span>johnfelixmarc@gmail.com</span>
         </a>
         <a
           href="https://github.com/jsbalabat"
           target="_blank"
           rel="noopener noreferrer"
-          class="px-4 py-2.5 rounded-lg border border-border hover:bg-surface-raised active:scale-[0.96] text-text transition-all flex items-center gap-2"
+          class="px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-border hover:bg-surface-raised active:scale-[0.96] text-text transition-all flex items-center gap-2 text-xs sm:text-sm"
         >
           <TechIcon name="github" class="w-4 h-4 text-accent" />
           <span>GitHub</span>
@@ -429,7 +456,7 @@ const keyOutcomes: Record<string, { badge: string; text: string }> = {
           href="https://www.linkedin.com/in/marc-balabat"
           target="_blank"
           rel="noopener noreferrer"
-          class="px-4 py-2.5 rounded-lg border border-border hover:bg-surface-raised active:scale-[0.96] text-text transition-all flex items-center gap-2"
+          class="px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-border hover:bg-surface-raised active:scale-[0.96] text-text transition-all flex items-center gap-2 text-xs sm:text-sm"
         >
           <TechIcon name="linkedin" class="w-4 h-4 text-accent" />
           <span>LinkedIn</span>
@@ -437,4 +464,31 @@ const keyOutcomes: Record<string, { badge: string; text: string }> = {
       </div>
     </div>
   </section>
+
+  <!-- Interactive Profile Picture Color Toggle Script -->
+  <script>
+    const pictureToggle = document.getElementById('profile-picture-toggle');
+    const pictureImg = document.getElementById('profile-picture-img');
+
+    if (pictureToggle && pictureImg) {
+      let isColor = false;
+
+      const toggleColor = () => {
+        isColor = !isColor;
+        if (isColor) {
+          // Latch to full color
+          pictureImg.classList.remove('grayscale');
+          pictureImg.classList.add('grayscale-0');
+          pictureToggle.setAttribute('aria-pressed', 'true');
+        } else {
+          // Revert to default grayscale
+          pictureImg.classList.remove('grayscale-0');
+          pictureImg.classList.add('grayscale');
+          pictureToggle.setAttribute('aria-pressed', 'false');
+        }
+      };
+
+      pictureToggle.addEventListener('click', toggleColor);
+    }
+  </script>
 </BaseLayout>
