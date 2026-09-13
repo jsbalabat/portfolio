@@ -58,9 +58,12 @@ const keyOutcomes: Record<string, { badge: string; text: string }> = {
 
 <BaseLayout>
   <!-- Full-Height Editorial Cover Page (Fluid full-screen on desktop, fitted on mobile) -->
-  <section id="cover" class="min-h-[100dvh] py-3 sm:py-8 lg:py-12 border-b border-border/60 flex flex-col justify-between">
+  <section
+    id="cover"
+    class="min-h-svh sm:min-h-dvh py-2 xs:py-3 sm:py-8 lg:py-12 border-b border-border/60 flex flex-col justify-between pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+  >
     <!-- Top Row: Cover Page Identity + Top-Right TLDR Toggle -->
-    <div class="flex items-center justify-between w-full pt-1 pb-2">
+    <div class="flex items-center justify-between w-full pt-1 pb-1.5 sm:pb-2">
       <div class="flex items-center gap-2 font-mono text-xs text-text-muted">
         <span class="inline-block w-2 h-2 rounded-full bg-accent"></span>
         <span class="font-bold text-sm tracking-tight text-text">Marc</span>
@@ -84,60 +87,67 @@ const keyOutcomes: Record<string, { badge: string; text: string }> = {
     </div>
 
     <!-- Middle Content -->
-    <div class="my-auto py-2 sm:py-4">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8 items-center">
+    <div class="my-auto py-1 xs:py-2 sm:py-4">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-6 lg:gap-8 items-center">
         
         <!-- Left Column: Picture, Identity, Headline, and CTAs -->
         <div class="lg:col-span-8 flex flex-col items-start text-left">
-          <div class="flex items-center gap-2 px-3 py-1 rounded-md border border-border/80 bg-surface text-xs font-mono text-text-muted shadow-2xs mb-3 sm:mb-5">
+          <div class="flex items-center gap-2 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-md border border-border/80 bg-surface text-[11px] sm:text-xs font-mono text-text-muted shadow-2xs mb-2 sm:mb-4">
             <span class="w-1.5 h-1.5 rounded-full bg-accent"></span>
-            <span class="text-[11px] sm:text-xs">Full-stack software engineer • Sole developer</span>
+            <span>Full-stack software engineer • Sole developer</span>
           </div>
 
-          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8 mb-4 sm:mb-6 w-full">
-            <!-- Portrait Image (Full width on mobile, fluid square on tablet/desktop, toggles color on press) -->
-            <div class="w-full sm:w-auto shrink-0">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-8 mb-3 sm:mb-6 w-full">
+            <!-- Portrait Image (Fitted on mobile with dynamic height cap, fluid square on tablet/desktop, toggles color on press) -->
+            <div class="w-full sm:w-auto shrink-0 flex justify-start">
               <button
                 type="button"
                 id="profile-picture-toggle"
                 aria-label="Toggle profile photo color"
                 aria-pressed="false"
                 title="Click or tap to toggle photo color"
-                class="w-full sm:w-44 md:w-52 lg:w-56 aspect-[4/3] sm:aspect-square rounded-2xl overflow-hidden border border-border shadow-sm bg-surface-raised relative group cursor-pointer active:scale-[0.98] transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent text-left block p-0"
+                class="w-full sm:w-44 md:w-52 lg:w-56 aspect-video xs:aspect-[16/10] sm:aspect-square max-h-[22svh] xs:max-h-[25svh] sm:max-h-none rounded-xl sm:rounded-2xl overflow-hidden border border-border shadow-sm bg-surface-raised relative group cursor-pointer active:scale-[0.98] transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent text-left block p-0"
               >
-                <img
-                  id="profile-picture-img"
-                  src="/images/profile.jpg"
-                  alt="Marc - Full-Stack Engineer"
-                  class="w-full h-full object-cover object-[center_60%] sm:object-center filter grayscale contrast-105 group-hover:grayscale-0 transition-all duration-300 pointer-events-none select-none"
-                  loading="eager"
-                />
+                <picture class="w-full h-full block">
+                  <!-- Picture 1: Normal desktop browser allocation (>= 1024px) -->
+                  <source media="(min-width: 1024px)" srcset="/images/profile-desktop.jpg" />
+                  <!-- Picture 2: In-between / tablet allocation (640px to 1023px) -->
+                  <source media="(min-width: 640px)" srcset="/images/profile-tablet.jpg" />
+                  <!-- Picture 3: Mobile mode allocation (< 640px default fallback) -->
+                  <img
+                    id="profile-picture-img"
+                    src="/images/profile-mobile.jpg"
+                    alt="Marc - Full-Stack Engineer"
+                    class="w-full h-full object-cover object-[center_60%] sm:object-center filter grayscale contrast-105 group-hover:grayscale-0 transition-all duration-300 pointer-events-none select-none"
+                    loading="eager"
+                  />
+                </picture>
               </button>
             </div>
 
             <!-- Main Title -->
             <div class="flex-1 text-left">
-              <h1 class="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-text leading-[1.15] sm:leading-[1.1] text-balance">
+              <h1 class="text-xl xs:text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-text leading-[1.15] sm:leading-[1.1] text-balance">
                 I build production systems that replace manual workflows.
               </h1>
             </div>
           </div>
 
-          <p class="text-xs sm:text-base text-text-muted leading-relaxed mb-4 sm:mb-6 max-w-3xl text-pretty tldr-dim text-left">
+          <p class="text-xs sm:text-base text-text-muted leading-snug sm:leading-relaxed mb-3 sm:mb-6 max-w-3xl text-pretty tldr-dim text-left">
             Sole engineer across three shipped products in 14 months with 650+ commits. I design systems where correctness and edge cases matter: replacing Excel billing for distribution companies, fixing schema normalization bugs, and building reliable offline-first pipelines.
           </p>
 
-          <div class="grid grid-cols-2 sm:flex sm:flex-wrap sm:items-center gap-2 sm:gap-3 text-sm font-medium w-full sm:w-auto">
+          <div class="grid grid-cols-2 sm:flex sm:flex-wrap sm:items-center gap-1.5 sm:gap-3 text-sm font-medium w-full sm:w-auto">
             <a
               href="#work"
-              class="col-span-2 sm:col-auto px-4 sm:px-5 py-2.5 rounded-xl bg-accent text-accent-text hover:opacity-90 active:scale-[0.96] transition-all shadow-xs flex items-center justify-center gap-2 font-medium text-xs sm:text-sm text-center"
+              class="col-span-2 sm:col-auto px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl bg-accent text-accent-text hover:opacity-90 active:scale-[0.96] transition-all shadow-xs flex items-center justify-center gap-2 font-medium text-xs sm:text-sm text-center"
             >
               <span>Explore Case Studies</span>
               <span class="text-xs">↓</span>
             </a>
             <a
               href="#architecture"
-              class="col-span-1 sm:col-auto px-3 sm:px-4 py-2.5 rounded-xl border border-border hover:bg-surface-raised active:scale-[0.96] text-text transition-all text-xs sm:text-sm flex items-center justify-center text-center"
+              class="col-span-1 sm:col-auto px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-border hover:bg-surface-raised active:scale-[0.96] text-text transition-all text-xs sm:text-sm flex items-center justify-center text-center"
             >
               <span class="sm:hidden">Schema Diff</span>
               <span class="hidden sm:inline">Schema Diff Playground</span>
@@ -145,7 +155,7 @@ const keyOutcomes: Record<string, { badge: string; text: string }> = {
             <button
               type="button"
               onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
-              class="col-span-1 sm:col-auto px-3 sm:px-4 py-2.5 rounded-xl border border-border hover:bg-surface-raised active:scale-[0.96] text-text transition-all cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
+              class="col-span-1 sm:col-auto px-2.5 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-border hover:bg-surface-raised active:scale-[0.96] text-text transition-all cursor-pointer flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
             >
               <TechIcon name="mail" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent shrink-0" />
               <span>Get in Touch</span>
@@ -154,7 +164,7 @@ const keyOutcomes: Record<string, { badge: string; text: string }> = {
               href="https://github.com/jsbalabat"
               target="_blank"
               rel="noopener noreferrer"
-              class="col-span-1 sm:col-auto px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-border/70 hover:border-border hover:bg-surface-raised active:scale-[0.96] text-text-muted hover:text-text transition-all flex items-center justify-center gap-1.5 text-xs font-mono"
+              class="col-span-1 sm:col-auto px-2.5 py-1.5 sm:px-3.5 sm:py-2.5 rounded-xl border border-border/70 hover:border-border hover:bg-surface-raised active:scale-[0.96] text-text-muted hover:text-text transition-all flex items-center justify-center gap-1.5 text-xs font-mono"
             >
               <TechIcon name="github" class="w-3.5 h-3.5 text-accent shrink-0" />
               <span>GitHub</span>
@@ -163,7 +173,7 @@ const keyOutcomes: Record<string, { badge: string; text: string }> = {
               href="https://www.linkedin.com/in/marc-balabat"
               target="_blank"
               rel="noopener noreferrer"
-              class="col-span-1 sm:col-auto px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-border/70 hover:border-border hover:bg-surface-raised active:scale-[0.96] text-text-muted hover:text-text transition-all flex items-center justify-center gap-1.5 text-xs font-mono"
+              class="col-span-1 sm:col-auto px-2.5 py-1.5 sm:px-3.5 sm:py-2.5 rounded-xl border border-border/70 hover:border-border hover:bg-surface-raised active:scale-[0.96] text-text-muted hover:text-text transition-all flex items-center justify-center gap-1.5 text-xs font-mono"
             >
               <TechIcon name="linkedin" class="w-3.5 h-3.5 text-accent shrink-0" />
               <span>LinkedIn</span>
@@ -172,31 +182,31 @@ const keyOutcomes: Record<string, { badge: string; text: string }> = {
         </div>
 
         <!-- Right Column: Key Metrics Callout (Highlights in TLDR Mode) -->
-        <div class="lg:col-span-4 grid grid-cols-3 lg:grid-cols-1 gap-2 sm:gap-3.5 w-full">
-          <div class="tldr-highlight p-2.5 xs:p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-border bg-surface shadow-xs transition-all duration-200 text-center sm:text-left">
+        <div class="lg:col-span-4 grid grid-cols-3 lg:grid-cols-1 gap-1.5 sm:gap-3.5 w-full">
+          <div class="tldr-highlight p-2 xs:p-2.5 sm:p-5 rounded-lg xs:rounded-xl sm:rounded-2xl border border-border bg-surface shadow-xs transition-all duration-200 text-center sm:text-left">
             <span class="text-[9px] xs:text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-accent font-semibold block mb-0.5 sm:mb-1 truncate">
               <span class="hidden xs:inline">Shipped </span>Products
             </span>
-            <p class="text-sm xs:text-base sm:text-2xl lg:text-3xl font-extrabold text-text tracking-tight tabular-nums">
+            <p class="text-xs xs:text-sm sm:text-2xl lg:text-3xl font-extrabold text-text tracking-tight tabular-nums">
               <span class="sm:hidden">3 Apps</span>
               <span class="hidden sm:inline">3 Applications</span>
             </p>
             <p class="hidden sm:block text-[11px] sm:text-xs text-text-muted mt-0.5 sm:mt-1 leading-relaxed">Sole engineer from architecture to deployment.</p>
           </div>
 
-          <div class="tldr-highlight p-2.5 xs:p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-border bg-surface shadow-xs transition-all duration-200 text-center sm:text-left">
+          <div class="tldr-highlight p-2 xs:p-2.5 sm:p-5 rounded-lg xs:rounded-xl sm:rounded-2xl border border-border bg-surface shadow-xs transition-all duration-200 text-center sm:text-left">
             <span class="text-[9px] xs:text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-accent font-semibold block mb-0.5 sm:mb-1 truncate">
               <span class="hidden xs:inline">Commercial </span>Adoption
             </span>
-            <p class="text-sm xs:text-base sm:text-2xl lg:text-3xl font-extrabold text-text tracking-tight tabular-nums">6 Companies</p>
+            <p class="text-xs xs:text-sm sm:text-2xl lg:text-3xl font-extrabold text-text tracking-tight tabular-nums">6 Companies</p>
             <p class="hidden sm:block text-[11px] sm:text-xs text-text-muted mt-0.5 sm:mt-1 leading-relaxed">Cleared ~150 invoices/day replacing Excel billing.</p>
           </div>
 
-          <div class="tldr-highlight p-2.5 xs:p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-border bg-surface shadow-xs transition-all duration-200 text-center sm:text-left">
+          <div class="tldr-highlight p-2 xs:p-2.5 sm:p-5 rounded-lg xs:rounded-xl sm:rounded-2xl border border-border bg-surface shadow-xs transition-all duration-200 text-center sm:text-left">
             <span class="text-[9px] xs:text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-accent font-semibold block mb-0.5 sm:mb-1 truncate">
               <span class="hidden xs:inline">Verified </span>Git History
             </span>
-            <p class="text-sm xs:text-base sm:text-2xl lg:text-3xl font-extrabold text-text tracking-tight tabular-nums">650+ Commits</p>
+            <p class="text-xs xs:text-sm sm:text-2xl lg:text-3xl font-extrabold text-text tracking-tight tabular-nums">650+ Commits</p>
             <p class="hidden sm:block text-[11px] sm:text-xs text-text-muted mt-0.5 sm:mt-1 leading-relaxed">Continuous delivery over 14 months.</p>
           </div>
         </div>
@@ -207,7 +217,7 @@ const keyOutcomes: Record<string, { badge: string; text: string }> = {
     <!-- Editorial Bottom Anchor / Scroll Prompt -->
     <div
       id="cover-bottom-anchor"
-      class="pt-3 sm:pt-6 pb-1 sm:pb-2 flex items-center justify-between gap-2 border-t border-border/40 text-[11px] sm:text-xs font-mono text-text-muted transition-opacity duration-300"
+      class="pt-2 xs:pt-3 sm:pt-6 pb-1 sm:pb-2 flex items-center justify-between gap-2 border-t border-border/40 text-[10px] xs:text-[11px] sm:text-xs font-mono text-text-muted transition-opacity duration-300"
     >
       <div id="open-to-roles-badge" class="flex items-center gap-1.5 sm:gap-2 truncate transition-opacity duration-300">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-500 shrink-0"></span>
