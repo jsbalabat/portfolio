@@ -1,10 +1,7 @@
 ---
 import "../styles/global.css";
-import CommandPalette from "../components/pitched/CommandPalette";
-import TldrToggle from "../components/TldrToggle";
 import ContactModal from "../components/ContactModal";
 import BackToTop from "../components/BackToTop.astro";
-import TerminalHandshakeSplash from "../components/splash/TerminalHandshakeSplash";
 
 interface Props {
   title?: string;
@@ -13,19 +10,17 @@ interface Props {
 
 const {
   title = "Marc | Full-Stack Software Engineer",
-  description = "Full-stack engineer who ships production systems that replace manual workflows. Sole engineer on three shipped products in 14 months.",
+  description = "Full-stack engineer specializing in reliable production systems, database architecture, and replacing fragmented workflows.",
 } = Astro.props;
 
 const canonicalURL = new URL(
   Astro.url.pathname,
   Astro.site || "https://marcbalabat.tech",
 );
-const isHomepage = Astro.url.pathname === "/" || Astro.url.pathname === "";
 
-const appVersion = import.meta.env.PUBLIC_APP_VERSION || "0.2.0";
+const appVersion = import.meta.env.PUBLIC_APP_VERSION || "0.4.0";
 const gitSha = import.meta.env.PUBLIC_GIT_SHA || "dev";
 const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
-const isProduction = gitBranch === "main";
 ---
 
 <!doctype html>
@@ -39,37 +34,32 @@ const isProduction = gitBranch === "main";
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
+    <!-- Google Fonts: DM Sans (Human/Natural Sans) & Alumni Sans (Display) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Alumni+Sans:ital,wght@0,700;0,800;0,900;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&display=swap"
+      rel="stylesheet"
+    />
+
     <!-- Primary Meta Tags -->
     <title>{title}</title>
     <meta name="title" content={title} />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
 
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph / Twitter -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-
-    <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={canonicalURL} />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
 
-    <!-- Tranquil Dark/Light/System Theme Script (Default: System) -->
+    <!-- Theme Initialization Script -->
     <script is:inline>
       const getStoredTheme = () => {
         try {
-          // Clean up legacy binary theme key if present
-          if (typeof localStorage !== "undefined") {
-            localStorage.removeItem("theme");
-          }
-          // Default option when loading in the website is always system
-          if (
-            typeof sessionStorage !== "undefined" &&
-            sessionStorage.getItem("theme_preference")
-          ) {
+          if (typeof sessionStorage !== "undefined" && sessionStorage.getItem("theme_preference")) {
             return sessionStorage.getItem("theme_preference");
           }
         } catch (e) {}
@@ -78,336 +68,144 @@ const isProduction = gitBranch === "main";
 
       const resolveTheme = (preference) => {
         if (preference === "system") {
-          return window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light";
+          return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
         }
         return preference;
       };
 
-      const initialPref = getStoredTheme();
-      const initialResolved = resolveTheme(initialPref);
-      document.documentElement.setAttribute("data-theme", initialResolved);
-      document.documentElement.setAttribute(
-        "data-theme-preference",
-        initialPref,
-      );
+      const pref = getStoredTheme();
+      document.documentElement.setAttribute("data-theme", resolveTheme(pref));
+      document.documentElement.setAttribute("data-theme-preference", pref);
 
-      // Listen for system theme changes dynamically
-      window
-        .matchMedia("(prefers-color-scheme: dark)")
-        .addEventListener("change", (e) => {
-          const currentPref =
-            typeof sessionStorage !== "undefined"
-              ? sessionStorage.getItem("theme_preference") || "system"
-              : "system";
-          if (currentPref === "system") {
-            document.documentElement.setAttribute(
-              "data-theme",
-              e.matches ? "dark" : "light",
-            );
-          }
-        });
-
-      // Check TLDR mode preference on initial page load
-      if (
-        typeof localStorage !== "undefined" &&
-        localStorage.getItem("portfolio_tldr_active") === "true"
-      ) {
-        document.addEventListener("DOMContentLoaded", () => {
-          document.body.classList.add("tldr-active");
-        });
-      }
-
-      // Strict splash lockout check before paint on homepage
-      const isHome =
-        window.location.pathname === "/" || window.location.pathname === "";
-      if (
-        isHome &&
-        typeof sessionStorage !== "undefined" &&
-        sessionStorage.getItem("portfolio_unlocked") !== "true"
-      ) {
-        document.documentElement.classList.add("splash-locked");
-      }
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+        if ((sessionStorage.getItem("theme_preference") || "system") === "system") {
+          document.documentElement.setAttribute("data-theme", e.matches ? "dark" : "light");
+        }
+      });
     </script>
   </head>
-  <body
-    class="min-h-screen bg-bg text-text antialiased selection:bg-accent/20 selection:text-accent"
-  >
-    <!-- Interactive Engineering Boot Terminal + Handshake Splash Gate -->
-    {isHomepage && <TerminalHandshakeSplash client:load />}
-
-    <!-- Site Navigation (Fixed, backdrop-blurred, 0-100 fade halfway through cover page) -->
+  <body class="min-h-screen bg-bg text-text antialiased selection:bg-accent selection:text-accent-text">
+    <!-- Clean Minimalist Header (Sticky with backdrop blur) -->
     <header
       id="site-header"
-      class="fixed top-0 left-0 right-0 z-40 bg-bg/90 backdrop-blur-md border-b border-border/60 transition-opacity duration-150 pointer-events-none"
-      style={isHomepage ? "opacity: 0;" : "opacity: 1; pointer-events: auto;"}
+      class="sticky top-0 left-0 right-0 z-40 bg-bg/90 backdrop-blur-md border-b border-border transition-colors"
     >
-      <div
-        class="w-full max-w-375 mx-auto px-4 sm:px-8 lg:px-12 pt-[max(0.875rem,env(safe-area-inset-top))] pb-3.5 sm:py-4 flex items-center justify-between gap-4"
-      >
-        <a
-          href="/"
-          class="group flex items-center gap-2 font-mono text-sm tracking-tight text-text shrink-0"
-        >
-          <span
-            class="inline-block w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-accent group-hover:scale-125 transition-transform duration-200 shrink-0"
-          ></span>
-          <span class="font-bold text-base sm:text-lg tracking-tight">Marc</span
-          >
-          <span class="text-text-muted hidden sm:inline">/</span>
-          <span class="text-text-muted text-xs font-mono hidden sm:inline"
-            >full-stack engineer</span
-          >
+      <div class="w-full max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+        <a href="/" class="group flex items-center gap-2 text-sm tracking-tight text-text shrink-0">
+          <span class="inline-block w-2 h-2 rounded-full bg-accent group-hover:scale-125 transition-transform duration-200 shrink-0"></span>
+          <span class="font-bold text-base tracking-tight">MARC</span>
+          <span class="text-text-muted/60 hidden sm:inline">/</span>
+          <span class="text-text-muted text-xs font-medium tracking-normal hidden sm:inline">SOFTWARE ENGINEER</span>
         </a>
 
-        <!-- Desktop Navigation Items (Visible on large screens) -->
-        <nav
-          class="hidden lg:flex items-center gap-3 xl:gap-5 text-xs xl:text-sm font-medium text-text-muted"
-        >
-          <!-- TLDR Interactive Toggle Button -->
-          <TldrToggle client:load />
-
-          <a
-            href="/#work"
-            class="hover:text-text transition-all active:scale-[0.96] inline-block"
-            >Case Studies</a
-          >
-          <a
-            href="/#architecture"
-            class="hover:text-text transition-all active:scale-[0.96] inline-block"
-            >Architecture</a
-          >
-          <a
-            href="/#skills"
-            class="hover:text-text transition-all active:scale-[0.96] inline-block"
-            >Stack</a
-          >
-          <a
-            href="/#about"
-            class="hover:text-text transition-all active:scale-[0.96] inline-block"
-            >About</a
-          >
+        <!-- Desktop Navigation Items -->
+        <nav class="hidden md:flex items-center gap-6 text-xs font-semibold uppercase tracking-wider text-text-muted">
+          <a href="/#projects" class="hover:text-text transition-colors">Projects</a>
+          <a href="/#about" class="hover:text-text transition-colors">About</a>
+          <a href="/#skills" class="hover:text-text transition-colors">Stack</a>
           <button
             type="button"
             onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
-            class="hover:text-text transition-all active:scale-[0.96] cursor-pointer"
+            class="hover:text-text transition-colors cursor-pointer uppercase"
           >
             Contact
           </button>
 
-          <!-- Command Palette Trigger -->
-          <CommandPalette client:load />
-
-          <!-- Theme Toggle (Cycles: System -> Light -> Dark) -->
+          <!-- Theme Toggle (System -> Light -> Dark) -->
           <button
             id="theme-toggle"
             type="button"
-            aria-label="Toggle color theme (System, Light, Dark)"
+            aria-label="Toggle color theme"
             title="Theme: System (default), Light, Dark"
-            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-surface-raised active:scale-[0.96] border border-border text-xs font-mono text-text transition-all cursor-pointer shrink-0"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md hover:bg-surface-raised active:scale-[0.96] border border-border text-xs text-text transition-all cursor-pointer shrink-0 font-medium"
           >
             <span id="theme-toggle-icon" class="text-accent">◐</span>
             <span id="theme-toggle-text">System</span>
           </button>
         </nav>
 
-        <!-- Mobile / Tablet Action Bar (< 1024px) -->
-        <div class="flex lg:hidden items-center gap-1.5 sm:gap-2 shrink-0">
-          <!-- TLDR Interactive Toggle Button -->
-          <TldrToggle client:load />
-
-          <!-- Command Palette Trigger -->
-          <CommandPalette client:load />
-
-          <!-- Mobile Theme Toggle -->
+        <!-- Mobile Controls -->
+        <div class="flex md:hidden items-center gap-2 shrink-0">
           <button
             id="theme-toggle-mobile"
             type="button"
             aria-label="Toggle color theme"
-            title="Theme: System (default), Light, Dark"
-            class="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg hover:bg-surface-raised active:scale-[0.96] border border-border text-xs font-mono text-text transition-all cursor-pointer"
+            class="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-surface-raised border border-border text-xs text-text cursor-pointer"
           >
-            <span id="theme-toggle-mobile-icon" class="text-accent text-sm"
-              >◐</span
-            >
+            <span id="theme-toggle-mobile-icon">◐</span>
           </button>
 
-          <!-- Mobile Menu Drawer Toggle Button -->
           <button
             id="mobile-menu-toggle"
             type="button"
             aria-expanded="false"
             aria-controls="mobile-menu"
-            aria-label="Toggle mobile navigation menu"
-            class="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg border border-border bg-surface hover:bg-surface-raised active:scale-[0.96] text-text transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            aria-label="Toggle navigation menu"
+            class="inline-flex items-center justify-center w-8 h-8 rounded-md border border-border bg-surface text-text cursor-pointer"
           >
-            <svg
-              id="hamburger-icon-open"
-              class="w-4 h-4 text-text block"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
+            <svg id="hamburger-icon" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="4" x2="20" y1="6" y2="6"></line>
               <line x1="4" x2="20" y1="12" y2="12"></line>
               <line x1="4" x2="20" y1="18" y2="18"></line>
-            </svg>
-            <svg
-              id="hamburger-icon-close"
-              class="w-4 h-4 text-text hidden"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
         </div>
       </div>
 
       <!-- Mobile Navigation Drawer -->
-      <div
-        id="mobile-menu"
-        class="hidden lg:hidden w-full border-t border-border/70 bg-bg/95 backdrop-blur-xl px-4 py-3 shadow-xl transition-all duration-200"
-      >
-        <div
-          class="flex flex-col space-y-1 text-sm font-medium font-mono text-text max-w-375 mx-auto"
-        >
-          <a
-            href="/#work"
-            class="mobile-nav-link flex items-center justify-between px-3.5 py-2.5 rounded-xl hover:bg-surface-raised active:scale-[0.98] transition-all min-h-11"
-          >
-            <span>Case Studies</span>
-            <span class="text-xs text-text-muted">➔</span>
-          </a>
-          <a
-            href="/#architecture"
-            class="mobile-nav-link flex items-center justify-between px-3.5 py-2.5 rounded-xl hover:bg-surface-raised active:scale-[0.98] transition-all min-h-11"
-          >
-            <span>Architecture Diff</span>
-            <span class="text-xs text-text-muted">➔</span>
-          </a>
-          <a
-            href="/#skills"
-            class="mobile-nav-link flex items-center justify-between px-3.5 py-2.5 rounded-xl hover:bg-surface-raised active:scale-[0.98] transition-all min-h-11"
-          >
-            <span>Stack & Tools</span>
-            <span class="text-xs text-text-muted">➔</span>
-          </a>
-          <a
-            href="/#about"
-            class="mobile-nav-link flex items-center justify-between px-3.5 py-2.5 rounded-xl hover:bg-surface-raised active:scale-[0.98] transition-all min-h-11"
-          >
-            <span>About</span>
-            <span class="text-xs text-text-muted">➔</span>
-          </a>
+      <div id="mobile-menu" class="hidden md:hidden w-full border-t border-border bg-bg/95 backdrop-blur-xl px-4 py-3">
+        <div class="flex flex-col space-y-2 text-xs uppercase font-medium text-text max-w-5xl mx-auto">
+          <a href="/#projects" class="mobile-nav-link py-2 hover:text-accent">Projects</a>
+          <a href="/#about" class="mobile-nav-link py-2 hover:text-accent">About</a>
+          <a href="/#skills" class="mobile-nav-link py-2 hover:text-accent">Stack</a>
           <button
             type="button"
             id="mobile-contact-btn"
-            class="mobile-nav-link w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl hover:bg-surface-raised active:scale-[0.98] transition-all text-accent cursor-pointer min-h-11"
+            class="mobile-nav-link py-2 text-left uppercase hover:text-accent cursor-pointer"
           >
-            <span>Contact</span>
-            <span class="text-xs">✉</span>
+            Contact
           </button>
         </div>
       </div>
     </header>
 
-    <!-- Maximized Full-Width Container (eliminating excess lateral whitespace) -->
-    <div
-      id="main-content-wrapper"
-      class="w-full max-w-375 mx-auto px-4 sm:px-8 lg:px-12 flex flex-col min-h-screen"
-    >
-      <!-- Main Page Content -->
-      <main class={`flex-1 ${isHomepage ? "" : "pt-20 sm:pt-24 py-6 sm:py-8"}`}>
+    <!-- Main Container (Tightened max-w-5xl to reduce dead empty lateral margin) -->
+    <div class="w-full max-w-5xl mx-auto px-4 sm:px-6 flex flex-col min-h-screen">
+      <main class="flex-1">
         <slot />
       </main>
 
-      <!-- Site Footer -->
-      <footer
-        class="py-6 sm:py-8 pb-[max(1.5rem,env(safe-area-inset-bottom))] border-t border-border/60 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono text-text-muted"
-      >
-        <div
-          class="flex flex-wrap items-center justify-center md:justify-start gap-2.5 sm:gap-3 text-center md:text-left"
-        >
-          <span>© {new Date().getFullYear()} Marc (jsbalabat).</span>
-          <!-- Dynamic Version & Git SHA Status Pill -->
-          <a
-            href={gitSha !== "dev"
-              ? `https://github.com/jsbalabat/portfolio/commit/${gitSha}`
-              : "https://github.com/jsbalabat/portfolio"}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border border-border/70 bg-surface hover:bg-surface-raised hover:border-border text-[11px] font-mono text-text-muted hover:text-text transition-all active:scale-[0.96]"
-            title={`Deployed from ${gitBranch} branch (${gitSha})`}
-          >
-            <span
-              class={`w-1.5 h-1.5 rounded-full ${isProduction ? "bg-emerald-600 dark:bg-emerald-500" : "bg-amber-500"}`}
-            ></span>
-            <span>v{appVersion}</span>
-            <span class="text-text-muted/40">·</span>
-            <span class="text-text font-medium">{gitSha}</span>
-            {
-              !isProduction && (
-                <span class="text-[10px] text-accent font-normal">
-                  ({gitBranch})
-                </span>
-              )
-            }
-          </a>
+      <!-- Minimalist Editorial Footer (Reduced top margin from mt-20 to mt-10) -->
+      <footer class="py-8 border-t border-border mt-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs text-text-muted">
+        <div class="flex flex-col gap-0.5">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span class="text-text font-semibold uppercase tracking-wider text-[11px]">AVAILABLE FOR NEW OPPORTUNITIES</span>
+          </div>
+          <p>© {new Date().getFullYear()} Marc Balabat. v{appVersion} · {gitSha} ({gitBranch})</p>
         </div>
-        <div
-          class="flex flex-wrap items-center justify-center md:justify-end gap-x-3 sm:gap-x-4 gap-y-2 text-center md:text-right"
-        >
+
+        <div class="flex flex-wrap items-center gap-x-5 gap-y-1.5 uppercase tracking-wider text-text font-medium text-[11px]">
+          <a href="https://github.com/jsbalabat" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">GitHub</a>
+          <a href="https://www.linkedin.com/in/marc-balabat" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">LinkedIn</a>
           <button
             type="button"
             onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
-            class="hover:text-text transition-colors cursor-pointer text-left underline decoration-accent/40 hover:decoration-accent"
-            title="Open email contact popup"
+            class="hover:text-accent transition-colors cursor-pointer uppercase"
           >
-            johnfelixmarc@gmail.com
+            Email
           </button>
-          <span class="hidden sm:inline text-border" aria-hidden="true">•</span>
-          <a
-            href="https://github.com/jsbalabat"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="hover:text-text transition-colors">GitHub</a
-          >
-          <span class="hidden sm:inline text-border" aria-hidden="true">•</span>
-          <a
-            href="https://www.linkedin.com/in/marc-balabat"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="hover:text-text transition-colors">LinkedIn</a
-          >
-          <span class="hidden sm:inline text-border" aria-hidden="true">•</span>
-          <span
-            class="inline-flex items-center gap-1.5 text-accent font-medium"
-          >
-            <span class="w-1.5 h-1.5 rounded-full bg-accent/60"></span>
-            Cloudflare Workers Runtime
-          </span>
         </div>
       </footer>
     </div>
 
-    <!-- Floating Back to Top Button -->
+    <!-- Back to Top & Contact Modal -->
     <BackToTop />
-
-    <!-- Contact Email Modal Popup -->
     <ContactModal client:load />
 
-    <!-- Theme Toggle & TLDR Toast Dismiss Scripts -->
+    <!-- Theme Switcher, Mobile Menu, and Scroll-Reveal Observer -->
     <script>
+      // 1. Theme Logic
       const getActiveThemePreference = (): string => {
         try {
           if (typeof sessionStorage !== "undefined") {
@@ -422,276 +220,81 @@ const isProduction = gitBranch === "main";
         const pref = getActiveThemePreference();
         const iconEl = document.getElementById("theme-toggle-icon");
         const textEl = document.getElementById("theme-toggle-text");
-        const btn = document.getElementById("theme-toggle");
+        const iconMobileEl = document.getElementById("theme-toggle-mobile-icon");
 
-        if (iconEl && textEl && btn) {
-          if (pref === "system") {
-            iconEl.textContent = "◐";
-            textEl.textContent = "System";
-            btn.setAttribute("title", "Theme: System (Default Auto)");
-          } else if (pref === "light") {
-            iconEl.textContent = "☼";
-            textEl.textContent = "Light";
-            btn.setAttribute("title", "Theme: Light");
-          } else {
-            iconEl.textContent = "☾";
-            textEl.textContent = "Dark";
-            btn.setAttribute("title", "Theme: Dark");
-          }
-        }
+        const iconMap: Record<string, string> = { system: "◐", light: "☼", dark: "☾" };
+        const textMap: Record<string, string> = { system: "System", light: "Light", dark: "Dark" };
 
-        const iconMobileEl = document.getElementById(
-          "theme-toggle-mobile-icon",
-        );
-        const btnMobile = document.getElementById("theme-toggle-mobile");
-
-        if (iconMobileEl && btnMobile) {
-          if (pref === "system") {
-            iconMobileEl.textContent = "◐";
-            btnMobile.setAttribute("title", "Theme: System (Default Auto)");
-          } else if (pref === "light") {
-            iconMobileEl.textContent = "☼";
-            btnMobile.setAttribute("title", "Theme: Light");
-          } else {
-            iconMobileEl.textContent = "☾";
-            btnMobile.setAttribute("title", "Theme: Dark");
-          }
-        }
-
-        const iconLandingEl = document.getElementById(
-          "theme-toggle-landing-icon",
-        );
-        const textLandingEl = document.getElementById(
-          "theme-toggle-landing-text",
-        );
-        const btnLanding = document.getElementById("theme-toggle-landing");
-
-        if (iconLandingEl && btnLanding) {
-          if (pref === "system") {
-            iconLandingEl.textContent = "◐";
-            if (textLandingEl) textLandingEl.textContent = "System";
-            btnLanding.setAttribute("title", "Theme: System (Default Auto)");
-          } else if (pref === "light") {
-            iconLandingEl.textContent = "☼";
-            if (textLandingEl) textLandingEl.textContent = "Light";
-            btnLanding.setAttribute("title", "Theme: Light");
-          } else {
-            iconLandingEl.textContent = "☾";
-            if (textLandingEl) textLandingEl.textContent = "Dark";
-            btnLanding.setAttribute("title", "Theme: Dark");
-          }
-        }
-      };
-
-      const applyThemePreference = (nextPref: string) => {
-        try {
-          sessionStorage.setItem("theme_preference", nextPref);
-        } catch (e) {}
-        document.documentElement.setAttribute(
-          "data-theme-preference",
-          nextPref,
-        );
-        if (nextPref === "system") {
-          const resolved = window.matchMedia("(prefers-color-scheme: dark)")
-            .matches
-            ? "dark"
-            : "light";
-          document.documentElement.setAttribute("data-theme", resolved);
-        } else {
-          document.documentElement.setAttribute("data-theme", nextPref);
-        }
-        updateThemeToggleUI();
-        window.dispatchEvent(
-          new CustomEvent("theme-preference-change", { detail: nextPref }),
-        );
+        if (iconEl) iconEl.textContent = iconMap[pref] || "◐";
+        if (textEl) textEl.textContent = textMap[pref] || "System";
+        if (iconMobileEl) iconMobileEl.textContent = iconMap[pref] || "◐";
       };
 
       const cycleTheme = () => {
         const currentPref = getActiveThemePreference();
-        const cycle: Record<string, string> = {
-          system: "light",
-          light: "dark",
-          dark: "system",
-        };
+        const cycle: Record<string, string> = { system: "light", light: "dark", dark: "system" };
         const next = cycle[currentPref] || "system";
-        applyThemePreference(next);
+        sessionStorage.setItem("theme_preference", next);
+        document.documentElement.setAttribute("data-theme-preference", next);
+
+        if (next === "system") {
+          const resolved = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          document.documentElement.setAttribute("data-theme", resolved);
+        } else {
+          document.documentElement.setAttribute("data-theme", next);
+        }
+        updateThemeToggleUI();
       };
 
-      const toggle = document.getElementById("theme-toggle");
-      if (toggle) {
-        toggle.addEventListener("click", cycleTheme);
-      }
-
-      const toggleMobile = document.getElementById("theme-toggle-mobile");
-      if (toggleMobile) {
-        toggleMobile.addEventListener("click", cycleTheme);
-      }
-
-      const toggleLanding = document.getElementById("theme-toggle-landing");
-      if (toggleLanding) {
-        toggleLanding.addEventListener("click", cycleTheme);
-      }
-
-      // Initial theme toggle UI update
+      document.getElementById("theme-toggle")?.addEventListener("click", cycleTheme);
+      document.getElementById("theme-toggle-mobile")?.addEventListener("click", cycleTheme);
       updateThemeToggleUI();
 
-      window.addEventListener("theme-preference-change", () => {
-        updateThemeToggleUI();
-      });
-
-      // Mobile Drawer Menu State & Handlers
+      // 2. Mobile Menu Toggle
       const menuToggle = document.getElementById("mobile-menu-toggle");
       const mobileMenu = document.getElementById("mobile-menu");
-      const openIcon = document.getElementById("hamburger-icon-open");
-      const closeIcon = document.getElementById("hamburger-icon-close");
-      const mobileContactBtn = document.getElementById("mobile-contact-btn");
-
-      const closeMobileMenu = () => {
-        if (!mobileMenu || !menuToggle) return;
-        mobileMenu.classList.add("hidden");
-        menuToggle.setAttribute("aria-expanded", "false");
-        openIcon?.classList.remove("hidden");
-        openIcon?.classList.add("block");
-        closeIcon?.classList.remove("block");
-        closeIcon?.classList.add("hidden");
-      };
-
-      const openMobileMenu = () => {
-        if (!mobileMenu || !menuToggle) return;
-        mobileMenu.classList.remove("hidden");
-        menuToggle.setAttribute("aria-expanded", "true");
-        openIcon?.classList.remove("block");
-        openIcon?.classList.add("hidden");
-        closeIcon?.classList.remove("hidden");
-        closeIcon?.classList.add("block");
-      };
-
       if (menuToggle && mobileMenu) {
         menuToggle.addEventListener("click", () => {
-          const isExpanded =
-            menuToggle.getAttribute("aria-expanded") === "true";
-          if (isExpanded) {
-            closeMobileMenu();
-          } else {
-            openMobileMenu();
-          }
+          mobileMenu.classList.toggle("hidden");
         });
-
-        // Close on link click
-        const links = mobileMenu.querySelectorAll(".mobile-nav-link");
-        links.forEach((link) => {
-          link.addEventListener("click", () => {
-            closeMobileMenu();
-          });
-        });
-
-        // Close on Escape key
-        window.addEventListener("keydown", (e) => {
-          if (
-            e.key === "Escape" &&
-            menuToggle.getAttribute("aria-expanded") === "true"
-          ) {
-            closeMobileMenu();
-            menuToggle.focus();
-          }
-        });
-
-        // Close on outside click
-        document.addEventListener("click", (e) => {
-          const target = e.target as HTMLElement | null;
-          if (
-            menuToggle.getAttribute("aria-expanded") === "true" &&
-            target &&
-            !mobileMenu.contains(target) &&
-            !menuToggle.contains(target)
-          ) {
-            closeMobileMenu();
-          }
-        });
-
-        // Auto-close on resize to desktop (>= 1024px)
-        window
-          .matchMedia("(min-width: 1024px)")
-          .addEventListener("change", (e) => {
-            if (e.matches) {
-              closeMobileMenu();
-            }
-          });
-      }
-
-      if (mobileContactBtn) {
-        mobileContactBtn.addEventListener("click", () => {
-          closeMobileMenu();
-          window.dispatchEvent(new CustomEvent("open-contact-modal"));
+        mobileMenu.querySelectorAll(".mobile-nav-link").forEach((link) => {
+          link.addEventListener("click", () => mobileMenu.classList.add("hidden"));
         });
       }
+      document.getElementById("mobile-contact-btn")?.addEventListener("click", () => {
+        window.dispatchEvent(new CustomEvent("open-contact-modal"));
+      });
 
-      // Dynamic header fade-in and collision detection
-      const header = document.getElementById("site-header");
-      const cover = document.getElementById("cover");
-      const bottomAnchor = document.getElementById("cover-bottom-anchor");
+      // 3. Smooth Scroll Entrance Observer (GPU-composited micro-animations)
+      const initScrollReveals = () => {
+        if (!("IntersectionObserver" in window)) {
+          document.querySelectorAll(".reveal-on-scroll").forEach((el) => el.classList.add("is-visible"));
+          return;
+        }
 
-      if (header && cover) {
-        const updateHeader = () => {
-          const coverHeight = cover.offsetHeight || window.innerHeight;
-          const halfway = coverHeight * 0.5;
-          const scrollY = window.scrollY || window.pageYOffset || 0;
-
-          // Disappear ONLY when header collides/overlaps with the bottom anchor on-screen
-          if (bottomAnchor) {
-            const headerRect = header.getBoundingClientRect();
-            const anchorRect = bottomAnchor.getBoundingClientRect();
-            const headerBottom =
-              headerRect.bottom > 0
-                ? headerRect.bottom
-                : header.offsetHeight || 60;
-
-            if (anchorRect.top <= headerBottom) {
-              bottomAnchor.style.opacity = "0";
-              bottomAnchor.style.pointerEvents = "none";
-            } else {
-              bottomAnchor.style.opacity = "1";
-              bottomAnchor.style.pointerEvents = "auto";
-            }
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          {
+            threshold: 0.08,
+            rootMargin: "0px 0px -30px 0px",
           }
+        );
 
-          if (scrollY <= halfway) {
-            header.style.opacity = "0";
-            header.style.pointerEvents = "none";
-            // Also close mobile menu if scrolling back to top of cover
-            closeMobileMenu();
-          } else if (scrollY >= coverHeight) {
-            header.style.opacity = "1";
-            header.style.pointerEvents = "auto";
-          } else {
-            const progress = (scrollY - halfway) / (coverHeight - halfway);
-            const clamped = Math.max(0, Math.min(1, progress));
-            header.style.opacity = clamped.toFixed(3);
-            header.style.pointerEvents = clamped > 0.15 ? "auto" : "none";
-          }
-        };
-
-        window.addEventListener("scroll", updateHeader, { passive: true });
-        window.addEventListener("resize", updateHeader, { passive: true });
-        updateHeader();
-      } else if (header) {
-        header.style.opacity = "1";
-        header.style.pointerEvents = "auto";
-      }
-
-      // Vertical scrollbar fade: visible only during vertical page movement (mouse movement not counted)
-      let scrollbarFadeTimer: number | undefined;
-      const onVerticalPageMovement = () => {
-        document.documentElement.classList.add("is-scrolling");
-        if (scrollbarFadeTimer) clearTimeout(scrollbarFadeTimer);
-        scrollbarFadeTimer = window.setTimeout(() => {
-          document.documentElement.classList.remove("is-scrolling");
-        }, 1000);
+        document.querySelectorAll(".reveal-on-scroll").forEach((el) => observer.observe(el));
       };
 
-      window.addEventListener("scroll", onVerticalPageMovement, {
-        passive: true,
-      });
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initScrollReveals);
+      } else {
+        initScrollReveals();
+      }
     </script>
   </body>
 </html>

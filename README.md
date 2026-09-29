@@ -39,3 +39,15 @@ npx wrangler dev
 ## Documentation
 
 Full architectural specifications, design tokens, and phase-by-phase implementation guides are organized under [`docs/`](docs/).
+
+
+## TODO
+
+Add the following later.
+- fix shifting in mobile view whenever scrolling up/down. area in landing page space adjusting whenever scrolling happens.
+- make diff slider top bottom/sandwich comparison not side by side
+- make animations smoother. example, transition animation when pressing explore is not smooth and feels jittery
+- fix text, alignments, line counts, content in general in mobile view. looks good on desktop but not on mobile.
+- add photo for different picture dimensions
+- when pressing marc in header, introduce back the reload page used in the splash page.
+- when in command k or ctrl k menu, searching and clicking on the different navigable tabs should not do a page reload to the part of the page but just an exit of the menu and a smooth animation transition to the page. also when searching it auto zooms in when pressing search bar. keep it the normal view when focusing and unfocusing unless zoomed in intentionally.`

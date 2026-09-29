@@ -187,7 +187,7 @@ export default function ContactModal() {
                 Get in Touch
               </h2>
             </div>
-            <p className="text-xs font-mono text-text-muted">
+            <p className="text-xs text-text-muted">
               Sends directly to{' '}
               <span className="text-accent font-semibold">johnfelixmarc@gmail.com</span>
             </p>
@@ -222,14 +222,14 @@ export default function ContactModal() {
                   setStatus('idle');
                   closeModal();
                 }}
-                className="px-4 py-2 rounded-lg bg-accent text-accent-text hover:opacity-90 active:scale-[0.96] font-medium text-xs font-mono transition-all cursor-pointer"
+                className="px-4 py-2 rounded-lg bg-accent text-accent-text hover:opacity-90 active:scale-[0.96] font-medium text-xs transition-all cursor-pointer"
               >
                 Done
               </button>
               <button
                 type="button"
                 onClick={() => setStatus('idle')}
-                className="px-4 py-2 rounded-lg border border-border hover:bg-surface-raised active:scale-[0.96] text-xs font-mono text-text transition-all cursor-pointer"
+                className="px-4 py-2 rounded-lg border border-border hover:bg-surface-raised active:scale-[0.96] text-xs text-text transition-all cursor-pointer"
               >
                 Send Another
               </button>
@@ -267,7 +267,7 @@ export default function ContactModal() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {/* Name field */}
               <div>
-                <label htmlFor="contact-name" className="block text-xs font-mono font-medium text-text-muted mb-1">
+                <label htmlFor="contact-name" className="block text-xs font-medium text-text-muted mb-1">
                   Your Name <span className="text-accent">*</span>
                 </label>
                 <input
@@ -285,7 +285,7 @@ export default function ContactModal() {
 
               {/* Email field */}
               <div>
-                <label htmlFor="contact-email" className="block text-xs font-mono font-medium text-text-muted mb-1">
+                <label htmlFor="contact-email" className="block text-xs font-medium text-text-muted mb-1">
                   Your Email <span className="text-accent">*</span>
                 </label>
                 <input
@@ -303,7 +303,7 @@ export default function ContactModal() {
 
             {/* Subject field */}
             <div>
-              <label htmlFor="contact-subject" className="block text-xs font-mono font-medium text-text-muted mb-1">
+              <label htmlFor="contact-subject" className="block text-xs font-medium text-text-muted mb-1">
                 Subject
               </label>
               <input
@@ -319,7 +319,7 @@ export default function ContactModal() {
 
             {/* Message field */}
             <div>
-              <label htmlFor="contact-message" className="block text-xs font-mono font-medium text-text-muted mb-1">
+              <label htmlFor="contact-message" className="block text-xs font-medium text-text-muted mb-1">
                 Message <span className="text-accent">*</span>
               </label>
               <textarea
@@ -338,7 +338,7 @@ export default function ContactModal() {
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
               <a
                 href="mailto:johnfelixmarc@gmail.com"
-                className="text-xs font-mono text-text-muted hover:text-text transition-colors order-2 sm:order-1"
+                className="text-xs text-text-muted hover:text-text transition-colors order-2 sm:order-1"
               >
                 Or use mailto: client
               </a>
@@ -347,7 +347,7 @@ export default function ContactModal() {
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="px-3.5 py-2 rounded-lg border border-border hover:bg-surface-raised active:scale-[0.96] text-xs font-mono text-text transition-all cursor-pointer"
+                  className="px-3.5 py-2 rounded-lg border border-border hover:bg-surface-raised active:scale-[0.96] text-xs text-text transition-all cursor-pointer"
                   disabled={status === 'submitting'}
                 >
                   Cancel
@@ -355,7 +355,7 @@ export default function ContactModal() {
                 <button
                   type="submit"
                   disabled={status === 'submitting'}
-                  className="px-4 py-2 rounded-lg bg-accent text-accent-text hover:opacity-90 active:scale-[0.96] font-medium text-xs font-mono transition-all shadow-xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg bg-accent text-accent-text hover:opacity-90 active:scale-[0.96] font-medium text-xs transition-all shadow-xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
                 >
                   {status === 'submitting' ? (
                     <>
