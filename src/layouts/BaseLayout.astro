@@ -2,6 +2,8 @@
 import "../styles/global.css";
 import ContactModal from "../components/ContactModal";
 import BackToTop from "../components/BackToTop.astro";
+import SplashLoader from "../components/SplashLoader.astro";
+import { ClientRouter } from "astro:transitions";
 
 interface Props {
   title?: string;
@@ -18,7 +20,7 @@ const canonicalURL = new URL(
   Astro.site || "https://marcbalabat.tech",
 );
 
-const appVersion = import.meta.env.PUBLIC_APP_VERSION || "0.4.0";
+const appVersion = import.meta.env.PUBLIC_APP_VERSION || "1.0.1";
 const gitSha = import.meta.env.PUBLIC_GIT_SHA || "dev";
 const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
 ---
@@ -33,6 +35,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
+    <ClientRouter />
 
     <!-- Google Fonts: DM Sans (Human/Natural Sans) & Alumni Sans (Display) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -73,9 +76,14 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         return preference;
       };
 
-      const pref = getStoredTheme();
-      document.documentElement.setAttribute("data-theme", resolveTheme(pref));
-      document.documentElement.setAttribute("data-theme-preference", pref);
+      const applyTheme = () => {
+        const pref = getStoredTheme();
+        document.documentElement.setAttribute("data-theme", resolveTheme(pref));
+        document.documentElement.setAttribute("data-theme-preference", pref);
+      };
+
+      applyTheme();
+      document.addEventListener("astro:after-swap", applyTheme);
 
       window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
         if ((sessionStorage.getItem("theme_preference") || "system") === "system") {
@@ -85,12 +93,75 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
     </script>
   </head>
   <body class="min-h-screen bg-bg text-text antialiased selection:bg-accent selection:text-accent-text">
-    <!-- Clean Minimalist Header (Sticky with backdrop blur) -->
+    <SplashLoader />
+
+    <!-- Background Technical Flair: Left & Right Rails -->
+    <aside
+      aria-hidden="true"
+      class="pointer-events-none fixed top-0 bottom-0 left-2 xl:left-5 z-0 hidden lg:flex flex-col justify-between items-center py-12 text-text-muted/30 select-none font-mono text-[9px] tracking-widest uppercase"
+    >
+      <!-- Top: Reticle + Lat -->
+      <div class="flex flex-col items-center gap-2">
+        <svg class="w-3.5 h-3.5 text-text-muted/40 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2">
+          <circle cx="8" cy="8" r="5" stroke-dasharray="2 2"></circle>
+          <line x1="8" y1="1" x2="8" y2="15"></line>
+          <line x1="1" y1="8" x2="15" y2="8"></line>
+        </svg>
+        <span class="[writing-mode:vertical-rl] rotate-180">SYS.01 // LAT 14.5995° N</span>
+      </div>
+
+      <!-- Middle: Vertical measurement tick marks line -->
+      <div class="h-48 w-[1px] bg-border-subtle relative flex flex-col justify-between items-center">
+        <span class="w-2 h-[1px] bg-border-subtle"></span>
+        <span class="w-1.5 h-[1px] bg-border-subtle"></span>
+        <span class="w-3 h-[1px] bg-text-muted/40"></span>
+        <span class="w-1.5 h-[1px] bg-border-subtle"></span>
+        <span class="w-2 h-[1px] bg-border-subtle"></span>
+      </div>
+
+      <!-- Bottom: PROD_SYS // ACTIVE -->
+      <div class="flex flex-col items-center gap-2">
+        <span class="[writing-mode:vertical-rl] rotate-180">PROD_SYS // ACTIVE</span>
+        <div class="w-1.5 h-1.5 rounded-full bg-emerald-500/40"></div>
+      </div>
+    </aside>
+
+    <aside
+      aria-hidden="true"
+      class="pointer-events-none fixed top-0 bottom-0 right-2 xl:right-5 z-0 hidden lg:flex flex-col justify-between items-center py-12 text-text-muted/30 select-none font-mono text-[9px] tracking-widest uppercase"
+    >
+      <!-- Top: Longitude + 3NF -->
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-1.5 h-1.5 rounded-full bg-accent/40"></div>
+        <span class="[writing-mode:vertical-rl]">LNG 120.9842° E // 3NF</span>
+      </div>
+
+      <!-- Middle: Vertical measurement line with coordinate marks -->
+      <div class="h-48 w-[1px] bg-border-subtle relative flex flex-col justify-between items-center">
+        <span class="w-2 h-[1px] bg-border-subtle"></span>
+        <span class="w-1.5 h-[1px] bg-border-subtle"></span>
+        <span class="w-3 h-[1px] bg-text-muted/40"></span>
+        <span class="w-1.5 h-[1px] bg-border-subtle"></span>
+        <span class="w-2 h-[1px] bg-border-subtle"></span>
+      </div>
+
+      <!-- Bottom: Technical crosshair SVG + telemetry status -->
+      <div class="flex flex-col items-center gap-2">
+        <span class="[writing-mode:vertical-rl]">TELEMETRY // OK</span>
+        <svg class="w-3.5 h-3.5 text-text-muted/40 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2">
+          <rect x="3" y="3" width="10" height="10" stroke-dasharray="2 2"></rect>
+          <line x1="8" y1="2" x2="8" y2="14"></line>
+          <line x1="2" y1="8" x2="14" y2="8"></line>
+        </svg>
+      </div>
+    </aside>
+
+    <!-- Dynamic Header (Reveals on scroll) -->
     <header
       id="site-header"
-      class="sticky top-0 left-0 right-0 z-40 bg-bg/90 backdrop-blur-md border-b border-border transition-colors"
+      class="fixed top-0 left-0 right-0 z-40 bg-bg/90 backdrop-blur-md transition-all duration-300 opacity-0 pointer-events-none -translate-y-2"
     >
-      <div class="w-full max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+      <div class="w-[90%] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
         <a href="/" class="group flex items-center gap-2 text-sm tracking-tight text-text shrink-0">
           <span class="inline-block w-2 h-2 rounded-full bg-accent group-hover:scale-125 transition-transform duration-200 shrink-0"></span>
           <span class="font-bold text-base tracking-tight">MARC</span>
@@ -101,15 +172,8 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         <!-- Desktop Navigation Items -->
         <nav class="hidden md:flex items-center gap-6 text-xs font-semibold uppercase tracking-wider text-text-muted">
           <a href="/#projects" class="hover:text-text transition-colors">Projects</a>
-          <a href="/#about" class="hover:text-text transition-colors">About</a>
           <a href="/#skills" class="hover:text-text transition-colors">Stack</a>
-          <button
-            type="button"
-            onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
-            class="hover:text-text transition-colors cursor-pointer uppercase"
-          >
-            Contact
-          </button>
+          <a href="/#contact" class="hover:text-text transition-colors">Contact</a>
 
           <!-- Theme Toggle (System -> Light -> Dark) -->
           <button
@@ -154,29 +218,22 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
 
       <!-- Mobile Navigation Drawer -->
       <div id="mobile-menu" class="hidden md:hidden w-full border-t border-border bg-bg/95 backdrop-blur-xl px-4 py-3">
-        <div class="flex flex-col space-y-2 text-xs uppercase font-medium text-text max-w-5xl mx-auto">
+        <div class="flex flex-col space-y-2 text-xs uppercase font-medium text-text w-[90%] mx-auto">
           <a href="/#projects" class="mobile-nav-link py-2 hover:text-accent">Projects</a>
-          <a href="/#about" class="mobile-nav-link py-2 hover:text-accent">About</a>
           <a href="/#skills" class="mobile-nav-link py-2 hover:text-accent">Stack</a>
-          <button
-            type="button"
-            id="mobile-contact-btn"
-            class="mobile-nav-link py-2 text-left uppercase hover:text-accent cursor-pointer"
-          >
-            Contact
-          </button>
+          <a href="/#contact" class="mobile-nav-link py-2 hover:text-accent">Contact</a>
         </div>
       </div>
     </header>
 
     <!-- Main Container (Tightened max-w-5xl to reduce dead empty lateral margin) -->
-    <div class="w-full max-w-5xl mx-auto px-4 sm:px-6 flex flex-col min-h-screen">
+    <div class="w-[90%] mx-auto px-4 sm:px-6 flex flex-col min-h-screen">
       <main class="flex-1">
         <slot />
       </main>
 
-      <!-- Minimalist Editorial Footer (Reduced top margin from mt-20 to mt-10) -->
-      <footer class="py-8 border-t border-border mt-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs text-text-muted">
+      <!-- Minimalist Editorial Footer -->
+      <footer class="py-8 border-t border-border flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs text-text-muted">
         <div class="flex flex-col gap-0.5">
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
@@ -199,101 +256,426 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
       </footer>
     </div>
 
+    <!-- Long Capsule Pill Custom Scrollbar -->
+    <div
+      id="custom-scrollbar"
+      aria-hidden="true"
+      class="fixed right-2 sm:right-3.5 top-1/3 bottom-1/3 w-1 sm:w-1.5 rounded-full bg-border/40 overflow-hidden pointer-events-none z-40 hidden sm:flex flex-col justify-start opacity-0 transition-opacity duration-300"
+    >
+      <div id="scrollbar-fill" class="w-full bg-accent rounded-full transition-[height] duration-75 ease-out h-0"></div>
+    </div>
+
+    <!-- Invert Aura Cursor -->
+    <div id="cursor-dot" class="pointer-events-none fixed top-0 left-0 w-4 h-4 rounded-full bg-white z-[9999] mix-blend-difference hidden md:block opacity-0 transition-opacity duration-150"></div>
+    <div id="cursor-aura" class="pointer-events-none fixed top-0 left-0 w-12 h-12 rounded-full border border-white/50 bg-white/10 blur-[0.5px] z-[9998] mix-blend-difference hidden md:block opacity-0 transition-opacity duration-150"></div>
+
     <!-- Back to Top & Contact Modal -->
     <BackToTop />
     <ContactModal client:load />
 
-    <!-- Theme Switcher, Mobile Menu, and Scroll-Reveal Observer -->
+    <!-- Theme Switcher, Mobile Menu, Lenis, and Scroll-Reveal Observer -->
     <script>
-      // 1. Theme Logic
-      const getActiveThemePreference = (): string => {
-        try {
-          if (typeof sessionStorage !== "undefined") {
-            const stored = sessionStorage.getItem("theme_preference");
-            if (stored) return stored;
+      import Lenis from "lenis";
+
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (typeof window !== "undefined" && "scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+      }
+
+      // Invert Aura Cursor (Global listeners attached once across transitions)
+      if (typeof window !== "undefined" && !(window as any).__cursorInitialized) {
+        (window as any).__cursorInitialized = true;
+
+        let targetX = -100, targetY = -100;
+        let auraX = -100, auraY = -100;
+        let isMouseDown = false;
+        let cursorActive = false;
+
+        window.addEventListener("mousemove", (e: MouseEvent) => {
+          if (!window.matchMedia("(pointer: fine)").matches) return;
+          const dot = document.getElementById("cursor-dot");
+          const aura = document.getElementById("cursor-aura");
+          if (!dot || !aura) return;
+
+          targetX = e.clientX;
+          targetY = e.clientY;
+
+          if (!cursorActive) {
+            cursorActive = true;
+            auraX = targetX;
+            auraY = targetY;
           }
-        } catch (e) {}
-        return "system";
-      };
 
-      const updateThemeToggleUI = () => {
-        const pref = getActiveThemePreference();
-        const iconEl = document.getElementById("theme-toggle-icon");
-        const textEl = document.getElementById("theme-toggle-text");
-        const iconMobileEl = document.getElementById("theme-toggle-mobile-icon");
+          if (dot.classList.contains("opacity-0")) dot.classList.remove("opacity-0");
+          if (aura.classList.contains("opacity-0")) aura.classList.remove("opacity-0");
 
-        const iconMap: Record<string, string> = { system: "◐", light: "☼", dark: "☾" };
-        const textMap: Record<string, string> = { system: "System", light: "Light", dark: "Dark" };
+          dot.style.transform = `translate3d(${targetX}px, ${targetY}px, 0) translate(-50%, -50%)`;
+        }, { passive: true });
 
-        if (iconEl) iconEl.textContent = iconMap[pref] || "◐";
-        if (textEl) textEl.textContent = textMap[pref] || "System";
-        if (iconMobileEl) iconMobileEl.textContent = iconMap[pref] || "◐";
-      };
-
-      const cycleTheme = () => {
-        const currentPref = getActiveThemePreference();
-        const cycle: Record<string, string> = { system: "light", light: "dark", dark: "system" };
-        const next = cycle[currentPref] || "system";
-        sessionStorage.setItem("theme_preference", next);
-        document.documentElement.setAttribute("data-theme-preference", next);
-
-        if (next === "system") {
-          const resolved = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-          document.documentElement.setAttribute("data-theme", resolved);
-        } else {
-          document.documentElement.setAttribute("data-theme", next);
+        function renderCursor() {
+          const aura = document.getElementById("cursor-aura");
+          if (cursorActive && aura) {
+            auraX += (targetX - auraX) * 0.12;
+            auraY += (targetY - auraY) * 0.12;
+            const scale = isMouseDown ? 0.75 : 1;
+            aura.style.transform = `translate3d(${auraX}px, ${auraY}px, 0) translate(-50%, -50%) scale(${scale})`;
+          }
+          requestAnimationFrame(renderCursor);
         }
-        updateThemeToggleUI();
-      };
+        requestAnimationFrame(renderCursor);
 
-      document.getElementById("theme-toggle")?.addEventListener("click", cycleTheme);
-      document.getElementById("theme-toggle-mobile")?.addEventListener("click", cycleTheme);
-      updateThemeToggleUI();
-
-      // 2. Mobile Menu Toggle
-      const menuToggle = document.getElementById("mobile-menu-toggle");
-      const mobileMenu = document.getElementById("mobile-menu");
-      if (menuToggle && mobileMenu) {
-        menuToggle.addEventListener("click", () => {
-          mobileMenu.classList.toggle("hidden");
+        window.addEventListener("mousedown", () => {
+          isMouseDown = true;
         });
-        mobileMenu.querySelectorAll(".mobile-nav-link").forEach((link) => {
-          link.addEventListener("click", () => mobileMenu.classList.add("hidden"));
+
+        window.addEventListener("mouseup", () => {
+          isMouseDown = false;
+        });
+
+        document.addEventListener("mouseleave", () => {
+          cursorActive = false;
+          const dot = document.getElementById("cursor-dot");
+          const aura = document.getElementById("cursor-aura");
+          if (dot) dot.classList.add("opacity-0");
+          if (aura) aura.classList.add("opacity-0");
+        });
+
+        document.addEventListener("astro:page-load", () => {
+          const dot = document.getElementById("cursor-dot");
+          const aura = document.getElementById("cursor-aura");
+          if ((cursorActive || window.matchMedia("(pointer: fine)").matches) && targetX >= 0) {
+            cursorActive = true;
+            if (dot) {
+              dot.classList.remove("opacity-0");
+              dot.style.transform = `translate3d(${targetX}px, ${targetY}px, 0) translate(-50%, -50%)`;
+            }
+            if (aura) {
+              aura.classList.remove("opacity-0");
+              aura.style.transform = `translate3d(${auraX}px, ${auraY}px, 0) translate(-50%, -50%)`;
+            }
+          }
         });
       }
-      document.getElementById("mobile-contact-btn")?.addEventListener("click", () => {
-        window.dispatchEvent(new CustomEvent("open-contact-modal"));
-      });
 
-      // 3. Smooth Scroll Entrance Observer (GPU-composited micro-animations)
-      const initScrollReveals = () => {
-        if (!("IntersectionObserver" in window)) {
-          document.querySelectorAll(".reveal-on-scroll").forEach((el) => el.classList.add("is-visible"));
-          return;
-        }
-
-        const observer = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                entry.target.classList.add("is-visible");
-                observer.unobserve(entry.target);
-              }
-            });
-          },
-          {
-            threshold: 0.08,
-            rootMargin: "0px 0px -30px 0px",
-          }
-        );
-
-        document.querySelectorAll(".reveal-on-scroll").forEach((el) => observer.observe(el));
+      const getTargetScrollY = (el: HTMLElement): number => {
+        const currentScroll = (window as any).lenis
+          ? (window as any).lenis.actualScroll
+          : (window.scrollY || window.pageYOffset || 0);
+        const rect = el.getBoundingClientRect();
+        // Lapses the section's top separator line 43px behind the 52px fixed header.
+        // On 1920x932, SELECTED WORK (03) (pt-12 / 48px) lands at Y = 91px, Card 1 at Y = 200px,
+        // Card 2 at Y = 429px, Card 3 at Y = 658px-863px, matching website.png perfectly.
+        return Math.max(0, Math.round(rect.top + currentScroll - 43));
       };
 
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", initScrollReveals);
-      } else {
-        initScrollReveals();
+      const scrollToTarget = (target: HTMLElement | string, immediate = false) => {
+        const el = typeof target === "string" ? (document.querySelector(target) as HTMLElement | null) : target;
+        if (!el) return;
+        const targetY = getTargetScrollY(el);
+        const activeLenis = (window as any).lenis;
+        if (activeLenis && !prefersReducedMotion) {
+          activeLenis.scrollTo(targetY, {
+            duration: immediate ? 0 : 1.2,
+            immediate,
+          });
+        } else {
+          window.scrollTo({
+            top: targetY,
+            behavior: immediate || prefersReducedMotion ? "auto" : "smooth",
+          });
+        }
+      };
+
+      // Dynamic hash link interceptor: Intercept all links pointing to in-page hashes
+      if (typeof window !== "undefined" && !(window as any).__hashNavInitialized) {
+        (window as any).__hashNavInitialized = true;
+
+        document.addEventListener("click", (e) => {
+          const anchor = (e.target as HTMLElement)?.closest?.('a[href*="#"]') as HTMLAnchorElement | null;
+          if (!anchor) return;
+          const href = anchor.getAttribute("href");
+          if (!href) return;
+
+          try {
+            const targetUrl = new URL(anchor.href, window.location.href);
+            const isSamePage =
+              targetUrl.pathname.replace(/\/$/, "") === window.location.pathname.replace(/\/$/, "");
+            if (isSamePage && targetUrl.hash) {
+              const targetEl = document.querySelector(targetUrl.hash) as HTMLElement | null;
+              if (targetEl) {
+                e.preventDefault();
+                e.stopPropagation();
+                history.pushState(null, "", targetUrl.hash);
+                scrollToTarget(targetEl, false);
+              }
+            }
+          } catch (err) {}
+        });
+      }
+
+      const initPage = () => {
+        // 1. Lenis Elastic Smooth Scrolling
+        let lenis: any = null;
+        if (!prefersReducedMotion) {
+          if ((window as any).lenis) {
+            try {
+              (window as any).lenis.destroy();
+            } catch (e) {}
+          }
+
+          lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smoothWheel: true,
+            wheelMultiplier: 1.0,
+          });
+
+          (window as any).lenis = lenis;
+
+          if ((window as any).__lenisRafId) {
+            cancelAnimationFrame((window as any).__lenisRafId);
+          }
+          function raf(time: number) {
+            lenis.raf(time);
+            (window as any).__lenisRafId = requestAnimationFrame(raf);
+          }
+          (window as any).__lenisRafId = requestAnimationFrame(raf);
+        }
+
+        // Handle initial hash on navigation or load (e.g. returning from a project)
+        if (window.location.hash) {
+          const hash = window.location.hash;
+          const targetEl = document.querySelector(hash) as HTMLElement | null;
+          if (targetEl) {
+            scrollToTarget(targetEl, true);
+            requestAnimationFrame(() => scrollToTarget(targetEl, true));
+            setTimeout(() => scrollToTarget(targetEl, true), 60);
+            setTimeout(() => scrollToTarget(targetEl, true), 160);
+          }
+        }
+
+        // 2. Intercept header "MARC" logo for smooth wipe transition to top
+        let isWiping = false;
+        const headerLogo = document.querySelector('#site-header a[href="/"]');
+        if (headerLogo) {
+          headerLogo.addEventListener("click", (e) => {
+            if (window.location.pathname === "/" || window.location.pathname === "") {
+              e.preventDefault();
+              if (isWiping) return;
+              const splash = document.getElementById("splash-loader");
+              const progress = document.getElementById("splash-progress");
+              if (!splash) {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                if (lenis) lenis.scrollTo(0, { duration: 1.2 });
+                return;
+              }
+
+              isWiping = true;
+              // Reset splash to bottom position ready for wipe-up
+              splash.style.transition = "none";
+              splash.style.display = "flex";
+              splash.style.transform = "translateY(100%)";
+              splash.style.pointerEvents = "auto";
+              if (progress) {
+                progress.style.transition = "none";
+                progress.style.width = "0%";
+              }
+              void splash.offsetHeight;
+
+              // Step 1: Smooth wipe UP to cover screen
+              splash.style.transition = "transform 0.42s cubic-bezier(0.76, 0, 0.24, 1)";
+              splash.style.transform = "translateY(0%)";
+
+              setTimeout(() => {
+                // Step 2: Screen fully obscured - silently reset scroll to top
+                window.scrollTo(0, 0);
+                if (lenis) lenis.scrollTo(0, { immediate: true });
+
+                // Fill progress bar indicator
+                if (progress) {
+                  progress.style.transition = "width 0.28s ease-out";
+                  progress.style.width = "100%";
+                }
+
+                // Step 3: Smooth wipe away UP to reveal top of page
+                setTimeout(() => {
+                  splash.style.transition = "transform 0.45s cubic-bezier(0.76, 0, 0.24, 1)";
+                  splash.style.transform = "translateY(-100%)";
+                  splash.style.pointerEvents = "none";
+
+                  setTimeout(() => {
+                    splash.style.display = "none";
+                    splash.style.transform = "translateY(100%)";
+                    isWiping = false;
+                  }, 460);
+                }, 280);
+              }, 430);
+            }
+          });
+        }
+
+        // 3. Custom Floating Long Pill Scrollbar
+        const customScrollbar = document.getElementById("custom-scrollbar");
+        const scrollbarFill = document.getElementById("scrollbar-fill");
+        const updateCustomScrollbar = () => {
+          if (!customScrollbar || !scrollbarFill) return;
+          const scrollY = window.scrollY || window.pageYOffset || 0;
+          const docHeight = document.documentElement.scrollHeight;
+          const winHeight = window.innerHeight;
+          const maxScroll = docHeight - winHeight;
+
+          if (scrollY < 50 || maxScroll <= 0) {
+            customScrollbar.classList.add("opacity-0");
+          } else {
+            customScrollbar.classList.remove("opacity-0");
+            const progress = Math.min(Math.max((scrollY / maxScroll) * 100, 0), 100);
+            scrollbarFill.style.height = `${progress}%`;
+          }
+        };
+        window.addEventListener("scroll", updateCustomScrollbar, { passive: true });
+        if (lenis) {
+          lenis.on("scroll", updateCustomScrollbar);
+        }
+        window.addEventListener("resize", updateCustomScrollbar);
+        updateCustomScrollbar();
+
+        // 4. Dynamic Active Navigation Scroll Spy
+        const sectionIds = ["projects", "skills", "contact"];
+        const sections = sectionIds
+          .map((id) => document.getElementById(id))
+          .filter(Boolean) as HTMLElement[];
+        const navLinks = document.querySelectorAll<HTMLAnchorElement>(
+          'nav a[href*="#"], #mobile-menu a[href*="#"]'
+        );
+
+        if (sections.length > 0) {
+          const spyObserver = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  const id = entry.target.getAttribute("id");
+                  navLinks.forEach((link) => {
+                    const href = link.getAttribute("href") || "";
+                    if (href.endsWith(`#${id}`)) {
+                      link.classList.add("text-accent", "font-bold");
+                      link.classList.remove("text-text-muted");
+                    } else {
+                      link.classList.remove("text-accent", "font-bold");
+                      link.classList.add("text-text-muted");
+                    }
+                  });
+                }
+              });
+            },
+            {
+              rootMargin: "-20% 0px -60% 0px",
+              threshold: 0,
+            }
+          );
+          sections.forEach((section) => spyObserver.observe(section));
+        }
+
+        // 5. Dynamic Header Scroll Reveal
+        const siteHeader = document.getElementById("site-header");
+        const handleScrollHeader = () => {
+          const scrollY = window.scrollY || window.pageYOffset || 0;
+          if (scrollY > 120) {
+            siteHeader?.classList.remove("opacity-0", "pointer-events-none", "-translate-y-2");
+            siteHeader?.classList.add("opacity-100", "pointer-events-auto", "translate-y-0");
+          } else {
+            siteHeader?.classList.add("opacity-0", "pointer-events-none", "-translate-y-2");
+            siteHeader?.classList.remove("opacity-100", "pointer-events-auto", "translate-y-0");
+          }
+        };
+        window.addEventListener("scroll", handleScrollHeader, { passive: true });
+        if (lenis) {
+          lenis.on("scroll", () => handleScrollHeader());
+        }
+        handleScrollHeader();
+
+        // 6. Theme Logic
+        const getActiveThemePreference = (): string => {
+          try {
+            if (typeof sessionStorage !== "undefined") {
+              const stored = sessionStorage.getItem("theme_preference");
+              if (stored) return stored;
+            }
+          } catch (e) {}
+          return "system";
+        };
+
+        const updateThemeToggleUI = () => {
+          const pref = getActiveThemePreference();
+          const iconEl = document.getElementById("theme-toggle-icon");
+          const textEl = document.getElementById("theme-toggle-text");
+          const iconMobileEl = document.getElementById("theme-toggle-mobile-icon");
+
+          const iconMap: Record<string, string> = { system: "◐", light: "☼", dark: "☾" };
+          const textMap: Record<string, string> = { system: "System", light: "Light", dark: "Dark" };
+
+          if (iconEl) iconEl.textContent = iconMap[pref] || "◐";
+          if (textEl) textEl.textContent = textMap[pref] || "System";
+          if (iconMobileEl) iconMobileEl.textContent = iconMap[pref] || "◐";
+        };
+
+        const cycleTheme = () => {
+          const currentPref = getActiveThemePreference();
+          const cycle: Record<string, string> = { system: "light", light: "dark", dark: "system" };
+          const next = cycle[currentPref] || "system";
+          sessionStorage.setItem("theme_preference", next);
+          document.documentElement.setAttribute("data-theme-preference", next);
+
+          if (next === "system") {
+            const resolved = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+            document.documentElement.setAttribute("data-theme", resolved);
+          } else {
+            document.documentElement.setAttribute("data-theme", next);
+          }
+          updateThemeToggleUI();
+        };
+
+        document.getElementById("theme-toggle")?.addEventListener("click", cycleTheme);
+        document.getElementById("theme-toggle-mobile")?.addEventListener("click", cycleTheme);
+        updateThemeToggleUI();
+
+        // 7. Mobile Menu Toggle
+        const menuToggle = document.getElementById("mobile-menu-toggle");
+        const mobileMenu = document.getElementById("mobile-menu");
+        if (menuToggle && mobileMenu) {
+          menuToggle.addEventListener("click", () => {
+            mobileMenu.classList.toggle("hidden");
+          });
+          mobileMenu.querySelectorAll(".mobile-nav-link").forEach((link) => {
+            link.addEventListener("click", () => mobileMenu.classList.add("hidden"));
+          });
+        }
+
+        // 8. Smooth Scroll Entrance Observer (GPU-composited micro-animations)
+        if (!("IntersectionObserver" in window)) {
+          document.querySelectorAll(".reveal-on-scroll").forEach((el) => el.classList.add("is-visible"));
+        } else {
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add("is-visible");
+                  observer.unobserve(entry.target);
+                }
+              });
+            },
+            {
+              threshold: 0.08,
+              rootMargin: "0px 0px -30px 0px",
+            }
+          );
+
+          document.querySelectorAll(".reveal-on-scroll").forEach((el) => observer.observe(el));
+        }
+      };
+
+      document.addEventListener("astro:page-load", initPage);
+      if (document.readyState !== "loading") {
+        initPage();
       }
     </script>
   </body>

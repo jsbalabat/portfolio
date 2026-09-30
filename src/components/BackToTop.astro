@@ -8,14 +8,11 @@
   type="button"
   aria-label="Back to top"
   title="Back to top"
-  class="fixed bottom-6 right-6 z-40 sm:bottom-8 sm:right-8 flex items-center justify-center h-10 px-3 rounded-full bg-surface-raised border border-border text-text-muted hover:text-text shadow-sm hover:border-text transition-all duration-200 cursor-pointer opacity-0 pointer-events-none translate-y-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent group"
+  class="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 lg:right-11 xl:right-14 z-40 flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-surface-raised/95 backdrop-blur-sm border border-border text-text-muted hover:text-text shadow-sm hover:border-text hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer opacity-0 pointer-events-none translate-y-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent group"
 >
-  <span class="max-w-0 overflow-hidden whitespace-nowrap opacity-0 group-hover:max-w-xs group-hover:opacity-100 group-hover:mr-1.5 transition-all duration-200 text-xs font-semibold uppercase tracking-wider">
-    top
-  </span>
   <svg
     viewBox="0 0 24 24"
-    class="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5"
+    class="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:-translate-y-1"
     fill="none"
     stroke="currentColor"
     stroke-width="2"
@@ -28,31 +25,41 @@
 </button>
 
 <script>
-  const backToTop = document.getElementById('back-to-top');
+  const initBackToTop = () => {
+    const backToTop = document.getElementById('back-to-top');
+    if (!backToTop) return;
 
-  if (backToTop) {
     backToTop.addEventListener('click', () => {
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      window.scrollTo({
-        top: 0,
-        behavior: prefersReducedMotion ? 'auto' : 'smooth',
-      });
+      const lenis = (window as any).lenis;
+      if (!prefersReducedMotion && lenis) {
+        lenis.scrollTo(0, { duration: 1.2 });
+      } else {
+        window.scrollTo({
+          top: 0,
+          behavior: prefersReducedMotion ? 'auto' : 'smooth',
+        });
+      }
     });
 
     const updateBackToTop = () => {
       const scrollY = window.scrollY || window.pageYOffset || 0;
-      if (scrollY > 300) {
-        backToTop.style.opacity = '1';
-        backToTop.style.pointerEvents = 'auto';
-        backToTop.style.transform = 'translateY(0)';
+      if (scrollY > 250) {
+        backToTop.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
+        backToTop.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
       } else {
-        backToTop.style.opacity = '0';
-        backToTop.style.pointerEvents = 'none';
-        backToTop.style.transform = 'translateY(8px)';
+        backToTop.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+        backToTop.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
       }
     };
 
     window.addEventListener('scroll', updateBackToTop, { passive: true });
+    const lenis = (window as any).lenis;
+    if (lenis) {
+      lenis.on('scroll', updateBackToTop);
+    }
     updateBackToTop();
-  }
+  };
+
+  document.addEventListener('astro:page-load', initBackToTop);
 </script>

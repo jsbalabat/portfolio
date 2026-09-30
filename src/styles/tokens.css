@@ -32,25 +32,25 @@
 
 @media (prefers-color-scheme: light) {
   :root {
-    /* Light Theme (Crisp Editorial Paper) */
-    --color-bg: #ffffff;
-    --color-bg-subtle: #f7f7f7;
-    --color-surface: #fbfbfb;
-    --color-surface-raised: #f0f0f0;
+    /* Light Theme (Crisp High-Contrast Paper) */
+    --color-bg: #f6f6f8;
+    --color-bg-subtle: #eeeff2;
+    --color-surface: #ffffff;
+    --color-surface-raised: #f0f0f4;
     --color-surface-card: #ffffff;
-    --color-text: #080808;
-    --color-text-muted: #555555;
-    --color-text-dim: #888888;
-    --color-border: #e0e0e0;
-    --color-border-subtle: #eeeeee;
+    --color-text: #111111;
+    --color-text-muted: #333336;
+    --color-text-dim: #5c5c63;
+    --color-border: #d0d0d6;
+    --color-border-subtle: #e2e2e8;
     --color-border-hover: #111111;
-    --color-accent: #080808;
+    --color-accent: #111111;
     --color-accent-hover: #222222;
     --color-accent-subtle: rgba(0, 0, 0, 0.06);
     --color-accent-text: #ffffff;
     --color-highlight: #000000;
-    --color-badge-bg: #f0f0f0;
-    --color-badge-text: #080808;
+    --color-badge-bg: #e6e6ec;
+    --color-badge-text: #111111;
 
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
@@ -84,24 +84,24 @@ html[data-theme="dark"] {
 }
 
 html[data-theme="light"] {
-  --color-bg: #ffffff;
-  --color-bg-subtle: #f7f7f7;
-  --color-surface: #fbfbfb;
-  --color-surface-raised: #f0f0f0;
+  --color-bg: #f6f6f8;
+  --color-bg-subtle: #eeeff2;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f0f0f4;
   --color-surface-card: #ffffff;
-  --color-text: #080808;
-  --color-text-muted: #555555;
-  --color-text-dim: #888888;
-  --color-border: #e0e0e0;
-  --color-border-subtle: #eeeeee;
+  --color-text: #111111;
+  --color-text-muted: #333336;
+  --color-text-dim: #5c5c63;
+  --color-border: #d0d0d6;
+  --color-border-subtle: #e2e2e8;
   --color-border-hover: #111111;
-  --color-accent: #080808;
+  --color-accent: #111111;
   --color-accent-hover: #222222;
   --color-accent-subtle: rgba(0, 0, 0, 0.06);
   --color-accent-text: #ffffff;
   --color-highlight: #000000;
-  --color-badge-bg: #f0f0f0;
-  --color-badge-text: #080808;
+  --color-badge-bg: #e6e6ec;
+  --color-badge-text: #111111;
 
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
