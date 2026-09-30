@@ -158,7 +158,7 @@ export default function ContactModal() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="contact-modal-title"
-      className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs ${
+      className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 ${
         isClosing ? 'animate-modal-backdrop-out' : 'animate-modal-backdrop'
       }`}
       onMouseDown={(e) => {
@@ -174,22 +174,21 @@ export default function ContactModal() {
     >
       <div
         ref={dialogRef}
-        className={`relative w-full max-w-lg max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-border bg-surface p-5 sm:p-7 shadow-2xl text-text ${
+        className={`relative w-full max-w-lg max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-xl border border-border bg-surface p-6 sm:p-8 text-text shadow-2xl ${
           isClosing ? 'animate-modal-content-out' : 'animate-modal-content'
         }`}
       >
         {/* Modal Header */}
-        <div className="flex items-start justify-between gap-4 mb-5 pb-3 border-b border-border/60">
+        <div className="flex items-start justify-between gap-4 mb-6 pb-3 border-b border-border/60">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-500"></span>
-              <h2 id="contact-modal-title" className="text-lg font-bold tracking-tight text-text">
-                Get in Touch
+              <span className="size-1.5 rounded-full bg-accent animate-pulse"></span>
+              <h2 id="contact-modal-title" className="text-sm font-bold font-mono tracking-wider text-text uppercase">
+                // DIRECT INQUIRY DISPATCH
               </h2>
             </div>
-            <p className="text-xs font-mono text-text-muted">
-              Sends directly to{' '}
-              <span className="text-accent font-semibold">johnfelixmarc@gmail.com</span>
+            <p className="text-xs text-text-muted font-mono">
+              DIRECT CHANNEL &rarr; <span className="text-accent font-semibold">johnfelixmarc@gmail.com</span>
             </p>
           </div>
 
@@ -197,7 +196,7 @@ export default function ContactModal() {
             type="button"
             onClick={closeModal}
             aria-label="Close modal"
-            className="p-1 rounded-lg text-text-muted hover:text-text hover:bg-surface-raised active:scale-[0.96] transition-all text-lg leading-none cursor-pointer"
+            className="p-1.5 rounded-lg text-text-muted hover:text-text hover:bg-surface-raised active:scale-[0.96] transition-all text-sm leading-none cursor-pointer"
           >
             ✕
           </button>
@@ -206,13 +205,13 @@ export default function ContactModal() {
         {/* Modal Body / Form States */}
         {status === 'success' ? (
           <div className="py-6 text-center space-y-4">
-            <div className="w-12 h-12 rounded-full bg-emerald-900/15 dark:bg-emerald-500/10 border border-emerald-700/30 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-400 mx-auto flex items-center justify-center text-xl font-bold">
+            <div className="size-12 rounded-full bg-surface-raised border border-border text-accent mx-auto flex items-center justify-center text-xl font-bold font-mono">
               ✓
             </div>
             <div>
-              <h3 className="text-base font-bold text-text">Message Sent!</h3>
-              <p className="text-xs text-text-muted mt-1 max-w-sm mx-auto">
-                Thank you. Your message has been sent to my Gmail. I will reply to you as soon as possible.
+              <h3 className="text-base font-bold font-mono uppercase tracking-wider text-text">Transmission Received</h3>
+              <p className="text-xs text-text-muted mt-1.5 max-w-sm mx-auto leading-relaxed">
+                Direct dispatch delivered to primary inbox. Acknowledgment response will be transmitted shortly.
               </p>
             </div>
             <div className="pt-2 flex justify-center gap-3">
@@ -222,14 +221,14 @@ export default function ContactModal() {
                   setStatus('idle');
                   closeModal();
                 }}
-                className="px-4 py-2 rounded-lg bg-accent text-accent-text hover:opacity-90 active:scale-[0.96] font-medium text-xs font-mono transition-all cursor-pointer"
+                className="px-5 py-2.5 rounded-lg bg-accent text-accent-text hover:opacity-90 active:scale-[0.98] font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
               >
                 Done
               </button>
               <button
                 type="button"
                 onClick={() => setStatus('idle')}
-                className="px-4 py-2 rounded-lg border border-border hover:bg-surface-raised active:scale-[0.96] text-xs font-mono text-text transition-all cursor-pointer"
+                className="px-4 py-2.5 rounded-lg border border-border hover:bg-surface-raised active:scale-[0.98] text-xs font-semibold uppercase tracking-wider text-text transition-all cursor-pointer"
               >
                 Send Another
               </button>
@@ -251,24 +250,24 @@ export default function ContactModal() {
 
             {/* Error Notification */}
             {status === 'error' && (
-              <div className="p-3 rounded-lg bg-red-950/40 border border-red-800/60 text-xs text-red-200">
+              <div className="p-3 rounded-lg bg-surface-raised border border-red-500/40 text-xs text-red-400">
                 <p className="font-medium">{errorMessage}</p>
                 <a
                   href={`mailto:johnfelixmarc@gmail.com?subject=${encodeURIComponent(
                     subject || 'Portfolio Inquiry'
                   )}&body=${encodeURIComponent(message)}`}
-                  className="underline text-red-300 hover:text-red-100 mt-1 inline-block"
+                  className="underline text-text hover:text-accent mt-1 inline-block"
                 >
-                  Or click here to open your default email client directly →
+                  Direct client fallback &rarr;
                 </a>
               </div>
             )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               {/* Name field */}
               <div>
-                <label htmlFor="contact-name" className="block text-xs font-mono font-medium text-text-muted mb-1">
-                  Your Name <span className="text-accent">*</span>
+                <label htmlFor="contact-name" className="block text-[11px] font-mono uppercase tracking-wider text-text-muted mb-1.5">
+                  Name <span className="text-accent">*</span>
                 </label>
                 <input
                   ref={nameInputRef}
@@ -277,16 +276,16 @@ export default function ContactModal() {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. Alex Smith"
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-surface-raised text-text placeholder:text-text-muted/60 focus:outline-none focus:ring-2 focus:ring-accent"
+                  placeholder="Alex Smith"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-lg border border-border bg-surface-raised text-text placeholder:text-text-muted/60 focus:border-accent outline-none transition-colors"
                   disabled={status === 'submitting'}
                 />
               </div>
 
               {/* Email field */}
               <div>
-                <label htmlFor="contact-email" className="block text-xs font-mono font-medium text-text-muted mb-1">
-                  Your Email <span className="text-accent">*</span>
+                <label htmlFor="contact-email" className="block text-[11px] font-mono uppercase tracking-wider text-text-muted mb-1.5">
+                  Email <span className="text-accent">*</span>
                 </label>
                 <input
                   id="contact-email"
@@ -295,7 +294,7 @@ export default function ContactModal() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="alex@company.com"
-                  className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-surface-raised text-text placeholder:text-text-muted/60 focus:outline-none focus:ring-2 focus:ring-accent"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-lg border border-border bg-surface-raised text-text placeholder:text-text-muted/60 focus:border-accent outline-none transition-colors"
                   disabled={status === 'submitting'}
                 />
               </div>
@@ -303,7 +302,7 @@ export default function ContactModal() {
 
             {/* Subject field */}
             <div>
-              <label htmlFor="contact-subject" className="block text-xs font-mono font-medium text-text-muted mb-1">
+              <label htmlFor="contact-subject" className="block text-[11px] font-mono uppercase tracking-wider text-text-muted mb-1.5">
                 Subject
               </label>
               <input
@@ -312,14 +311,14 @@ export default function ContactModal() {
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="Project inquiry / Full-stack opportunity"
-                className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-surface-raised text-text placeholder:text-text-muted/60 focus:outline-none focus:ring-2 focus:ring-accent"
+                className="w-full px-3.5 py-2.5 text-xs rounded-lg border border-border bg-surface-raised text-text placeholder:text-text-muted/60 focus:border-accent outline-none transition-colors"
                 disabled={status === 'submitting'}
               />
             </div>
 
             {/* Message field */}
             <div>
-              <label htmlFor="contact-message" className="block text-xs font-mono font-medium text-text-muted mb-1">
+              <label htmlFor="contact-message" className="block text-[11px] font-mono uppercase tracking-wider text-text-muted mb-1.5">
                 Message <span className="text-accent">*</span>
               </label>
               <textarea
@@ -329,7 +328,7 @@ export default function ContactModal() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Hi Marc, I'd like to talk to you about..."
-                className="w-full px-3 py-2 text-sm rounded-lg border border-border bg-surface-raised text-text placeholder:text-text-muted/60 focus:outline-none focus:ring-2 focus:ring-accent resize-none"
+                className="w-full px-3.5 py-2.5 text-xs rounded-lg border border-border bg-surface-raised text-text placeholder:text-text-muted/60 focus:border-accent outline-none transition-colors resize-none"
                 disabled={status === 'submitting'}
               />
             </div>
@@ -338,16 +337,16 @@ export default function ContactModal() {
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
               <a
                 href="mailto:johnfelixmarc@gmail.com"
-                className="text-xs font-mono text-text-muted hover:text-text transition-colors order-2 sm:order-1"
+                className="text-[11px] font-mono uppercase tracking-wider text-text-muted hover:text-text transition-colors order-2 sm:order-1"
               >
-                Or use mailto: client
+                // mailto: client
               </a>
 
-              <div className="flex items-center gap-2 w-full sm:w-auto justify-end order-1 sm:order-2">
+              <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end order-1 sm:order-2">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="px-3.5 py-2 rounded-lg border border-border hover:bg-surface-raised active:scale-[0.96] text-xs font-mono text-text transition-all cursor-pointer"
+                  className="px-4 py-2.5 rounded-lg border border-border hover:bg-surface-raised active:scale-[0.98] text-xs font-semibold uppercase tracking-wider text-text transition-all cursor-pointer"
                   disabled={status === 'submitting'}
                 >
                   Cancel
@@ -355,15 +354,15 @@ export default function ContactModal() {
                 <button
                   type="submit"
                   disabled={status === 'submitting'}
-                  className="px-4 py-2 rounded-lg bg-accent text-accent-text hover:opacity-90 active:scale-[0.96] font-medium text-xs font-mono transition-all shadow-xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                  className="px-5 py-2.5 rounded-lg bg-accent text-accent-text hover:opacity-90 active:scale-[0.98] transition-all text-xs font-bold uppercase tracking-wider shadow-xs cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {status === 'submitting' ? (
                     <>
                       <span className="w-2.5 h-2.5 border-2 border-accent-text border-t-transparent rounded-full animate-spin"></span>
-                      <span>Sending...</span>
+                      <span>Dispatching...</span>
                     </>
                   ) : (
-                    <span>Send Message</span>
+                    <span>Dispatch Inquiry</span>
                   )}
                 </button>
               </div>

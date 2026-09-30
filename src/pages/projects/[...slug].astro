@@ -1,0 +1,172 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TechIcon from '../../components/icons/TechIcon.astro';
+import { getCollection } from 'astro:content';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+---
+
+<BaseLayout
+  title={`${project.data.title} | Architecture Dossier // Protected`}
+  description={`Proprietary architecture and production details for ${project.data.title}.`}
+>
+  <div class="min-h-[80dvh] flex flex-col justify-center py-12 sm:py-20 max-w-4xl mx-auto">
+    <!-- Back Navigation -->
+    <div class="mb-8 reveal-on-scroll">
+      <a
+        href="/#projects"
+        class="group inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-text-muted hover:text-text transition-colors"
+      >
+        <span class="inline-block transition-transform duration-200 group-hover:-translate-x-1">←</span>
+        <span>Return to Projects</span>
+      </a>
+    </div>
+
+    <!-- Status Badge & Header -->
+    <div class="space-y-4 mb-10 reveal-on-scroll">
+      <div class="flex flex-wrap items-center gap-3">
+        {project.data.liveUrl ? (
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface text-xs text-text shadow-2xs">
+            <span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="tracking-wide uppercase text-[11px] font-semibold">PRODUCTION LIVE // PUBLIC DEPLOYMENT</span>
+          </div>
+        ) : (
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface text-xs text-text shadow-2xs">
+            <span class="size-2 rounded-full bg-amber-500 animate-pulse"></span>
+            <span class="tracking-wide uppercase text-[11px] font-semibold">404 / ARCHITECTURE DOSSIER</span>
+          </div>
+        )}
+        <div class="text-[11px] font-mono text-text-muted uppercase tracking-widest">
+          REF: SEC-{project.id.toUpperCase()}-01
+        </div>
+      </div>
+
+      <h1 class="font-display font-black text-4xl sm:text-6xl md:text-7xl tracking-tight uppercase text-text leading-[0.95]">
+        PROJECT DOSSIER // <span class={project.data.liveUrl ? "text-accent" : "text-text-muted"}>{project.data.liveUrl ? "PUBLIC ACCESS" : "PROTECTED"}</span>
+      </h1>
+
+      <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl font-normal">
+        {project.data.liveUrl
+          ? `Full production deployment and architectural specifications for ${project.data.title}. Live application and open-source infrastructure are publicly accessible.`
+          : "The full architectural dossier, system diagrams, and proprietary architecture for this production deployment are currently restricted under non-disclosure agreements or undergoing sanitized release."}
+      </p>
+    </div>
+
+    <!-- Technical Metadata Dossier Pill / Card -->
+    <div
+      class="rounded-xl border border-border bg-surface p-6 sm:p-8 space-y-6 reveal-on-scroll shadow-xs"
+      transition:name={`project-card-${project.id}`}
+    >
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-border gap-3">
+        <div>
+          <span class="text-accent uppercase font-bold tracking-wider text-xs block mb-1">
+            {project.data.category}
+          </span>
+          <h2
+            class="font-display font-black text-3xl sm:text-4xl uppercase tracking-tight text-text"
+            transition:name={`project-title-${project.id}`}
+          >
+            {project.data.title}
+          </h2>
+        </div>
+        <div class="text-xs uppercase font-medium text-text-muted sm:text-right">
+          <span class="block text-text font-semibold">{project.data.role}</span>
+          <span>Timeline: {project.data.timeline}</span>
+        </div>
+      </div>
+
+      <!-- Technical Telemetry Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
+        <div class="space-y-1.5">
+          <span class="text-[10px] font-mono uppercase tracking-widest text-text-muted font-bold block">
+            System Outcome
+          </span>
+          <p class="text-text font-medium leading-relaxed">
+            {project.data.keyOutcome}
+          </p>
+        </div>
+
+        <div class="space-y-1.5">
+          <span class="text-[10px] font-mono uppercase tracking-widest text-text-muted font-bold block">
+            Architectural Metrics
+          </span>
+          <span class="inline-block px-2.5 py-1 rounded-md bg-surface-raised border border-border-subtle text-[11px] text-text font-semibold uppercase tracking-wider">
+            {project.data.metrics}
+          </span>
+        </div>
+      </div>
+
+      <!-- Verified Production Stack -->
+      <div class="pt-4 border-t border-border space-y-2.5">
+        <span class="text-[10px] font-mono uppercase tracking-widest text-text-muted font-bold block">
+          Deployment Stack Components
+        </span>
+        <div class="flex flex-wrap gap-1.5">
+          {project.data.stack.map((tech) => (
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded border border-border-subtle bg-surface-raised text-xs text-text font-medium">
+              <TechIcon name={tech} class="w-3.5 h-3.5 text-text" />
+              <span>{tech}</span>
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-wrap items-center gap-3 pt-8 reveal-on-scroll">
+      {project.data.liveUrl && (
+        <a
+          href={project.data.liveUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-accent-text hover:scale-[1.02] active:scale-[0.98] transition-all text-xs font-bold uppercase tracking-wider shadow-xs"
+        >
+          <span>Visit Live Site</span>
+          <span class="text-xs">↗</span>
+        </a>
+      )}
+
+      {project.data.repoUrl && (
+        <a
+          href={project.data.repoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-border bg-surface hover:bg-surface-raised hover:border-text-muted active:scale-[0.97] text-text transition-all text-xs font-semibold uppercase tracking-wider"
+        >
+          <TechIcon name="github" class="w-3.5 h-3.5 text-accent" />
+          <span>GitHub Repo</span>
+          <span class="text-xs">↗</span>
+        </a>
+      )}
+
+      <a
+        href="/#projects"
+        class={project.data.liveUrl
+          ? "inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-border bg-surface hover:bg-surface-raised hover:border-text-muted active:scale-[0.97] text-text-muted hover:text-text transition-all text-xs font-semibold uppercase tracking-wider"
+          : "inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-accent-text hover:scale-[1.02] active:scale-[0.98] transition-all text-xs font-bold uppercase tracking-wider shadow-xs"}
+      >
+        <span>← Return to Projects</span>
+      </a>
+
+      {!project.data.liveUrl && (
+        <button
+          type="button"
+          onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
+          class="px-5 py-3 rounded-lg border border-border bg-surface hover:bg-surface-raised hover:border-text-muted active:scale-[0.97] text-text transition-all text-xs font-semibold uppercase tracking-wider cursor-pointer"
+        >
+          Request Sanitized Architecture Brief
+        </button>
+      )}
+    </div>
+  </div>
+</BaseLayout>

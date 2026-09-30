@@ -1,10 +1,9 @@
 ---
 import "../styles/global.css";
-import CommandPalette from "../components/pitched/CommandPalette";
-import TldrToggle from "../components/TldrToggle";
 import ContactModal from "../components/ContactModal";
 import BackToTop from "../components/BackToTop.astro";
-import TerminalHandshakeSplash from "../components/splash/TerminalHandshakeSplash";
+import SplashLoader from "../components/SplashLoader.astro";
+import { ClientRouter } from "astro:transitions";
 
 interface Props {
   title?: string;
@@ -13,19 +12,17 @@ interface Props {
 
 const {
   title = "Marc | Full-Stack Software Engineer",
-  description = "Full-stack engineer who ships production systems that replace manual workflows. Sole engineer on three shipped products in 14 months.",
+  description = "Full-stack engineer specializing in reliable production systems, database architecture, and replacing fragmented workflows.",
 } = Astro.props;
 
 const canonicalURL = new URL(
   Astro.url.pathname,
   Astro.site || "https://marcbalabat.tech",
 );
-const isHomepage = Astro.url.pathname === "/" || Astro.url.pathname === "";
 
-const appVersion = import.meta.env.PUBLIC_APP_VERSION || "0.2.0";
+const appVersion = import.meta.env.PUBLIC_APP_VERSION || "1.0.1";
 const gitSha = import.meta.env.PUBLIC_GIT_SHA || "dev";
 const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
-const isProduction = gitBranch === "main";
 ---
 
 <!doctype html>
@@ -38,6 +35,15 @@ const isProduction = gitBranch === "main";
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
+    <ClientRouter />
+
+    <!-- Google Fonts: DM Sans (Human/Natural Sans) & Alumni Sans (Display) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Alumni+Sans:ital,wght@0,700;0,800;0,900;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- Primary Meta Tags -->
     <title>{title}</title>
@@ -45,31 +51,18 @@ const isProduction = gitBranch === "main";
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
 
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph / Twitter -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-
-    <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={canonicalURL} />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
 
-    <!-- Tranquil Dark/Light/System Theme Script (Default: System) -->
+    <!-- Theme Initialization Script -->
     <script is:inline>
       const getStoredTheme = () => {
         try {
-          // Clean up legacy binary theme key if present
-          if (typeof localStorage !== "undefined") {
-            localStorage.removeItem("theme");
-          }
-          // Default option when loading in the website is always system
-          if (
-            typeof sessionStorage !== "undefined" &&
-            sessionStorage.getItem("theme_preference")
-          ) {
+          if (typeof sessionStorage !== "undefined" && sessionStorage.getItem("theme_preference")) {
             return sessionStorage.getItem("theme_preference");
           }
         } catch (e) {}
@@ -78,620 +71,613 @@ const isProduction = gitBranch === "main";
 
       const resolveTheme = (preference) => {
         if (preference === "system") {
-          return window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light";
+          return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
         }
         return preference;
       };
 
-      const initialPref = getStoredTheme();
-      const initialResolved = resolveTheme(initialPref);
-      document.documentElement.setAttribute("data-theme", initialResolved);
-      document.documentElement.setAttribute(
-        "data-theme-preference",
-        initialPref,
-      );
+      const applyTheme = () => {
+        const pref = getStoredTheme();
+        document.documentElement.setAttribute("data-theme", resolveTheme(pref));
+        document.documentElement.setAttribute("data-theme-preference", pref);
+      };
 
-      // Listen for system theme changes dynamically
-      window
-        .matchMedia("(prefers-color-scheme: dark)")
-        .addEventListener("change", (e) => {
-          const currentPref =
-            typeof sessionStorage !== "undefined"
-              ? sessionStorage.getItem("theme_preference") || "system"
-              : "system";
-          if (currentPref === "system") {
-            document.documentElement.setAttribute(
-              "data-theme",
-              e.matches ? "dark" : "light",
-            );
-          }
-        });
+      applyTheme();
+      document.addEventListener("astro:after-swap", applyTheme);
 
-      // Check TLDR mode preference on initial page load
-      if (
-        typeof localStorage !== "undefined" &&
-        localStorage.getItem("portfolio_tldr_active") === "true"
-      ) {
-        document.addEventListener("DOMContentLoaded", () => {
-          document.body.classList.add("tldr-active");
-        });
-      }
-
-      // Strict splash lockout check before paint on homepage
-      const isHome =
-        window.location.pathname === "/" || window.location.pathname === "";
-      if (
-        isHome &&
-        typeof sessionStorage !== "undefined" &&
-        sessionStorage.getItem("portfolio_unlocked") !== "true"
-      ) {
-        document.documentElement.classList.add("splash-locked");
-      }
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+        if ((sessionStorage.getItem("theme_preference") || "system") === "system") {
+          document.documentElement.setAttribute("data-theme", e.matches ? "dark" : "light");
+        }
+      });
     </script>
   </head>
-  <body
-    class="min-h-screen bg-bg text-text antialiased selection:bg-accent/20 selection:text-accent"
-  >
-    <!-- Interactive Engineering Boot Terminal + Handshake Splash Gate -->
-    {isHomepage && <TerminalHandshakeSplash client:load />}
+  <body class="min-h-screen bg-bg text-text antialiased selection:bg-accent selection:text-accent-text">
+    <SplashLoader />
 
-    <!-- Site Navigation (Fixed, backdrop-blurred, 0-100 fade halfway through cover page) -->
+    <!-- Background Technical Flair: Left & Right Rails -->
+    <aside
+      aria-hidden="true"
+      class="pointer-events-none fixed top-0 bottom-0 left-2 xl:left-5 z-0 hidden lg:flex flex-col justify-between items-center py-12 text-text-muted/30 select-none font-mono text-[9px] tracking-widest uppercase"
+    >
+      <!-- Top: Reticle + Lat -->
+      <div class="flex flex-col items-center gap-2">
+        <svg class="w-3.5 h-3.5 text-text-muted/40 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2">
+          <circle cx="8" cy="8" r="5" stroke-dasharray="2 2"></circle>
+          <line x1="8" y1="1" x2="8" y2="15"></line>
+          <line x1="1" y1="8" x2="15" y2="8"></line>
+        </svg>
+        <span class="[writing-mode:vertical-rl] rotate-180">SYS.01 // LAT 14.5995° N</span>
+      </div>
+
+      <!-- Middle: Vertical measurement tick marks line -->
+      <div class="h-48 w-[1px] bg-border-subtle relative flex flex-col justify-between items-center">
+        <span class="w-2 h-[1px] bg-border-subtle"></span>
+        <span class="w-1.5 h-[1px] bg-border-subtle"></span>
+        <span class="w-3 h-[1px] bg-text-muted/40"></span>
+        <span class="w-1.5 h-[1px] bg-border-subtle"></span>
+        <span class="w-2 h-[1px] bg-border-subtle"></span>
+      </div>
+
+      <!-- Bottom: PROD_SYS // ACTIVE -->
+      <div class="flex flex-col items-center gap-2">
+        <span class="[writing-mode:vertical-rl] rotate-180">PROD_SYS // ACTIVE</span>
+        <div class="w-1.5 h-1.5 rounded-full bg-emerald-500/40"></div>
+      </div>
+    </aside>
+
+    <aside
+      aria-hidden="true"
+      class="pointer-events-none fixed top-0 bottom-0 right-2 xl:right-5 z-0 hidden lg:flex flex-col justify-between items-center py-12 text-text-muted/30 select-none font-mono text-[9px] tracking-widest uppercase"
+    >
+      <!-- Top: Longitude + 3NF -->
+      <div class="flex flex-col items-center gap-2">
+        <div class="w-1.5 h-1.5 rounded-full bg-accent/40"></div>
+        <span class="[writing-mode:vertical-rl]">LNG 120.9842° E // 3NF</span>
+      </div>
+
+      <!-- Middle: Vertical measurement line with coordinate marks -->
+      <div class="h-48 w-[1px] bg-border-subtle relative flex flex-col justify-between items-center">
+        <span class="w-2 h-[1px] bg-border-subtle"></span>
+        <span class="w-1.5 h-[1px] bg-border-subtle"></span>
+        <span class="w-3 h-[1px] bg-text-muted/40"></span>
+        <span class="w-1.5 h-[1px] bg-border-subtle"></span>
+        <span class="w-2 h-[1px] bg-border-subtle"></span>
+      </div>
+
+      <!-- Bottom: Technical crosshair SVG + telemetry status -->
+      <div class="flex flex-col items-center gap-2">
+        <span class="[writing-mode:vertical-rl]">TELEMETRY // OK</span>
+        <svg class="w-3.5 h-3.5 text-text-muted/40 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2">
+          <rect x="3" y="3" width="10" height="10" stroke-dasharray="2 2"></rect>
+          <line x1="8" y1="2" x2="8" y2="14"></line>
+          <line x1="2" y1="8" x2="14" y2="8"></line>
+        </svg>
+      </div>
+    </aside>
+
+    <!-- Dynamic Header (Reveals on scroll) -->
     <header
       id="site-header"
-      class="fixed top-0 left-0 right-0 z-40 bg-bg/90 backdrop-blur-md border-b border-border/60 transition-opacity duration-150 pointer-events-none"
-      style={isHomepage ? "opacity: 0;" : "opacity: 1; pointer-events: auto;"}
+      class="fixed top-0 left-0 right-0 z-40 bg-bg/90 backdrop-blur-md transition-all duration-300 opacity-0 pointer-events-none -translate-y-2"
     >
-      <div
-        class="w-full max-w-375 mx-auto px-4 sm:px-8 lg:px-12 pt-[max(0.875rem,env(safe-area-inset-top))] pb-3.5 sm:py-4 flex items-center justify-between gap-4"
-      >
-        <a
-          href="/"
-          class="group flex items-center gap-2 font-mono text-sm tracking-tight text-text shrink-0"
-        >
-          <span
-            class="inline-block w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-accent group-hover:scale-125 transition-transform duration-200 shrink-0"
-          ></span>
-          <span class="font-bold text-base sm:text-lg tracking-tight">Marc</span
-          >
-          <span class="text-text-muted hidden sm:inline">/</span>
-          <span class="text-text-muted text-xs font-mono hidden sm:inline"
-            >full-stack engineer</span
-          >
+      <div class="w-[90%] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+        <a href="/" class="group flex items-center gap-2 text-sm tracking-tight text-text shrink-0">
+          <span class="inline-block size-2 rounded-full bg-accent group-hover:scale-125 transition-transform duration-200 shrink-0"></span>
+          <span class="font-bold text-base tracking-tight">MARC</span>
+          <span class="text-text-muted/60 hidden sm:inline">/</span>
+          <span class="text-text-muted text-xs font-medium tracking-normal hidden sm:inline">SOFTWARE ENGINEER</span>
         </a>
 
-        <!-- Desktop Navigation Items (Visible on large screens) -->
-        <nav
-          class="hidden lg:flex items-center gap-3 xl:gap-5 text-xs xl:text-sm font-medium text-text-muted"
-        >
-          <!-- TLDR Interactive Toggle Button -->
-          <TldrToggle client:load />
+        <!-- Desktop Navigation Items -->
+        <nav class="hidden md:flex items-center gap-6 text-xs font-semibold uppercase tracking-wider text-text-muted">
+          <a href="/#projects" class="hover:text-text transition-colors">Projects</a>
+          <a href="/#skills" class="hover:text-text transition-colors">Stack</a>
+          <a href="/#contact" class="hover:text-text transition-colors">Contact</a>
 
-          <a
-            href="/#work"
-            class="hover:text-text transition-all active:scale-[0.96] inline-block"
-            >Case Studies</a
-          >
-          <a
-            href="/#architecture"
-            class="hover:text-text transition-all active:scale-[0.96] inline-block"
-            >Architecture</a
-          >
-          <a
-            href="/#skills"
-            class="hover:text-text transition-all active:scale-[0.96] inline-block"
-            >Stack</a
-          >
-          <a
-            href="/#about"
-            class="hover:text-text transition-all active:scale-[0.96] inline-block"
-            >About</a
-          >
-          <button
-            type="button"
-            onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
-            class="hover:text-text transition-all active:scale-[0.96] cursor-pointer"
-          >
-            Contact
-          </button>
-
-          <!-- Command Palette Trigger -->
-          <CommandPalette client:load />
-
-          <!-- Theme Toggle (Cycles: System -> Light -> Dark) -->
+          <!-- Theme Toggle (System -> Light -> Dark) -->
           <button
             id="theme-toggle"
             type="button"
-            aria-label="Toggle color theme (System, Light, Dark)"
+            aria-label="Toggle color theme"
             title="Theme: System (default), Light, Dark"
-            class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-surface-raised active:scale-[0.96] border border-border text-xs font-mono text-text transition-all cursor-pointer shrink-0"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md hover:bg-surface-raised active:scale-[0.96] border border-border text-xs text-text transition-all cursor-pointer shrink-0 font-medium"
           >
             <span id="theme-toggle-icon" class="text-accent">◐</span>
             <span id="theme-toggle-text">System</span>
           </button>
         </nav>
 
-        <!-- Mobile / Tablet Action Bar (< 1024px) -->
-        <div class="flex lg:hidden items-center gap-1.5 sm:gap-2 shrink-0">
-          <!-- TLDR Interactive Toggle Button -->
-          <TldrToggle client:load />
-
-          <!-- Command Palette Trigger -->
-          <CommandPalette client:load />
-
-          <!-- Mobile Theme Toggle -->
+        <!-- Mobile Controls -->
+        <div class="flex md:hidden items-center gap-2 shrink-0">
           <button
             id="theme-toggle-mobile"
             type="button"
             aria-label="Toggle color theme"
-            title="Theme: System (default), Light, Dark"
-            class="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg hover:bg-surface-raised active:scale-[0.96] border border-border text-xs font-mono text-text transition-all cursor-pointer"
+            class="inline-flex items-center justify-center size-8 rounded-md hover:bg-surface-raised border border-border text-xs text-text cursor-pointer"
           >
-            <span id="theme-toggle-mobile-icon" class="text-accent text-sm"
-              >◐</span
-            >
+            <span id="theme-toggle-mobile-icon">◐</span>
           </button>
 
-          <!-- Mobile Menu Drawer Toggle Button -->
           <button
             id="mobile-menu-toggle"
             type="button"
             aria-expanded="false"
             aria-controls="mobile-menu"
-            aria-label="Toggle mobile navigation menu"
-            class="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg border border-border bg-surface hover:bg-surface-raised active:scale-[0.96] text-text transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            aria-label="Toggle navigation menu"
+            class="inline-flex items-center justify-center size-8 rounded-md border border-border bg-surface text-text cursor-pointer"
           >
-            <svg
-              id="hamburger-icon-open"
-              class="w-4 h-4 text-text block"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
+            <svg id="hamburger-icon" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="4" x2="20" y1="6" y2="6"></line>
               <line x1="4" x2="20" y1="12" y2="12"></line>
               <line x1="4" x2="20" y1="18" y2="18"></line>
-            </svg>
-            <svg
-              id="hamburger-icon-close"
-              class="w-4 h-4 text-text hidden"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
         </div>
       </div>
 
       <!-- Mobile Navigation Drawer -->
-      <div
-        id="mobile-menu"
-        class="hidden lg:hidden w-full border-t border-border/70 bg-bg/95 backdrop-blur-xl px-4 py-3 shadow-xl transition-all duration-200"
-      >
-        <div
-          class="flex flex-col space-y-1 text-sm font-medium font-mono text-text max-w-375 mx-auto"
-        >
-          <a
-            href="/#work"
-            class="mobile-nav-link flex items-center justify-between px-3.5 py-2.5 rounded-xl hover:bg-surface-raised active:scale-[0.98] transition-all min-h-11"
-          >
-            <span>Case Studies</span>
-            <span class="text-xs text-text-muted">➔</span>
-          </a>
-          <a
-            href="/#architecture"
-            class="mobile-nav-link flex items-center justify-between px-3.5 py-2.5 rounded-xl hover:bg-surface-raised active:scale-[0.98] transition-all min-h-11"
-          >
-            <span>Architecture Diff</span>
-            <span class="text-xs text-text-muted">➔</span>
-          </a>
-          <a
-            href="/#skills"
-            class="mobile-nav-link flex items-center justify-between px-3.5 py-2.5 rounded-xl hover:bg-surface-raised active:scale-[0.98] transition-all min-h-11"
-          >
-            <span>Stack & Tools</span>
-            <span class="text-xs text-text-muted">➔</span>
-          </a>
-          <a
-            href="/#about"
-            class="mobile-nav-link flex items-center justify-between px-3.5 py-2.5 rounded-xl hover:bg-surface-raised active:scale-[0.98] transition-all min-h-11"
-          >
-            <span>About</span>
-            <span class="text-xs text-text-muted">➔</span>
-          </a>
-          <button
-            type="button"
-            id="mobile-contact-btn"
-            class="mobile-nav-link w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl hover:bg-surface-raised active:scale-[0.98] transition-all text-accent cursor-pointer min-h-11"
-          >
-            <span>Contact</span>
-            <span class="text-xs">✉</span>
-          </button>
+      <div id="mobile-menu" class="hidden md:hidden w-full border-t border-border bg-bg/95 backdrop-blur-xl px-4 py-3">
+        <div class="flex flex-col space-y-2 text-xs uppercase font-medium text-text w-[90%] mx-auto">
+          <a href="/#projects" class="mobile-nav-link py-2 hover:text-accent">Projects</a>
+          <a href="/#skills" class="mobile-nav-link py-2 hover:text-accent">Stack</a>
+          <a href="/#contact" class="mobile-nav-link py-2 hover:text-accent">Contact</a>
         </div>
       </div>
     </header>
 
-    <!-- Maximized Full-Width Container (eliminating excess lateral whitespace) -->
-    <div
-      id="main-content-wrapper"
-      class="w-full max-w-375 mx-auto px-4 sm:px-8 lg:px-12 flex flex-col min-h-screen"
-    >
-      <!-- Main Page Content -->
-      <main class={`flex-1 ${isHomepage ? "" : "pt-20 sm:pt-24 py-6 sm:py-8"}`}>
+    <!-- Main Container (Tightened max-w-5xl to reduce dead empty lateral margin) -->
+    <div class="w-[90%] mx-auto px-4 sm:px-6 flex flex-col min-h-dvh">
+      <main class="flex-1">
         <slot />
       </main>
 
-      <!-- Site Footer -->
-      <footer
-        class="py-6 sm:py-8 pb-[max(1.5rem,env(safe-area-inset-bottom))] border-t border-border/60 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono text-text-muted"
-      >
-        <div
-          class="flex flex-wrap items-center justify-center md:justify-start gap-2.5 sm:gap-3 text-center md:text-left"
-        >
-          <span>© {new Date().getFullYear()} Marc (jsbalabat).</span>
-          <!-- Dynamic Version & Git SHA Status Pill -->
-          <a
-            href={gitSha !== "dev"
-              ? `https://github.com/jsbalabat/portfolio/commit/${gitSha}`
-              : "https://github.com/jsbalabat/portfolio"}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border border-border/70 bg-surface hover:bg-surface-raised hover:border-border text-[11px] font-mono text-text-muted hover:text-text transition-all active:scale-[0.96]"
-            title={`Deployed from ${gitBranch} branch (${gitSha})`}
-          >
-            <span
-              class={`w-1.5 h-1.5 rounded-full ${isProduction ? "bg-emerald-600 dark:bg-emerald-500" : "bg-amber-500"}`}
-            ></span>
-            <span>v{appVersion}</span>
-            <span class="text-text-muted/40">·</span>
-            <span class="text-text font-medium">{gitSha}</span>
-            {
-              !isProduction && (
-                <span class="text-[10px] text-accent font-normal">
-                  ({gitBranch})
-                </span>
-              )
-            }
-          </a>
+      <!-- Minimalist Editorial Footer -->
+      <footer class="py-8 border-t border-border flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs text-text-muted">
+        <div class="flex flex-col gap-0.5">
+          <div class="flex items-center gap-2">
+            <span class="size-2 rounded-full bg-emerald-500"></span>
+            <span class="text-text font-semibold uppercase tracking-wider text-[11px]">AVAILABLE FOR NEW OPPORTUNITIES</span>
+          </div>
+          <p>© {new Date().getFullYear()} Marc Balabat. v{appVersion} · {gitSha} ({gitBranch})</p>
         </div>
-        <div
-          class="flex flex-wrap items-center justify-center md:justify-end gap-x-3 sm:gap-x-4 gap-y-2 text-center md:text-right"
-        >
+
+        <div class="flex flex-wrap items-center gap-x-5 gap-y-1.5 uppercase tracking-wider text-text font-medium text-[11px]">
+          <a href="https://github.com/jsbalabat" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">GitHub</a>
+          <a href="https://www.linkedin.com/in/marc-balabat" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">LinkedIn</a>
           <button
             type="button"
             onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
-            class="hover:text-text transition-colors cursor-pointer text-left underline decoration-accent/40 hover:decoration-accent"
-            title="Open email contact popup"
+            class="hover:text-accent transition-colors cursor-pointer uppercase"
           >
-            johnfelixmarc@gmail.com
+            Email
           </button>
-          <span class="hidden sm:inline text-border" aria-hidden="true">•</span>
-          <a
-            href="https://github.com/jsbalabat"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="hover:text-text transition-colors">GitHub</a
-          >
-          <span class="hidden sm:inline text-border" aria-hidden="true">•</span>
-          <a
-            href="https://www.linkedin.com/in/marc-balabat"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="hover:text-text transition-colors">LinkedIn</a
-          >
-          <span class="hidden sm:inline text-border" aria-hidden="true">•</span>
-          <span
-            class="inline-flex items-center gap-1.5 text-accent font-medium"
-          >
-            <span class="w-1.5 h-1.5 rounded-full bg-accent/60"></span>
-            Cloudflare Workers Runtime
-          </span>
         </div>
       </footer>
     </div>
 
-    <!-- Floating Back to Top Button -->
-    <BackToTop />
+    <!-- Long Capsule Pill Custom Scrollbar -->
+    <div
+      id="custom-scrollbar"
+      aria-hidden="true"
+      class="fixed right-2 sm:right-3.5 top-1/3 bottom-1/3 w-1 sm:w-1.5 rounded-full bg-border/40 overflow-hidden pointer-events-none z-40 hidden sm:flex flex-col justify-start opacity-0 transition-opacity duration-300"
+    >
+      <div id="scrollbar-fill" class="w-full bg-accent rounded-full transition-[height] duration-75 ease-out h-0"></div>
+    </div>
 
-    <!-- Contact Email Modal Popup -->
+    <!-- Invert Aura Cursor -->
+    <div id="cursor-dot" class="pointer-events-none fixed top-0 left-0 w-4 h-4 rounded-full bg-white z-[9999] mix-blend-difference hidden md:block opacity-0 transition-opacity duration-150"></div>
+    <div id="cursor-aura" class="pointer-events-none fixed top-0 left-0 w-12 h-12 rounded-full border border-white/50 bg-white/10 blur-[0.5px] z-[9998] mix-blend-difference hidden md:block opacity-0 transition-opacity duration-150"></div>
+
+    <!-- Back to Top & Contact Modal -->
+    <BackToTop />
     <ContactModal client:load />
 
-    <!-- Theme Toggle & TLDR Toast Dismiss Scripts -->
+    <!-- Theme Switcher, Mobile Menu, Lenis, and Scroll-Reveal Observer -->
     <script>
-      const getActiveThemePreference = (): string => {
-        try {
-          if (typeof sessionStorage !== "undefined") {
-            const stored = sessionStorage.getItem("theme_preference");
-            if (stored) return stored;
+      import Lenis from "lenis";
+
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (typeof window !== "undefined" && "scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+      }
+
+      // Invert Aura Cursor (Global listeners attached once across transitions)
+      if (typeof window !== "undefined" && !(window as any).__cursorInitialized) {
+        (window as any).__cursorInitialized = true;
+
+        let targetX = -100, targetY = -100;
+        let auraX = -100, auraY = -100;
+        let isMouseDown = false;
+        let cursorActive = false;
+
+        window.addEventListener("mousemove", (e: MouseEvent) => {
+          if (!window.matchMedia("(pointer: fine)").matches) return;
+          const dot = document.getElementById("cursor-dot");
+          const aura = document.getElementById("cursor-aura");
+          if (!dot || !aura) return;
+
+          targetX = e.clientX;
+          targetY = e.clientY;
+
+          if (!cursorActive) {
+            cursorActive = true;
+            auraX = targetX;
+            auraY = targetY;
           }
-        } catch (e) {}
-        return "system";
+
+          if (dot.classList.contains("opacity-0")) dot.classList.remove("opacity-0");
+          if (aura.classList.contains("opacity-0")) aura.classList.remove("opacity-0");
+
+          dot.style.transform = `translate3d(${targetX}px, ${targetY}px, 0) translate(-50%, -50%)`;
+        }, { passive: true });
+
+        function renderCursor() {
+          const aura = document.getElementById("cursor-aura");
+          if (cursorActive && aura) {
+            auraX += (targetX - auraX) * 0.12;
+            auraY += (targetY - auraY) * 0.12;
+            const scale = isMouseDown ? 0.75 : 1;
+            aura.style.transform = `translate3d(${auraX}px, ${auraY}px, 0) translate(-50%, -50%) scale(${scale})`;
+          }
+          requestAnimationFrame(renderCursor);
+        }
+        requestAnimationFrame(renderCursor);
+
+        window.addEventListener("mousedown", () => {
+          isMouseDown = true;
+        });
+
+        window.addEventListener("mouseup", () => {
+          isMouseDown = false;
+        });
+
+        document.addEventListener("mouseleave", () => {
+          cursorActive = false;
+          const dot = document.getElementById("cursor-dot");
+          const aura = document.getElementById("cursor-aura");
+          if (dot) dot.classList.add("opacity-0");
+          if (aura) aura.classList.add("opacity-0");
+        });
+
+        document.addEventListener("astro:page-load", () => {
+          const dot = document.getElementById("cursor-dot");
+          const aura = document.getElementById("cursor-aura");
+          if ((cursorActive || window.matchMedia("(pointer: fine)").matches) && targetX >= 0) {
+            cursorActive = true;
+            if (dot) {
+              dot.classList.remove("opacity-0");
+              dot.style.transform = `translate3d(${targetX}px, ${targetY}px, 0) translate(-50%, -50%)`;
+            }
+            if (aura) {
+              aura.classList.remove("opacity-0");
+              aura.style.transform = `translate3d(${auraX}px, ${auraY}px, 0) translate(-50%, -50%)`;
+            }
+          }
+        });
+      }
+
+      const getTargetScrollY = (el: HTMLElement): number => {
+        const currentScroll = (window as any).lenis
+          ? (window as any).lenis.actualScroll
+          : (window.scrollY || window.pageYOffset || 0);
+        const rect = el.getBoundingClientRect();
+        // Lapses the section's top separator line 43px behind the 52px fixed header.
+        // On 1920x932, SELECTED WORK (03) (pt-12 / 48px) lands at Y = 91px, Card 1 at Y = 200px,
+        // Card 2 at Y = 429px, Card 3 at Y = 658px-863px, matching website.png perfectly.
+        return Math.max(0, Math.round(rect.top + currentScroll - 43));
       };
 
-      const updateThemeToggleUI = () => {
-        const pref = getActiveThemePreference();
-        const iconEl = document.getElementById("theme-toggle-icon");
-        const textEl = document.getElementById("theme-toggle-text");
-        const btn = document.getElementById("theme-toggle");
-
-        if (iconEl && textEl && btn) {
-          if (pref === "system") {
-            iconEl.textContent = "◐";
-            textEl.textContent = "System";
-            btn.setAttribute("title", "Theme: System (Default Auto)");
-          } else if (pref === "light") {
-            iconEl.textContent = "☼";
-            textEl.textContent = "Light";
-            btn.setAttribute("title", "Theme: Light");
-          } else {
-            iconEl.textContent = "☾";
-            textEl.textContent = "Dark";
-            btn.setAttribute("title", "Theme: Dark");
-          }
-        }
-
-        const iconMobileEl = document.getElementById(
-          "theme-toggle-mobile-icon",
-        );
-        const btnMobile = document.getElementById("theme-toggle-mobile");
-
-        if (iconMobileEl && btnMobile) {
-          if (pref === "system") {
-            iconMobileEl.textContent = "◐";
-            btnMobile.setAttribute("title", "Theme: System (Default Auto)");
-          } else if (pref === "light") {
-            iconMobileEl.textContent = "☼";
-            btnMobile.setAttribute("title", "Theme: Light");
-          } else {
-            iconMobileEl.textContent = "☾";
-            btnMobile.setAttribute("title", "Theme: Dark");
-          }
-        }
-
-        const iconLandingEl = document.getElementById(
-          "theme-toggle-landing-icon",
-        );
-        const textLandingEl = document.getElementById(
-          "theme-toggle-landing-text",
-        );
-        const btnLanding = document.getElementById("theme-toggle-landing");
-
-        if (iconLandingEl && btnLanding) {
-          if (pref === "system") {
-            iconLandingEl.textContent = "◐";
-            if (textLandingEl) textLandingEl.textContent = "System";
-            btnLanding.setAttribute("title", "Theme: System (Default Auto)");
-          } else if (pref === "light") {
-            iconLandingEl.textContent = "☼";
-            if (textLandingEl) textLandingEl.textContent = "Light";
-            btnLanding.setAttribute("title", "Theme: Light");
-          } else {
-            iconLandingEl.textContent = "☾";
-            if (textLandingEl) textLandingEl.textContent = "Dark";
-            btnLanding.setAttribute("title", "Theme: Dark");
-          }
-        }
-      };
-
-      const applyThemePreference = (nextPref: string) => {
-        try {
-          sessionStorage.setItem("theme_preference", nextPref);
-        } catch (e) {}
-        document.documentElement.setAttribute(
-          "data-theme-preference",
-          nextPref,
-        );
-        if (nextPref === "system") {
-          const resolved = window.matchMedia("(prefers-color-scheme: dark)")
-            .matches
-            ? "dark"
-            : "light";
-          document.documentElement.setAttribute("data-theme", resolved);
+      const scrollToTarget = (target: HTMLElement | string, immediate = false) => {
+        const el = typeof target === "string" ? (document.querySelector(target) as HTMLElement | null) : target;
+        if (!el) return;
+        const targetY = getTargetScrollY(el);
+        const activeLenis = (window as any).lenis;
+        if (activeLenis && !prefersReducedMotion) {
+          activeLenis.scrollTo(targetY, {
+            duration: immediate ? 0 : 1.2,
+            immediate,
+          });
         } else {
-          document.documentElement.setAttribute("data-theme", nextPref);
+          window.scrollTo({
+            top: targetY,
+            behavior: immediate || prefersReducedMotion ? "auto" : "smooth",
+          });
         }
-        updateThemeToggleUI();
-        window.dispatchEvent(
-          new CustomEvent("theme-preference-change", { detail: nextPref }),
-        );
       };
 
-      const cycleTheme = () => {
-        const currentPref = getActiveThemePreference();
-        const cycle: Record<string, string> = {
-          system: "light",
-          light: "dark",
-          dark: "system",
-        };
-        const next = cycle[currentPref] || "system";
-        applyThemePreference(next);
-      };
+      // Dynamic hash link interceptor: Intercept all links pointing to in-page hashes
+      if (typeof window !== "undefined" && !(window as any).__hashNavInitialized) {
+        (window as any).__hashNavInitialized = true;
 
-      const toggle = document.getElementById("theme-toggle");
-      if (toggle) {
-        toggle.addEventListener("click", cycleTheme);
-      }
-
-      const toggleMobile = document.getElementById("theme-toggle-mobile");
-      if (toggleMobile) {
-        toggleMobile.addEventListener("click", cycleTheme);
-      }
-
-      const toggleLanding = document.getElementById("theme-toggle-landing");
-      if (toggleLanding) {
-        toggleLanding.addEventListener("click", cycleTheme);
-      }
-
-      // Initial theme toggle UI update
-      updateThemeToggleUI();
-
-      window.addEventListener("theme-preference-change", () => {
-        updateThemeToggleUI();
-      });
-
-      // Mobile Drawer Menu State & Handlers
-      const menuToggle = document.getElementById("mobile-menu-toggle");
-      const mobileMenu = document.getElementById("mobile-menu");
-      const openIcon = document.getElementById("hamburger-icon-open");
-      const closeIcon = document.getElementById("hamburger-icon-close");
-      const mobileContactBtn = document.getElementById("mobile-contact-btn");
-
-      const closeMobileMenu = () => {
-        if (!mobileMenu || !menuToggle) return;
-        mobileMenu.classList.add("hidden");
-        menuToggle.setAttribute("aria-expanded", "false");
-        openIcon?.classList.remove("hidden");
-        openIcon?.classList.add("block");
-        closeIcon?.classList.remove("block");
-        closeIcon?.classList.add("hidden");
-      };
-
-      const openMobileMenu = () => {
-        if (!mobileMenu || !menuToggle) return;
-        mobileMenu.classList.remove("hidden");
-        menuToggle.setAttribute("aria-expanded", "true");
-        openIcon?.classList.remove("block");
-        openIcon?.classList.add("hidden");
-        closeIcon?.classList.remove("hidden");
-        closeIcon?.classList.add("block");
-      };
-
-      if (menuToggle && mobileMenu) {
-        menuToggle.addEventListener("click", () => {
-          const isExpanded =
-            menuToggle.getAttribute("aria-expanded") === "true";
-          if (isExpanded) {
-            closeMobileMenu();
-          } else {
-            openMobileMenu();
-          }
-        });
-
-        // Close on link click
-        const links = mobileMenu.querySelectorAll(".mobile-nav-link");
-        links.forEach((link) => {
-          link.addEventListener("click", () => {
-            closeMobileMenu();
-          });
-        });
-
-        // Close on Escape key
-        window.addEventListener("keydown", (e) => {
-          if (
-            e.key === "Escape" &&
-            menuToggle.getAttribute("aria-expanded") === "true"
-          ) {
-            closeMobileMenu();
-            menuToggle.focus();
-          }
-        });
-
-        // Close on outside click
         document.addEventListener("click", (e) => {
-          const target = e.target as HTMLElement | null;
-          if (
-            menuToggle.getAttribute("aria-expanded") === "true" &&
-            target &&
-            !mobileMenu.contains(target) &&
-            !menuToggle.contains(target)
-          ) {
-            closeMobileMenu();
-          }
-        });
+          const anchor = (e.target as HTMLElement)?.closest?.('a[href*="#"]') as HTMLAnchorElement | null;
+          if (!anchor) return;
+          const href = anchor.getAttribute("href");
+          if (!href) return;
 
-        // Auto-close on resize to desktop (>= 1024px)
-        window
-          .matchMedia("(min-width: 1024px)")
-          .addEventListener("change", (e) => {
-            if (e.matches) {
-              closeMobileMenu();
+          try {
+            const targetUrl = new URL(anchor.href, window.location.href);
+            const isSamePage =
+              targetUrl.pathname.replace(/\/$/, "") === window.location.pathname.replace(/\/$/, "");
+            if (isSamePage && targetUrl.hash) {
+              const targetEl = document.querySelector(targetUrl.hash) as HTMLElement | null;
+              if (targetEl) {
+                e.preventDefault();
+                e.stopPropagation();
+                history.pushState(null, "", targetUrl.hash);
+                scrollToTarget(targetEl, false);
+              }
+            }
+          } catch (err) {}
+        });
+      }
+
+      const initPage = () => {
+        // 1. Lenis Elastic Smooth Scrolling
+        let lenis: any = null;
+        if (!prefersReducedMotion) {
+          if ((window as any).lenis) {
+            try {
+              (window as any).lenis.destroy();
+            } catch (e) {}
+          }
+
+          lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smoothWheel: true,
+            wheelMultiplier: 1.0,
+          });
+
+          (window as any).lenis = lenis;
+
+          if ((window as any).__lenisRafId) {
+            cancelAnimationFrame((window as any).__lenisRafId);
+          }
+          function raf(time: number) {
+            lenis.raf(time);
+            (window as any).__lenisRafId = requestAnimationFrame(raf);
+          }
+          (window as any).__lenisRafId = requestAnimationFrame(raf);
+        }
+
+        // Handle initial hash on navigation or load (e.g. returning from a project)
+        if (window.location.hash) {
+          const hash = window.location.hash;
+          const targetEl = document.querySelector(hash) as HTMLElement | null;
+          if (targetEl) {
+            scrollToTarget(targetEl, true);
+            requestAnimationFrame(() => scrollToTarget(targetEl, true));
+            setTimeout(() => scrollToTarget(targetEl, true), 60);
+            setTimeout(() => scrollToTarget(targetEl, true), 160);
+          }
+        }
+
+        // 2. Intercept header "MARC" logo for smooth wipe transition to top
+        let isWiping = false;
+        const headerLogo = document.querySelector('#site-header a[href="/"]');
+        if (headerLogo) {
+          headerLogo.addEventListener("click", (e) => {
+            if (window.location.pathname === "/" || window.location.pathname === "") {
+              e.preventDefault();
+              if (isWiping) return;
+              const splash = document.getElementById("splash-loader");
+              const progress = document.getElementById("splash-progress");
+              if (!splash) {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                if (lenis) lenis.scrollTo(0, { duration: 1.2 });
+                return;
+              }
+
+              isWiping = true;
+              // Reset splash to bottom position ready for wipe-up
+              splash.style.transition = "none";
+              splash.style.display = "flex";
+              splash.style.transform = "translateY(100%)";
+              splash.style.pointerEvents = "auto";
+              if (progress) {
+                progress.style.transition = "none";
+                progress.style.width = "0%";
+              }
+              void splash.offsetHeight;
+
+              // Step 1: Smooth wipe UP to cover screen
+              splash.style.transition = "transform 0.42s cubic-bezier(0.76, 0, 0.24, 1)";
+              splash.style.transform = "translateY(0%)";
+
+              setTimeout(() => {
+                // Step 2: Screen fully obscured - silently reset scroll to top
+                window.scrollTo(0, 0);
+                if (lenis) lenis.scrollTo(0, { immediate: true });
+
+                // Fill progress bar indicator
+                if (progress) {
+                  progress.style.transition = "width 0.28s ease-out";
+                  progress.style.width = "100%";
+                }
+
+                // Step 3: Smooth wipe away UP to reveal top of page
+                setTimeout(() => {
+                  splash.style.transition = "transform 0.45s cubic-bezier(0.76, 0, 0.24, 1)";
+                  splash.style.transform = "translateY(-100%)";
+                  splash.style.pointerEvents = "none";
+
+                  setTimeout(() => {
+                    splash.style.display = "none";
+                    splash.style.transform = "translateY(100%)";
+                    isWiping = false;
+                  }, 460);
+                }, 280);
+              }, 430);
             }
           });
-      }
+        }
 
-      if (mobileContactBtn) {
-        mobileContactBtn.addEventListener("click", () => {
-          closeMobileMenu();
-          window.dispatchEvent(new CustomEvent("open-contact-modal"));
-        });
-      }
-
-      // Dynamic header fade-in and collision detection
-      const header = document.getElementById("site-header");
-      const cover = document.getElementById("cover");
-      const bottomAnchor = document.getElementById("cover-bottom-anchor");
-
-      if (header && cover) {
-        const updateHeader = () => {
-          const coverHeight = cover.offsetHeight || window.innerHeight;
-          const halfway = coverHeight * 0.5;
+        // 3. Custom Floating Long Pill Scrollbar
+        const customScrollbar = document.getElementById("custom-scrollbar");
+        const scrollbarFill = document.getElementById("scrollbar-fill");
+        const updateCustomScrollbar = () => {
+          if (!customScrollbar || !scrollbarFill) return;
           const scrollY = window.scrollY || window.pageYOffset || 0;
+          const docHeight = document.documentElement.scrollHeight;
+          const winHeight = window.innerHeight;
+          const maxScroll = docHeight - winHeight;
 
-          // Disappear ONLY when header collides/overlaps with the bottom anchor on-screen
-          if (bottomAnchor) {
-            const headerRect = header.getBoundingClientRect();
-            const anchorRect = bottomAnchor.getBoundingClientRect();
-            const headerBottom =
-              headerRect.bottom > 0
-                ? headerRect.bottom
-                : header.offsetHeight || 60;
-
-            if (anchorRect.top <= headerBottom) {
-              bottomAnchor.style.opacity = "0";
-              bottomAnchor.style.pointerEvents = "none";
-            } else {
-              bottomAnchor.style.opacity = "1";
-              bottomAnchor.style.pointerEvents = "auto";
-            }
-          }
-
-          if (scrollY <= halfway) {
-            header.style.opacity = "0";
-            header.style.pointerEvents = "none";
-            // Also close mobile menu if scrolling back to top of cover
-            closeMobileMenu();
-          } else if (scrollY >= coverHeight) {
-            header.style.opacity = "1";
-            header.style.pointerEvents = "auto";
+          if (scrollY < 50 || maxScroll <= 0) {
+            customScrollbar.classList.add("opacity-0");
           } else {
-            const progress = (scrollY - halfway) / (coverHeight - halfway);
-            const clamped = Math.max(0, Math.min(1, progress));
-            header.style.opacity = clamped.toFixed(3);
-            header.style.pointerEvents = clamped > 0.15 ? "auto" : "none";
+            customScrollbar.classList.remove("opacity-0");
+            const progress = Math.min(Math.max((scrollY / maxScroll) * 100, 0), 100);
+            scrollbarFill.style.height = `${progress}%`;
           }
         };
+        window.addEventListener("scroll", updateCustomScrollbar, { passive: true });
+        if (lenis) {
+          lenis.on("scroll", updateCustomScrollbar);
+        }
+        window.addEventListener("resize", updateCustomScrollbar);
+        updateCustomScrollbar();
 
-        window.addEventListener("scroll", updateHeader, { passive: true });
-        window.addEventListener("resize", updateHeader, { passive: true });
-        updateHeader();
-      } else if (header) {
-        header.style.opacity = "1";
-        header.style.pointerEvents = "auto";
-      }
+        // 4. Dynamic Active Navigation Scroll Spy
+        const sectionIds = ["projects", "skills", "contact"];
+        const sections = sectionIds
+          .map((id) => document.getElementById(id))
+          .filter(Boolean) as HTMLElement[];
+        const navLinks = document.querySelectorAll<HTMLAnchorElement>(
+          'nav a[href*="#"], #mobile-menu a[href*="#"]'
+        );
 
-      // Vertical scrollbar fade: visible only during vertical page movement (mouse movement not counted)
-      let scrollbarFadeTimer: number | undefined;
-      const onVerticalPageMovement = () => {
-        document.documentElement.classList.add("is-scrolling");
-        if (scrollbarFadeTimer) clearTimeout(scrollbarFadeTimer);
-        scrollbarFadeTimer = window.setTimeout(() => {
-          document.documentElement.classList.remove("is-scrolling");
-        }, 1000);
+        if (sections.length > 0) {
+          const spyObserver = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  const id = entry.target.getAttribute("id");
+                  navLinks.forEach((link) => {
+                    const href = link.getAttribute("href") || "";
+                    if (href.endsWith(`#${id}`)) {
+                      link.classList.add("text-accent", "font-bold");
+                      link.classList.remove("text-text-muted");
+                    } else {
+                      link.classList.remove("text-accent", "font-bold");
+                      link.classList.add("text-text-muted");
+                    }
+                  });
+                }
+              });
+            },
+            {
+              rootMargin: "-20% 0px -60% 0px",
+              threshold: 0,
+            }
+          );
+          sections.forEach((section) => spyObserver.observe(section));
+        }
+
+        // 5. Dynamic Header Scroll Reveal
+        const siteHeader = document.getElementById("site-header");
+        const handleScrollHeader = () => {
+          const scrollY = window.scrollY || window.pageYOffset || 0;
+          if (scrollY > 120) {
+            siteHeader?.classList.remove("opacity-0", "pointer-events-none", "-translate-y-2");
+            siteHeader?.classList.add("opacity-100", "pointer-events-auto", "translate-y-0");
+          } else {
+            siteHeader?.classList.add("opacity-0", "pointer-events-none", "-translate-y-2");
+            siteHeader?.classList.remove("opacity-100", "pointer-events-auto", "translate-y-0");
+          }
+        };
+        window.addEventListener("scroll", handleScrollHeader, { passive: true });
+        if (lenis) {
+          lenis.on("scroll", () => handleScrollHeader());
+        }
+        handleScrollHeader();
+
+        // 6. Theme Logic
+        const getActiveThemePreference = (): string => {
+          try {
+            if (typeof sessionStorage !== "undefined") {
+              const stored = sessionStorage.getItem("theme_preference");
+              if (stored) return stored;
+            }
+          } catch (e) {}
+          return "system";
+        };
+
+        const updateThemeToggleUI = () => {
+          const pref = getActiveThemePreference();
+          const iconEl = document.getElementById("theme-toggle-icon");
+          const textEl = document.getElementById("theme-toggle-text");
+          const iconMobileEl = document.getElementById("theme-toggle-mobile-icon");
+
+          const iconMap: Record<string, string> = { system: "◐", light: "☼", dark: "☾" };
+          const textMap: Record<string, string> = { system: "System", light: "Light", dark: "Dark" };
+
+          if (iconEl) iconEl.textContent = iconMap[pref] || "◐";
+          if (textEl) textEl.textContent = textMap[pref] || "System";
+          if (iconMobileEl) iconMobileEl.textContent = iconMap[pref] || "◐";
+        };
+
+        const cycleTheme = () => {
+          const currentPref = getActiveThemePreference();
+          const cycle: Record<string, string> = { system: "light", light: "dark", dark: "system" };
+          const next = cycle[currentPref] || "system";
+          sessionStorage.setItem("theme_preference", next);
+          document.documentElement.setAttribute("data-theme-preference", next);
+
+          if (next === "system") {
+            const resolved = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+            document.documentElement.setAttribute("data-theme", resolved);
+          } else {
+            document.documentElement.setAttribute("data-theme", next);
+          }
+          updateThemeToggleUI();
+        };
+
+        document.getElementById("theme-toggle")?.addEventListener("click", cycleTheme);
+        document.getElementById("theme-toggle-mobile")?.addEventListener("click", cycleTheme);
+        updateThemeToggleUI();
+
+        // 7. Mobile Menu Toggle
+        const menuToggle = document.getElementById("mobile-menu-toggle");
+        const mobileMenu = document.getElementById("mobile-menu");
+        if (menuToggle && mobileMenu) {
+          menuToggle.addEventListener("click", () => {
+            const isHidden = mobileMenu.classList.toggle("hidden");
+            menuToggle.setAttribute("aria-expanded", isHidden ? "false" : "true");
+          });
+          mobileMenu.querySelectorAll(".mobile-nav-link").forEach((link) => {
+            link.addEventListener("click", () => {
+              mobileMenu.classList.add("hidden");
+              menuToggle.setAttribute("aria-expanded", "false");
+            });
+          });
+        }
+
+        // 8. Smooth Scroll Entrance Observer (GPU-composited micro-animations)
+        if (!("IntersectionObserver" in window)) {
+          document.querySelectorAll(".reveal-on-scroll").forEach((el) => el.classList.add("is-visible"));
+        } else {
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add("is-visible");
+                  observer.unobserve(entry.target);
+                }
+              });
+            },
+            {
+              threshold: 0.08,
+              rootMargin: "0px 0px -30px 0px",
+            }
+          );
+
+          document.querySelectorAll(".reveal-on-scroll").forEach((el) => observer.observe(el));
+        }
       };
 
-      window.addEventListener("scroll", onVerticalPageMovement, {
-        passive: true,
-      });
+      document.addEventListener("astro:page-load", initPage);
     </script>
   </body>
 </html>
