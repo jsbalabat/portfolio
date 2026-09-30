@@ -213,3 +213,25 @@ body {
     cursor: none !important;
   }
 }
+
+/* ==========================================================================
+   TLDR Interactive Mode (Zero Layout Shift Guarantee)
+   ========================================================================== */
+.tldr-dim {
+  transition: opacity 0.25s ease, filter 0.25s ease;
+}
+
+:where(html.tldr-active, body.tldr-active) .tldr-dim {
+  opacity: 0.3 !important;
+  filter: grayscale(40%) !important;
+}
+
+.tldr-highlight {
+  transition: outline-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+:where(html.tldr-active, body.tldr-active) .tldr-highlight {
+  outline: 1.5px solid var(--color-accent) !important;
+  outline-offset: 1px !important;
+}
+

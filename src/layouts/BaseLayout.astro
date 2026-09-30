@@ -85,6 +85,18 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
       applyTheme();
       document.addEventListener("astro:after-swap", applyTheme);
 
+      const applyTldr = () => {
+        try {
+          if (localStorage.getItem("portfolio_tldr_active") === "true") {
+            document.documentElement.classList.add("tldr-active");
+          } else {
+            document.documentElement.classList.remove("tldr-active");
+          }
+        } catch (e) {}
+      };
+      applyTldr();
+      document.addEventListener("astro:after-swap", applyTldr);
+
       window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
         if ((sessionStorage.getItem("theme_preference") || "system") === "system") {
           document.documentElement.setAttribute("data-theme", e.matches ? "dark" : "light");
@@ -176,6 +188,20 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
           <a href="/#skills" class="hover:text-text transition-colors">Stack</a>
           <a href="/#contact" class="hover:text-text transition-colors">Contact</a>
 
+          <!-- TLDR Toggle in Header -->
+          <button
+            id="tldr-toggle-header"
+            data-tldr-toggle
+            type="button"
+            aria-pressed="false"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border bg-surface hover:bg-surface-raised active:scale-[0.96] text-xs font-mono font-medium text-text transition-all cursor-pointer shadow-2xs shrink-0 select-none"
+            title="Toggle TLDR: Dims detailed narrative and highlights key metrics, tech stacks, and project outcomes"
+          >
+            <span class="tldr-indicator size-1.5 rounded-full bg-text-muted/60 transition-colors"></span>
+            <span class="tracking-wider">TLDR</span>
+            <span class="tldr-badge text-[10px] px-1 py-0.2 rounded bg-surface-raised border border-border-subtle text-text-muted font-bold transition-colors">OFF</span>
+          </button>
+
           <!-- Theme Toggle (System -> Light -> Dark) -->
           <button
             id="theme-toggle"
@@ -191,6 +217,18 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
 
         <!-- Mobile Controls (44x44px minimum touch targets) -->
         <div class="flex md:hidden items-center gap-1.5 shrink-0">
+          <button
+            id="tldr-toggle-mobile"
+            data-tldr-toggle
+            type="button"
+            aria-label="Toggle TLDR mode"
+            class="inline-flex items-center justify-center size-10 min-w-[44px] min-h-[44px] rounded-lg hover:bg-surface-raised active:bg-surface-raised active:scale-90 border border-border text-xs font-mono font-bold text-text cursor-pointer transition-transform touch-manipulation gap-1"
+            title="Toggle TLDR"
+          >
+            <span class="tldr-indicator size-1.5 rounded-full bg-text-muted/60 transition-colors"></span>
+            <span>TLDR</span>
+          </button>
+
           <button
             id="theme-toggle-mobile"
             type="button"
@@ -619,6 +657,8 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
           const iconEl = document.getElementById("theme-toggle-icon");
           const textEl = document.getElementById("theme-toggle-text");
           const iconMobileEl = document.getElementById("theme-toggle-mobile-icon");
+          const iconHeroEl = document.getElementById("theme-toggle-hero-icon");
+          const textHeroEl = document.getElementById("theme-toggle-hero-text");
 
           const iconMap: Record<string, string> = { system: "◐", light: "☼", dark: "☾" };
           const textMap: Record<string, string> = { system: "System", light: "Light", dark: "Dark" };
@@ -626,6 +666,8 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
           if (iconEl) iconEl.textContent = iconMap[pref] || "◐";
           if (textEl) textEl.textContent = textMap[pref] || "System";
           if (iconMobileEl) iconMobileEl.textContent = iconMap[pref] || "◐";
+          if (iconHeroEl) iconHeroEl.textContent = iconMap[pref] || "◐";
+          if (textHeroEl) textHeroEl.textContent = textMap[pref] || "System";
         };
 
         const cycleTheme = () => {
@@ -646,9 +688,70 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
 
         document.getElementById("theme-toggle")?.addEventListener("click", cycleTheme);
         document.getElementById("theme-toggle-mobile")?.addEventListener("click", cycleTheme);
+        document.getElementById("theme-toggle-hero")?.addEventListener("click", cycleTheme);
         updateThemeToggleUI();
 
-        // 7. Mobile Menu Toggle with Smooth Animation
+        // 7. TLDR Mode Logic (Zero Layout Shift)
+        const isTldrActive = (): boolean => {
+          try {
+            return localStorage.getItem("portfolio_tldr_active") === "true";
+          } catch (e) {
+            return false;
+          }
+        };
+
+        const updateTldrUI = (active: boolean) => {
+          if (active) {
+            document.body.classList.add("tldr-active");
+            document.documentElement.classList.add("tldr-active");
+          } else {
+            document.body.classList.remove("tldr-active");
+            document.documentElement.classList.remove("tldr-active");
+          }
+
+          document.querySelectorAll("[data-tldr-toggle]").forEach((btn) => {
+            btn.setAttribute("aria-pressed", active ? "true" : "false");
+            const indicator = btn.querySelector(".tldr-indicator");
+            const badge = btn.querySelector(".tldr-badge");
+
+            if (active) {
+              btn.classList.add("border-accent", "text-accent");
+              btn.classList.remove("border-border", "text-text");
+              indicator?.classList.remove("bg-text-muted/60");
+              indicator?.classList.add("bg-emerald-500");
+              if (badge) {
+                badge.textContent = "ON";
+                badge.classList.add("bg-accent", "text-accent-text");
+                badge.classList.remove("bg-surface-raised", "text-text-muted", "border-border-subtle");
+              }
+            } else {
+              btn.classList.remove("border-accent", "text-accent");
+              btn.classList.add("border-border", "text-text");
+              indicator?.classList.add("bg-text-muted/60");
+              indicator?.classList.remove("bg-emerald-500");
+              if (badge) {
+                badge.textContent = "OFF";
+                badge.classList.remove("bg-accent", "text-accent-text");
+                badge.classList.add("bg-surface-raised", "text-text-muted", "border-border-subtle");
+              }
+            }
+          });
+        };
+
+        const toggleTldr = () => {
+          const next = !isTldrActive();
+          try {
+            localStorage.setItem("portfolio_tldr_active", String(next));
+          } catch (e) {}
+          updateTldrUI(next);
+        };
+
+        document.querySelectorAll("[data-tldr-toggle]").forEach((btn) => {
+          btn.addEventListener("click", toggleTldr);
+        });
+        updateTldrUI(isTldrActive());
+
+        // 8. Mobile Menu Toggle with Smooth Animation
         const menuToggle = document.getElementById("mobile-menu-toggle");
         const mobileMenu = document.getElementById("mobile-menu");
         const menuContent = document.getElementById("mobile-menu-content");
