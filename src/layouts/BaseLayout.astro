@@ -163,7 +163,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
     >
       <div class="w-[90%] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
         <a href="/" class="group flex items-center gap-2 text-sm tracking-tight text-text shrink-0">
-          <span class="inline-block w-2 h-2 rounded-full bg-accent group-hover:scale-125 transition-transform duration-200 shrink-0"></span>
+          <span class="inline-block size-2 rounded-full bg-accent group-hover:scale-125 transition-transform duration-200 shrink-0"></span>
           <span class="font-bold text-base tracking-tight">MARC</span>
           <span class="text-text-muted/60 hidden sm:inline">/</span>
           <span class="text-text-muted text-xs font-medium tracking-normal hidden sm:inline">SOFTWARE ENGINEER</span>
@@ -194,7 +194,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
             id="theme-toggle-mobile"
             type="button"
             aria-label="Toggle color theme"
-            class="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-surface-raised border border-border text-xs text-text cursor-pointer"
+            class="inline-flex items-center justify-center size-8 rounded-md hover:bg-surface-raised border border-border text-xs text-text cursor-pointer"
           >
             <span id="theme-toggle-mobile-icon">◐</span>
           </button>
@@ -205,9 +205,9 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
             aria-expanded="false"
             aria-controls="mobile-menu"
             aria-label="Toggle navigation menu"
-            class="inline-flex items-center justify-center w-8 h-8 rounded-md border border-border bg-surface text-text cursor-pointer"
+            class="inline-flex items-center justify-center size-8 rounded-md border border-border bg-surface text-text cursor-pointer"
           >
-            <svg id="hamburger-icon" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg id="hamburger-icon" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="4" x2="20" y1="6" y2="6"></line>
               <line x1="4" x2="20" y1="12" y2="12"></line>
               <line x1="4" x2="20" y1="18" y2="18"></line>
@@ -227,7 +227,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
     </header>
 
     <!-- Main Container (Tightened max-w-5xl to reduce dead empty lateral margin) -->
-    <div class="w-[90%] mx-auto px-4 sm:px-6 flex flex-col min-h-screen">
+    <div class="w-[90%] mx-auto px-4 sm:px-6 flex flex-col min-h-dvh">
       <main class="flex-1">
         <slot />
       </main>
@@ -236,7 +236,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
       <footer class="py-8 border-t border-border flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs text-text-muted">
         <div class="flex flex-col gap-0.5">
           <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span class="size-2 rounded-full bg-emerald-500"></span>
             <span class="text-text font-semibold uppercase tracking-wider text-[11px]">AVAILABLE FOR NEW OPPORTUNITIES</span>
           </div>
           <p>© {new Date().getFullYear()} Marc Balabat. v{appVersion} · {gitSha} ({gitBranch})</p>
@@ -643,10 +643,14 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         const mobileMenu = document.getElementById("mobile-menu");
         if (menuToggle && mobileMenu) {
           menuToggle.addEventListener("click", () => {
-            mobileMenu.classList.toggle("hidden");
+            const isHidden = mobileMenu.classList.toggle("hidden");
+            menuToggle.setAttribute("aria-expanded", isHidden ? "false" : "true");
           });
           mobileMenu.querySelectorAll(".mobile-nav-link").forEach((link) => {
-            link.addEventListener("click", () => mobileMenu.classList.add("hidden"));
+            link.addEventListener("click", () => {
+              mobileMenu.classList.add("hidden");
+              menuToggle.setAttribute("aria-expanded", "false");
+            });
           });
         }
 
@@ -674,9 +678,6 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
       };
 
       document.addEventListener("astro:page-load", initPage);
-      if (document.readyState !== "loading") {
-        initPage();
-      }
     </script>
   </body>
 </html>

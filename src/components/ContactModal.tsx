@@ -182,7 +182,7 @@ export default function ContactModal() {
         <div className="flex items-start justify-between gap-4 mb-6 pb-3 border-b border-border/60">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></span>
+              <span className="size-1.5 rounded-full bg-accent animate-pulse"></span>
               <h2 id="contact-modal-title" className="text-sm font-bold font-mono tracking-wider text-text uppercase">
                 // DIRECT INQUIRY DISPATCH
               </h2>
@@ -205,7 +205,7 @@ export default function ContactModal() {
         {/* Modal Body / Form States */}
         {status === 'success' ? (
           <div className="py-6 text-center space-y-4">
-            <div className="w-12 h-12 rounded-full bg-surface-raised border border-border text-accent mx-auto flex items-center justify-center text-xl font-bold font-mono">
+            <div className="size-12 rounded-full bg-surface-raised border border-border text-accent mx-auto flex items-center justify-center text-xl font-bold font-mono">
               ✓
             </div>
             <div>

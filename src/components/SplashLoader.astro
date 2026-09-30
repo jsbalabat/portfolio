@@ -50,6 +50,13 @@
       return;
     }
 
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      splash.style.display = 'none';
+      splash.style.pointerEvents = 'none';
+      sessionStorage.setItem('splash_shown', 'true');
+      return;
+    }
+
     if (splashRunning) return;
     splashRunning = true;
 

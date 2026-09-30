@@ -20,7 +20,7 @@ const { project } = Astro.props;
   title={`${project.data.title} | Architecture Dossier // Protected`}
   description={`Proprietary architecture and production details for ${project.data.title}.`}
 >
-  <div class="min-h-[80vh] flex flex-col justify-center py-12 sm:py-20 max-w-4xl mx-auto">
+  <div class="min-h-[80dvh] flex flex-col justify-center py-12 sm:py-20 max-w-4xl mx-auto">
     <!-- Back Navigation -->
     <div class="mb-8 reveal-on-scroll">
       <a
@@ -37,12 +37,12 @@ const { project } = Astro.props;
       <div class="flex flex-wrap items-center gap-3">
         {project.data.liveUrl ? (
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface text-xs text-text shadow-2xs">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <span class="tracking-wide uppercase text-[11px] font-semibold">PRODUCTION LIVE // PUBLIC DEPLOYMENT</span>
           </div>
         ) : (
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface text-xs text-text shadow-2xs">
-            <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+            <span class="size-2 rounded-full bg-amber-500 animate-pulse"></span>
             <span class="tracking-wide uppercase text-[11px] font-semibold">404 / ARCHITECTURE DOSSIER</span>
           </div>
         )}
