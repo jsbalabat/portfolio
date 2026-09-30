@@ -174,7 +174,7 @@ export default function ContactModal() {
     >
       <div
         ref={dialogRef}
-        className={`relative w-full max-w-lg max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-xl border border-border bg-surface p-6 sm:p-8 text-text shadow-2xl ${
+        className={`relative w-full max-w-lg max-h-[calc(100svh-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-xl border border-border bg-surface p-5 sm:p-8 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] text-text shadow-2xl ${
           isClosing ? 'animate-modal-content-out' : 'animate-modal-content'
         }`}
       >
@@ -196,7 +196,7 @@ export default function ContactModal() {
             type="button"
             onClick={closeModal}
             aria-label="Close modal"
-            className="p-1.5 rounded-lg text-text-muted hover:text-text hover:bg-surface-raised active:scale-[0.96] transition-all text-sm leading-none cursor-pointer"
+            className="size-10 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-text-muted hover:text-text hover:bg-surface-raised active:scale-[0.96] transition-all text-sm leading-none cursor-pointer touch-manipulation"
           >
             ✕
           </button>
@@ -221,14 +221,14 @@ export default function ContactModal() {
                   setStatus('idle');
                   closeModal();
                 }}
-                className="px-5 py-2.5 rounded-lg bg-accent text-accent-text hover:opacity-90 active:scale-[0.98] font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
+                className="inline-flex items-center justify-center min-h-[44px] px-5 py-2.5 rounded-lg bg-accent text-accent-text hover:opacity-90 active:scale-[0.98] font-bold text-xs uppercase tracking-wider transition-all cursor-pointer touch-manipulation"
               >
                 Done
               </button>
               <button
                 type="button"
                 onClick={() => setStatus('idle')}
-                className="px-4 py-2.5 rounded-lg border border-border hover:bg-surface-raised active:scale-[0.98] text-xs font-semibold uppercase tracking-wider text-text transition-all cursor-pointer"
+                className="inline-flex items-center justify-center min-h-[44px] px-4 py-2.5 rounded-lg border border-border hover:bg-surface-raised active:scale-[0.98] text-xs font-semibold uppercase tracking-wider text-text transition-all cursor-pointer touch-manipulation"
               >
                 Send Another
               </button>
@@ -277,7 +277,7 @@ export default function ContactModal() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Alex Smith"
-                  className="w-full px-3.5 py-2.5 text-xs rounded-lg border border-border bg-surface-raised text-text placeholder:text-text-muted/60 focus:border-accent outline-none transition-colors"
+                  className="w-full px-3.5 py-2.5 text-base sm:text-xs rounded-lg border border-border bg-surface-raised text-text placeholder:text-text-muted/60 focus:border-accent outline-none transition-colors"
                   disabled={status === 'submitting'}
                 />
               </div>
@@ -294,7 +294,7 @@ export default function ContactModal() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="alex@company.com"
-                  className="w-full px-3.5 py-2.5 text-xs rounded-lg border border-border bg-surface-raised text-text placeholder:text-text-muted/60 focus:border-accent outline-none transition-colors"
+                  className="w-full px-3.5 py-2.5 text-base sm:text-xs rounded-lg border border-border bg-surface-raised text-text placeholder:text-text-muted/60 focus:border-accent outline-none transition-colors"
                   disabled={status === 'submitting'}
                 />
               </div>
@@ -311,7 +311,7 @@ export default function ContactModal() {
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="Project inquiry / Full-stack opportunity"
-                className="w-full px-3.5 py-2.5 text-xs rounded-lg border border-border bg-surface-raised text-text placeholder:text-text-muted/60 focus:border-accent outline-none transition-colors"
+                className="w-full px-3.5 py-2.5 text-base sm:text-xs rounded-lg border border-border bg-surface-raised text-text placeholder:text-text-muted/60 focus:border-accent outline-none transition-colors"
                 disabled={status === 'submitting'}
               />
             </div>
@@ -328,7 +328,7 @@ export default function ContactModal() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Hi Marc, I'd like to talk to you about..."
-                className="w-full px-3.5 py-2.5 text-xs rounded-lg border border-border bg-surface-raised text-text placeholder:text-text-muted/60 focus:border-accent outline-none transition-colors resize-none"
+                className="w-full px-3.5 py-2.5 text-base sm:text-xs rounded-lg border border-border bg-surface-raised text-text placeholder:text-text-muted/60 focus:border-accent outline-none transition-colors resize-none"
                 disabled={status === 'submitting'}
               />
             </div>
@@ -346,7 +346,7 @@ export default function ContactModal() {
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="px-4 py-2.5 rounded-lg border border-border hover:bg-surface-raised active:scale-[0.98] text-xs font-semibold uppercase tracking-wider text-text transition-all cursor-pointer"
+                  className="inline-flex items-center justify-center min-h-[44px] px-4 py-2.5 rounded-lg border border-border hover:bg-surface-raised active:scale-[0.98] text-xs font-semibold uppercase tracking-wider text-text transition-all cursor-pointer touch-manipulation"
                   disabled={status === 'submitting'}
                 >
                   Cancel
@@ -354,7 +354,7 @@ export default function ContactModal() {
                 <button
                   type="submit"
                   disabled={status === 'submitting'}
-                  className="px-5 py-2.5 rounded-lg bg-accent text-accent-text hover:opacity-90 active:scale-[0.98] transition-all text-xs font-bold uppercase tracking-wider shadow-xs cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="inline-flex items-center justify-center min-h-[44px] px-5 py-2.5 rounded-lg bg-accent text-accent-text hover:opacity-90 active:scale-[0.98] transition-all text-xs font-bold uppercase tracking-wider shadow-xs cursor-pointer gap-2 disabled:opacity-50 touch-manipulation"
                 >
                   {status === 'submitting' ? (
                     <>

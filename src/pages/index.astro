@@ -48,24 +48,24 @@ const skills = {
 ---
 
 <BaseLayout>
-  <!-- Hero Section (Full Viewport, Centered Two-Column Grid) -->
-  <section id="hero" class="min-h-[100dvh] flex flex-col justify-center py-10 sm:py-16 border-b border-border">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center reveal-on-scroll">
+  <!-- Hero Section (Full Viewport, Centered Two-Column Grid, Dynamic Viewport Fit) -->
+  <section id="hero" class="min-h-[100svh] min-h-[100dvh] flex flex-col justify-center py-6 sm:py-12 lg:py-16 border-b border-border">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start reveal-on-scroll my-auto w-full">
       <!-- Left Column -->
-      <div class="lg:col-span-6 flex flex-col justify-center space-y-6 sm:space-y-8">
+      <div class="lg:col-span-6 flex flex-col justify-start space-y-4 sm:space-y-6">
         <!-- Status Row -->
-        <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 min-h-[28px]">
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface text-xs text-text shadow-2xs">
-            <span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span class="tracking-wide uppercase text-[11px] font-semibold">AVAILABLE FOR NEW ROLES</span>
+            <span class="size-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+            <span class="tracking-wide uppercase text-[10px] sm:text-[11px] font-semibold whitespace-nowrap">AVAILABLE FOR NEW ROLES</span>
           </div>
-          <div class="text-xs text-text-muted font-medium uppercase tracking-wider">
-            <span>MANILA / REMOTE</span>
+          <div class="text-[11px] sm:text-xs text-text-muted font-medium uppercase tracking-wider whitespace-nowrap">
+            <span>PHILIPPINES / REMOTE</span>
           </div>
         </div>
 
         <!-- Display Headline -->
-        <h1 class="font-display font-black text-5xl sm:text-6xl md:text-7xl lg:text-8xl 2xl:text-9xl tracking-tight leading-[0.9] text-text uppercase">
+        <h1 class="font-display font-black text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl 2xl:text-9xl tracking-tight leading-[0.9] text-text uppercase">
           <span class="block">PRODUCTION</span>
           <span class="block">SYSTEMS THAT</span>
           <span class="block text-text-muted">NEVER BREAK.</span>
@@ -73,48 +73,52 @@ const skills = {
       </div>
 
       <!-- Right Column -->
-      <div class="lg:col-span-6 flex flex-col justify-center space-y-6">
-        <div class="space-y-3.5">
-          <div class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold tracking-wide text-text-muted font-mono uppercase mb-2">
+      <div class="lg:col-span-6 flex flex-col justify-start space-y-4 sm:space-y-6">
+        <!-- Identity Row (Aligned with Status Row baseline) -->
+        <div class="flex items-center min-h-[28px]">
+          <div class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold tracking-wide text-text-muted font-mono uppercase">
             <span>Hi, I'm</span>
             <span id="hero-rotating-word" class="text-text font-black transition-all duration-300">
               Marc
             </span>
           </div>
-          <h2 class="text-xl sm:text-2xl 2xl:text-3xl font-bold tracking-tight text-text text-balance">
+        </div>
+
+        <div class="space-y-2.5 sm:space-y-3.5">
+          <h2 class="text-lg sm:text-2xl 2xl:text-3xl font-bold tracking-tight text-text text-balance leading-snug">
             I design and build resilient digital products with zero patience for software that fails silently.
           </h2>
-          <p class="text-sm sm:text-base text-text-muted leading-relaxed text-pretty font-normal">
+          <p class="text-xs sm:text-base text-text-muted leading-relaxed text-pretty font-normal">
             Sole engineer across four production applications with 700+ commits. I engineer systems where correctness and edge cases matter: replacing fragile Excel invoicing with offline-first mobile apps, eliminating cash waterfall drift with normalized relational schemas, and safeguarding clinical intake data with deterministic runtime validation.
           </p>
         </div>
 
         <!-- Metrics Strip -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 py-4 border-y border-border">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 py-2.5 sm:py-4 border-y border-border">
           <div>
-            <span class="block text-3xl sm:text-4xl 2xl:text-5xl font-extrabold text-text tabular-nums tracking-tight">04</span>
-            <span class="text-[11px] uppercase tracking-wider text-text-muted font-semibold">Shipped Apps</span>
+            <span class="block text-2xl sm:text-4xl 2xl:text-5xl font-extrabold text-text tabular-nums tracking-tight">04</span>
+            <span class="text-[10px] sm:text-[11px] uppercase tracking-wider text-text-muted font-semibold">Shipped Apps</span>
           </div>
           <div>
-            <span class="block text-3xl sm:text-4xl 2xl:text-5xl font-extrabold text-text tabular-nums tracking-tight">06</span>
-            <span class="text-[11px] uppercase tracking-wider text-text-muted font-semibold">Firms Adopted</span>
+            <span class="block text-2xl sm:text-4xl 2xl:text-5xl font-extrabold text-text tabular-nums tracking-tight">06</span>
+            <span class="text-[10px] sm:text-[11px] uppercase tracking-wider text-text-muted font-semibold">Firms Adopted</span>
           </div>
           <div>
-            <span class="block text-3xl sm:text-4xl 2xl:text-5xl font-extrabold text-text tabular-nums tracking-tight">~150</span>
-            <span class="text-[11px] uppercase tracking-wider text-text-muted font-semibold">Daily Invoices</span>
+            <span class="block text-2xl sm:text-4xl 2xl:text-5xl font-extrabold text-text tabular-nums tracking-tight">~150</span>
+            <span class="text-[10px] sm:text-[11px] uppercase tracking-wider text-text-muted font-semibold">Daily Invoices</span>
           </div>
           <div>
-            <span class="block text-3xl sm:text-4xl 2xl:text-5xl font-extrabold text-text tabular-nums tracking-tight">100%</span>
-            <span class="text-[11px] uppercase tracking-wider text-text-muted font-semibold">RLS Isolation</span>
+            <span class="block text-2xl sm:text-4xl 2xl:text-5xl font-extrabold text-text tabular-nums tracking-tight">100%</span>
+            <span class="text-[10px] sm:text-[11px] uppercase tracking-wider text-text-muted font-semibold">RLS Isolation</span>
           </div>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="flex flex-wrap items-center gap-3 pt-2">
+        <!-- Action Buttons (Responsive & 44px min touch targets) -->
+        <div class="flex flex-wrap items-center gap-2.5 sm:gap-3 pt-1 sm:pt-2">
           <a
             id="explore-projects-btn"
             href="#projects"
-            class="group inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-accent text-accent-text hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-xs font-bold uppercase tracking-wider text-center shadow-xs cursor-pointer"
+            class="group inline-flex items-center justify-center min-h-[44px] gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-accent text-accent-text hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-xs font-bold uppercase tracking-wider text-center shadow-xs cursor-pointer touch-manipulation"
           >
             <span>Explore Projects</span>
             <span class="inline-block transition-transform duration-200 group-hover:translate-y-1">↓</span>
@@ -122,7 +126,7 @@ const skills = {
           <button
             type="button"
             onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
-            class="px-5 py-3 rounded-lg border border-border bg-surface hover:bg-surface-raised hover:border-text-muted active:scale-[0.97] text-text transition-all text-xs font-semibold uppercase tracking-wider cursor-pointer"
+            class="inline-flex items-center justify-center min-h-[44px] px-4.5 sm:px-5 py-2.5 sm:py-3 rounded-lg border border-border bg-surface hover:bg-surface-raised hover:border-text-muted active:scale-[0.97] text-text transition-all text-xs font-semibold uppercase tracking-wider cursor-pointer touch-manipulation"
           >
             Get in Touch
           </button>
@@ -130,7 +134,7 @@ const skills = {
             href="https://github.com/jsbalabat"
             target="_blank"
             rel="noopener noreferrer"
-            class="px-4 py-3 rounded-lg border border-border bg-surface hover:bg-surface-raised hover:border-text-muted active:scale-[0.97] text-text-muted hover:text-text transition-all text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5"
+            class="inline-flex items-center justify-center min-h-[44px] px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-border bg-surface hover:bg-surface-raised hover:border-text-muted active:scale-[0.97] text-text-muted hover:text-text transition-all text-xs font-semibold uppercase tracking-wider gap-1.5 touch-manipulation"
           >
             <TechIcon name="github" class="w-3.5 h-3.5" />
             <span>GitHub</span>
@@ -139,7 +143,7 @@ const skills = {
             href="https://www.linkedin.com/in/marc-balabat"
             target="_blank"
             rel="noopener noreferrer"
-            class="px-4 py-3 rounded-lg border border-border bg-surface hover:bg-surface-raised hover:border-text-muted active:scale-[0.97] text-text-muted hover:text-text transition-all text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5"
+            class="inline-flex items-center justify-center min-h-[44px] px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-border bg-surface hover:bg-surface-raised hover:border-text-muted active:scale-[0.97] text-text-muted hover:text-text transition-all text-xs font-semibold uppercase tracking-wider gap-1.5 touch-manipulation"
           >
             <TechIcon name="linkedin" class="w-3.5 h-3.5" />
             <span>LinkedIn</span>
@@ -184,38 +188,7 @@ const skills = {
               aria-label={`View ${project.data.title} technical dossier`}
             ></a>
 
-            <!-- Sleek Top-Right Architectural Marker & Actions -->
-            <div class="absolute top-4 right-5 sm:right-6 flex items-center gap-2 font-mono text-[10px] tracking-widest text-text-muted/40 select-none z-20">
-              {project.data.liveUrl && (
-                <a
-                  href={project.data.liveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-accent text-accent-text text-[10px] font-bold uppercase tracking-wider hover:opacity-90 active:scale-95 transition-all shadow-xs"
-                  title={`Open live site for ${project.data.title}`}
-                >
-                  <span>Live Site</span>
-                  <span class="text-[11px]">↗</span>
-                </a>
-              )}
-              {project.data.repoUrl && (
-                <a
-                  href={project.data.repoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded border border-border bg-surface-raised text-text-muted hover:text-text text-[10px] font-semibold uppercase tracking-wider transition-colors"
-                  title={`View source code for ${project.data.title}`}
-                >
-                  <TechIcon name="github" class="w-2.5 h-2.5" />
-                  <span>Repo</span>
-                  <span class="text-[10px]">↗</span>
-                </a>
-              )}
-              <span class="hidden sm:inline group-hover:text-accent transition-colors">SYS.ARCH // {indexStr}</span>
-              <span class="text-xs group-hover:text-accent transition-colors">↗</span>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-stretch">
               <!-- Left Column (Identity, Title, Status) -->
               <div class="lg:col-span-3 space-y-2">
                 <div class="flex flex-wrap items-center gap-1.5 text-xs text-text-muted">
@@ -223,7 +196,7 @@ const skills = {
                   <span class="text-text-muted/50">/</span>
                   <span class="tabular-nums">{totalStr}</span>
                   <span class="text-border mx-0.5">•</span>
-                  <span class="font-medium text-[11px] uppercase tracking-wider">{project.data.timeline}</span>
+                  <span class="font-medium text-[11px] uppercase tracking-wider whitespace-nowrap">{project.data.timeline}</span>
                 </div>
 
                 <span class="text-accent uppercase font-semibold tracking-wider text-[11px] block">
@@ -242,8 +215,8 @@ const skills = {
                 </p>
 
                 <div class="pt-1">
-                  <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-border bg-surface-raised text-[10px] text-text font-semibold uppercase tracking-wider">
-                    <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-border bg-surface-raised text-[10px] text-text font-semibold uppercase tracking-wider whitespace-nowrap">
+                    <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
                     <span>PRODUCTION LIVE</span>
                   </div>
                 </div>
@@ -265,19 +238,52 @@ const skills = {
                 </div>
               </div>
 
-              <!-- Right Column (Architectural Specs & Stack) -->
-              <div class="lg:col-span-3 space-y-2.5 pt-1 lg:pt-0">
-                <span class="text-[10px] uppercase tracking-wider text-text-muted font-bold block">ARCHITECTURE & STACK</span>
-                <div>
-                  <span class="inline-block px-2.5 py-1 rounded-md bg-surface-raised border border-border-subtle text-[11px] text-text font-semibold uppercase tracking-wider">{project.data.metrics}</span>
+              <!-- Right Column (Architectural Specs, Stack & Badges) -->
+              <div class="lg:col-span-3 flex flex-col justify-between h-full pt-1 lg:pt-0">
+                <div class="space-y-2.5">
+                  <span class="text-[10px] uppercase tracking-wider text-text-muted font-bold block">ARCHITECTURE & STACK</span>
+                  <div>
+                    <span class="inline-block px-2.5 py-1 rounded-md bg-surface-raised border border-border-subtle text-[11px] text-text font-semibold uppercase tracking-wider">{project.data.metrics}</span>
+                  </div>
+                  <div class="flex flex-wrap gap-1.5 pt-0.5">
+                    {project.data.stack.map((tech) => (
+                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded border border-border-subtle bg-surface-raised text-[11px] text-text font-medium">
+                        <TechIcon name={tech} class="w-3 h-3 text-text" />
+                        <span>{tech}</span>
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <div class="flex flex-wrap gap-1.5 pt-0.5">
-                  {project.data.stack.map((tech) => (
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded border border-border-subtle bg-surface-raised text-[11px] text-text font-medium">
-                      <TechIcon name={tech} class="w-3 h-3 text-text" />
-                      <span>{tech}</span>
-                    </span>
-                  ))}
+
+                <!-- Bottom Right Actions & Marker -->
+                <div class="pt-5 sm:pt-6 flex flex-wrap items-center justify-end gap-2 font-mono text-[10px] tracking-widest text-text-muted/50 select-none z-20">
+                  {project.data.liveUrl && (
+                    <a
+                      href={project.data.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-accent text-accent-text text-[10px] font-bold uppercase tracking-wider hover:opacity-90 active:scale-95 transition-all shadow-xs whitespace-nowrap shrink-0 pointer-events-auto touch-manipulation"
+                      title={`Open live site for ${project.data.title}`}
+                    >
+                      <span class="whitespace-nowrap leading-none">Live Site</span>
+                      <span class="text-[11px] leading-none">↗</span>
+                    </a>
+                  )}
+                  {project.data.repoUrl && (
+                    <a
+                      href={project.data.repoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center gap-1 px-2.5 py-1 rounded border border-border bg-surface-raised text-text-muted hover:text-text text-[10px] font-semibold uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 pointer-events-auto touch-manipulation"
+                      title={`View source code for ${project.data.title}`}
+                    >
+                      <TechIcon name="github" class="w-2.5 h-2.5" />
+                      <span>Repo</span>
+                      <span class="text-[10px]">↗</span>
+                    </a>
+                  )}
+                  <span class="inline group-hover:text-accent transition-colors whitespace-nowrap">SYS.ARCH // {indexStr}</span>
+                  <span class="text-xs group-hover:text-accent transition-colors shrink-0">↗</span>
                 </div>
               </div>
             </div>

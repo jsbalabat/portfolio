@@ -32,6 +32,24 @@ html {
   scrollbar-gutter: stable;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Touch & Mobile Optimizations (Apple WWDC Fluid Interfaces & iOS compatibility) */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a, button, input, textarea, select {
+  touch-action: manipulation;
+}
+
+/* Prevent iOS Safari automatic zoom on focus while maintaining styling */
+@media screen and (max-width: 767px) {
+  input, select, textarea {
+    font-size: 16px;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -76,6 +94,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.2s ease, color 0.2s ease;
+  overflow-x: clip;
+  width: 100%;
+  min-height: 100dvh;
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
 }
 
 /* Accessible focus ring */
