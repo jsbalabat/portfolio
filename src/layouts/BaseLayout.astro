@@ -490,6 +490,48 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         });
       }
 
+      let isWiping = false;
+      const wipeSplashTransition = (onCovered?: () => void) => {
+        if (isWiping) return;
+        const splash = document.getElementById("splash-loader");
+        const progress = document.getElementById("splash-progress");
+        if (!splash || prefersReducedMotion) {
+          onCovered?.();
+          return;
+        }
+        isWiping = true;
+        splash.style.transition = "none";
+        splash.style.display = "flex";
+        splash.style.transform = "translateY(100%)";
+        splash.style.pointerEvents = "auto";
+        if (progress) {
+          progress.style.transition = "none";
+          progress.style.width = "0%";
+        }
+        void splash.offsetHeight;
+
+        splash.style.transition = "transform 0.42s cubic-bezier(0.76, 0, 0.24, 1)";
+        splash.style.transform = "translateY(0%)";
+
+        setTimeout(() => {
+          onCovered?.();
+          if (progress) {
+            progress.style.transition = "width 0.28s ease-out";
+            progress.style.width = "100%";
+          }
+          setTimeout(() => {
+            splash.style.transition = "transform 0.45s cubic-bezier(0.76, 0, 0.24, 1)";
+            splash.style.transform = "translateY(-100%)";
+            splash.style.pointerEvents = "none";
+            setTimeout(() => {
+              splash.style.display = "none";
+              splash.style.transform = "translateY(100%)";
+              isWiping = false;
+            }, 460);
+          }, 280);
+        }, 430);
+      };
+
       const initPage = () => {
         // 1. Lenis Elastic Smooth Scrolling
         let lenis: any = null;
@@ -531,27 +573,26 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
           }
         }
 
-        // 2. Header "MARC" logo: navigate back to base URL
+        // 2. Header "MARC" logo: navigate back to base URL with transition splash wipe
         const headerLogo = document.querySelector('#site-header a[href="/"]');
         if (headerLogo) {
           headerLogo.addEventListener("click", (e) => {
-            const isHome = window.location.pathname === "/" || window.location.pathname === "";
-            if (isHome) {
-              e.preventDefault();
-              if (window.location.hash) {
-                history.pushState(null, "", "/");
-              }
-              const isTouch = window.matchMedia("(pointer: coarse)").matches || "ontouchstart" in window;
-              const activeLenis = (window as any).lenis;
-              if (!isTouch && activeLenis && !prefersReducedMotion) {
-                activeLenis.scrollTo(0, { duration: 0.8 });
-              } else {
-                window.scrollTo({
-                  top: 0,
-                  behavior: prefersReducedMotion ? "auto" : "smooth",
-                });
-              }
+            const isHome = window.location.pathname === "/" || window.location.pathname === "" || window.location.pathname.endsWith("/index.html");
+            if (window.location.hash || !isHome) {
+              history.pushState(null, "", "/");
             }
+            e.preventDefault();
+            closeMobileMenu();
+
+            wipeSplashTransition(() => {
+              if (!isHome) {
+                window.location.href = "/";
+              } else {
+                window.scrollTo(0, 0);
+                const activeLenis = (window as any).lenis;
+                if (activeLenis) activeLenis.scrollTo(0, { immediate: true });
+              }
+            });
           });
         }
 
