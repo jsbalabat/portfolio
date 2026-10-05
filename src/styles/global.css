@@ -153,6 +153,19 @@ body {
 }
 
 /* ==========================================================================
+   Smooth Corner Anti-Aliasing (Eliminate Edge Grain & Subpixel Bleed)
+   ========================================================================== */
+[class*="rounded"] {
+  background-clip: padding-box;
+}
+
+.hover-card-lift,
+.reveal-on-scroll {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* ==========================================================================
    Modal Animation Utilities
    ========================================================================== */
 @keyframes modal-backdrop-in {
@@ -226,12 +239,31 @@ body {
   filter: grayscale(40%) !important;
 }
 
-.tldr-highlight {
-  transition: outline-color 0.2s ease, box-shadow 0.2s ease;
+.tldr-highlight,
+[data-tldr-toggle],
+[data-tldr-toggle] .tldr-badge {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
 :where(html.tldr-active, body.tldr-active) .tldr-highlight {
-  outline: 1.5px solid var(--color-accent) !important;
-  outline-offset: 1px !important;
+  border-color: var(--color-highlight) !important;
+  box-shadow: 0 0 0 2px var(--color-highlight) !important;
+}
+
+/* Remove landing page bar border when TLDR is active */
+:where(html.tldr-active, body.tldr-active) #hero .metrics-strip {
+  border-top-color: transparent !important;
+  border-bottom-color: transparent !important;
+}
+
+/* TLDR toggle button and badge border matches soft highlight with increased width */
+:where(html.tldr-active, body.tldr-active) [data-tldr-toggle] {
+  border-color: var(--color-highlight) !important;
+  box-shadow: 0 0 0 2px var(--color-highlight) !important;
+}
+
+:where(html.tldr-active, body.tldr-active) [data-tldr-toggle] .tldr-badge {
+  border-color: var(--color-highlight) !important;
+  box-shadow: 0 0 0 1px var(--color-highlight) !important;
 }
 

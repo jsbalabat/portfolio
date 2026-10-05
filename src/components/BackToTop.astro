@@ -38,11 +38,23 @@
       activeScrollHandler = null;
     }
 
-    backToTop.addEventListener('click', () => {
+    backToTop.addEventListener('click', (e) => {
+      e.preventDefault();
+      const isHome = window.location.pathname === '/' || window.location.pathname === '';
+      if (!isHome) {
+        window.location.href = '/';
+        return;
+      }
+
+      if (window.location.hash) {
+        history.pushState(null, '', '/');
+      }
+
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const isTouch = window.matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
       const lenis = (window as any).lenis;
-      if (!prefersReducedMotion && lenis) {
-        lenis.scrollTo(0, { duration: 1.2 });
+      if (!isTouch && lenis && !prefersReducedMotion) {
+        lenis.scrollTo(0, { duration: 0.8 });
       } else {
         window.scrollTo({
           top: 0,

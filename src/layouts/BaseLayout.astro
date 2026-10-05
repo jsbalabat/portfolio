@@ -194,12 +194,12 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
             data-tldr-toggle
             type="button"
             aria-pressed="false"
-            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border bg-surface hover:bg-surface-raised active:scale-[0.96] text-xs font-mono font-medium text-text transition-all cursor-pointer shadow-2xs shrink-0 select-none"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-border bg-surface hover:bg-surface-raised text-xs font-mono font-medium text-text transition-colors cursor-pointer shadow-2xs shrink-0 select-none"
             title="Toggle TLDR: Dims detailed narrative and highlights key metrics, tech stacks, and project outcomes"
           >
-            <span class="tldr-indicator size-1.5 rounded-full bg-text-muted/60 transition-colors"></span>
-            <span class="tracking-wider">TLDR</span>
-            <span class="tldr-badge text-[10px] px-1 py-0.2 rounded bg-surface-raised border border-border-subtle text-text-muted font-bold transition-colors">OFF</span>
+            <span class="tldr-indicator size-1.5 rounded-full bg-text-muted/60 transition-colors shrink-0"></span>
+            <span class="tracking-wider shrink-0">TLDR</span>
+            <span class="tldr-badge w-7 min-w-[28px] text-[10px] py-0.5 rounded-md bg-surface-raised border border-border-subtle text-text-muted font-bold transition-colors inline-flex items-center justify-center text-center shrink-0">OFF</span>
           </button>
 
           <!-- Theme Toggle (System -> Light -> Dark) -->
@@ -208,7 +208,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
             type="button"
             aria-label="Toggle color theme"
             title="Theme: System (default), Light, Dark"
-            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md hover:bg-surface-raised active:scale-[0.96] border border-border text-xs text-text transition-all cursor-pointer shrink-0 font-medium"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg hover:bg-surface-raised active:scale-[0.96] border border-border text-xs text-text transition-all cursor-pointer shrink-0 font-medium"
           >
             <span id="theme-toggle-icon" class="text-accent">◐</span>
             <span id="theme-toggle-text">System</span>
@@ -222,7 +222,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
             data-tldr-toggle
             type="button"
             aria-label="Toggle TLDR mode"
-            class="inline-flex items-center justify-center size-10 min-w-[44px] min-h-[44px] rounded-lg hover:bg-surface-raised active:bg-surface-raised active:scale-90 border border-border text-xs font-mono font-bold text-text cursor-pointer transition-transform touch-manipulation gap-1"
+            class="inline-flex items-center justify-center size-10 min-w-[44px] min-h-[44px] rounded-xl hover:bg-surface-raised active:bg-surface-raised active:scale-90 border border-border text-xs font-mono font-bold text-text cursor-pointer transition-transform touch-manipulation gap-1"
             title="Toggle TLDR"
           >
             <span class="tldr-indicator size-1.5 rounded-full bg-text-muted/60 transition-colors"></span>
@@ -233,7 +233,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
             id="theme-toggle-mobile"
             type="button"
             aria-label="Toggle color theme"
-            class="inline-flex items-center justify-center size-10 min-w-[44px] min-h-[44px] rounded-lg hover:bg-surface-raised active:bg-surface-raised active:scale-90 border border-border text-sm text-text cursor-pointer transition-transform touch-manipulation"
+            class="inline-flex items-center justify-center size-10 min-w-[44px] min-h-[44px] rounded-xl hover:bg-surface-raised active:bg-surface-raised active:scale-90 border border-border text-sm text-text cursor-pointer transition-transform touch-manipulation"
           >
             <span id="theme-toggle-mobile-icon">◐</span>
           </button>
@@ -244,7 +244,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
             aria-expanded="false"
             aria-controls="mobile-menu"
             aria-label="Toggle navigation menu"
-            class="inline-flex items-center justify-center size-10 min-w-[44px] min-h-[44px] rounded-lg border border-border bg-surface hover:bg-surface-raised active:bg-surface-raised active:scale-90 text-text cursor-pointer transition-transform touch-manipulation"
+            class="inline-flex items-center justify-center size-10 min-w-[44px] min-h-[44px] rounded-xl border border-border bg-surface hover:bg-surface-raised active:bg-surface-raised active:scale-90 text-text cursor-pointer transition-transform touch-manipulation"
           >
             <svg id="hamburger-icon" class="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line id="line-top" x1="4" y1="6" x2="20" y2="6" class="transition-transform duration-300 origin-center"></line>
@@ -258,16 +258,16 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
       <!-- Mobile Navigation Drawer (Smooth CSS Grid & Opacity Animation) -->
       <div
         id="mobile-menu"
-        class="md:hidden grid grid-rows-[0fr] transition-[grid-template-rows,opacity] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] opacity-0 pointer-events-none w-full border-t border-border/0 bg-bg/95 backdrop-blur-xl"
+        class="md:hidden grid grid-rows-[0fr] transition-[grid-template-rows,opacity] duration-200 ease-out opacity-0 pointer-events-none w-full border-t border-border/0 bg-bg/98 backdrop-blur-md"
       >
         <div class="overflow-hidden">
           <div
             id="mobile-menu-content"
-            class="w-[90%] mx-auto px-4 py-3 flex flex-col space-y-1 text-xs uppercase font-medium text-text transition-transform duration-300 -translate-y-2"
+            class="w-[90%] mx-auto px-4 py-3 flex flex-col space-y-1 text-xs uppercase font-medium text-text transition-transform duration-200 -translate-y-2"
           >
-            <a href="/#projects" class="mobile-nav-link min-h-[44px] flex items-center px-3 py-2 rounded-lg hover:bg-surface-raised active:bg-surface-raised hover:text-accent active:scale-[0.98] transition-all touch-manipulation">Projects</a>
-            <a href="/#skills" class="mobile-nav-link min-h-[44px] flex items-center px-3 py-2 rounded-lg hover:bg-surface-raised active:bg-surface-raised hover:text-accent active:scale-[0.98] transition-all touch-manipulation">Stack</a>
-            <a href="/#contact" class="mobile-nav-link min-h-[44px] flex items-center px-3 py-2 rounded-lg hover:bg-surface-raised active:bg-surface-raised hover:text-accent active:scale-[0.98] transition-all touch-manipulation">Contact</a>
+            <a href="/#projects" class="mobile-nav-link min-h-[44px] flex items-center px-3 py-2 rounded-lg hover:bg-surface-raised active:bg-surface-raised hover:text-text transition-colors touch-manipulation">Projects</a>
+            <a href="/#skills" class="mobile-nav-link min-h-[44px] flex items-center px-3 py-2 rounded-lg hover:bg-surface-raised active:bg-surface-raised hover:text-text transition-colors touch-manipulation">Stack</a>
+            <a href="/#contact" class="mobile-nav-link min-h-[44px] flex items-center px-3 py-2 rounded-lg hover:bg-surface-raised active:bg-surface-raised hover:text-text transition-colors touch-manipulation">Contact</a>
           </div>
         </div>
       </div>
@@ -415,14 +415,34 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         return Math.max(0, Math.round(rect.top + currentScroll - 43));
       };
 
+      const closeMobileMenu = () => {
+        const menuToggle = document.getElementById("mobile-menu-toggle");
+        const mobileMenu = document.getElementById("mobile-menu");
+        const menuContent = document.getElementById("mobile-menu-content");
+        const lineTop = document.getElementById("line-top");
+        const lineMid = document.getElementById("line-mid");
+        const lineBot = document.getElementById("line-bot");
+
+        menuToggle?.setAttribute("aria-expanded", "false");
+        mobileMenu?.classList.add("grid-rows-[0fr]", "opacity-0", "pointer-events-none", "border-border/0");
+        mobileMenu?.classList.remove("grid-rows-[1fr]", "opacity-100", "pointer-events-auto", "border-border");
+        menuContent?.classList.add("-translate-y-2");
+        menuContent?.classList.remove("translate-y-0");
+        lineTop?.style.removeProperty("transform");
+        lineMid?.style.removeProperty("opacity");
+        lineBot?.style.removeProperty("transform");
+      };
+
       const scrollToTarget = (target: HTMLElement | string, immediate = false) => {
         const el = typeof target === "string" ? (document.querySelector(target) as HTMLElement | null) : target;
         if (!el) return;
         const targetY = getTargetScrollY(el);
+        const isTouch = window.matchMedia("(pointer: coarse)").matches || "ontouchstart" in window;
         const activeLenis = (window as any).lenis;
-        if (activeLenis && !prefersReducedMotion) {
+
+        if (!isTouch && activeLenis && !prefersReducedMotion) {
           activeLenis.scrollTo(targetY, {
-            duration: immediate ? 0 : 1.2,
+            duration: immediate ? 0 : 0.85,
             immediate,
           });
         } else {
@@ -452,8 +472,18 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
               if (targetEl) {
                 e.preventDefault();
                 e.stopPropagation();
+
+                closeMobileMenu();
                 history.pushState(null, "", targetUrl.hash);
-                scrollToTarget(targetEl, false);
+
+                const isTouch = window.matchMedia("(pointer: coarse)").matches || "ontouchstart" in window;
+                if (isTouch) {
+                  requestAnimationFrame(() => {
+                    scrollToTarget(targetEl, false);
+                  });
+                } else {
+                  scrollToTarget(targetEl, false);
+                }
               }
             }
           } catch (err) {}
@@ -501,62 +531,26 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
           }
         }
 
-        // 2. Intercept header "MARC" logo for smooth wipe transition to top
-        let isWiping = false;
+        // 2. Header "MARC" logo: navigate back to base URL
         const headerLogo = document.querySelector('#site-header a[href="/"]');
         if (headerLogo) {
           headerLogo.addEventListener("click", (e) => {
-            if (window.location.pathname === "/" || window.location.pathname === "") {
+            const isHome = window.location.pathname === "/" || window.location.pathname === "";
+            if (isHome) {
               e.preventDefault();
-              if (isWiping) return;
-              const splash = document.getElementById("splash-loader");
-              const progress = document.getElementById("splash-progress");
-              if (!splash) {
-                window.scrollTo({ top: 0, behavior: "smooth" });
-                if (lenis) lenis.scrollTo(0, { duration: 1.2 });
-                return;
+              if (window.location.hash) {
+                history.pushState(null, "", "/");
               }
-
-              isWiping = true;
-              // Reset splash to bottom position ready for wipe-up
-              splash.style.transition = "none";
-              splash.style.display = "flex";
-              splash.style.transform = "translateY(100%)";
-              splash.style.pointerEvents = "auto";
-              if (progress) {
-                progress.style.transition = "none";
-                progress.style.width = "0%";
+              const isTouch = window.matchMedia("(pointer: coarse)").matches || "ontouchstart" in window;
+              const activeLenis = (window as any).lenis;
+              if (!isTouch && activeLenis && !prefersReducedMotion) {
+                activeLenis.scrollTo(0, { duration: 0.8 });
+              } else {
+                window.scrollTo({
+                  top: 0,
+                  behavior: prefersReducedMotion ? "auto" : "smooth",
+                });
               }
-              void splash.offsetHeight;
-
-              // Step 1: Smooth wipe UP to cover screen
-              splash.style.transition = "transform 0.42s cubic-bezier(0.76, 0, 0.24, 1)";
-              splash.style.transform = "translateY(0%)";
-
-              setTimeout(() => {
-                // Step 2: Screen fully obscured - silently reset scroll to top
-                window.scrollTo(0, 0);
-                if (lenis) lenis.scrollTo(0, { immediate: true });
-
-                // Fill progress bar indicator
-                if (progress) {
-                  progress.style.transition = "width 0.28s ease-out";
-                  progress.style.width = "100%";
-                }
-
-                // Step 3: Smooth wipe away UP to reveal top of page
-                setTimeout(() => {
-                  splash.style.transition = "transform 0.45s cubic-bezier(0.76, 0, 0.24, 1)";
-                  splash.style.transform = "translateY(-100%)";
-                  splash.style.pointerEvents = "none";
-
-                  setTimeout(() => {
-                    splash.style.display = "none";
-                    splash.style.transform = "translateY(100%)";
-                    isWiping = false;
-                  }, 460);
-                }, 280);
-              }, 430);
             }
           });
         }
@@ -715,23 +709,23 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
             const badge = btn.querySelector(".tldr-badge");
 
             if (active) {
-              btn.classList.add("border-accent", "text-accent");
-              btn.classList.remove("border-border", "text-text");
+              btn.classList.add("border-highlight", "text-text");
+              btn.classList.remove("border-border", "border-accent", "text-accent");
               indicator?.classList.remove("bg-text-muted/60");
               indicator?.classList.add("bg-emerald-500");
               if (badge) {
                 badge.textContent = "ON";
-                badge.classList.add("bg-accent", "text-accent-text");
-                badge.classList.remove("bg-surface-raised", "text-text-muted", "border-border-subtle");
+                badge.classList.add("bg-surface-raised", "text-text", "border-highlight");
+                badge.classList.remove("bg-accent", "text-accent-text", "border-accent", "text-text-muted", "border-border-subtle");
               }
             } else {
-              btn.classList.remove("border-accent", "text-accent");
+              btn.classList.remove("border-highlight", "border-accent", "text-accent");
               btn.classList.add("border-border", "text-text");
               indicator?.classList.add("bg-text-muted/60");
               indicator?.classList.remove("bg-emerald-500");
               if (badge) {
                 badge.textContent = "OFF";
-                badge.classList.remove("bg-accent", "text-accent-text");
+                badge.classList.remove("border-highlight", "bg-accent", "text-accent-text", "border-accent");
                 badge.classList.add("bg-surface-raised", "text-text-muted", "border-border-subtle");
               }
             }
