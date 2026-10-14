@@ -50,35 +50,6 @@ const skills = {
 <BaseLayout>
   <!-- Hero Section (Full Viewport, Centered Two-Column Grid, Dynamic Viewport Fit) -->
   <section id="hero" class="relative min-h-[100svh] min-h-[100dvh] flex flex-col justify-center py-6 sm:py-12 lg:py-16 border-b border-border">
-    <!-- Top-Right Landing Controls (TLDR & Dark Mode, Aligned to Content Container) -->
-    <div class="absolute top-3 sm:top-5 right-0 z-30 flex items-center gap-2">
-      <!-- TLDR Toggle -->
-      <button
-        id="tldr-toggle-hero"
-        data-tldr-toggle
-        type="button"
-        aria-pressed="false"
-        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-border bg-surface hover:bg-surface-raised text-xs font-sans font-medium text-text transition-colors cursor-pointer shadow-2xs touch-manipulation select-none"
-        title="Toggle TLDR: Dims detailed narrative and highlights key metrics, tech stacks, and project outcomes"
-      >
-        <span class="tldr-indicator size-1.5 rounded-full bg-text-muted/60 transition-colors shrink-0"></span>
-        <span class="font-semibold tracking-wider shrink-0">TLDR</span>
-        <span class="tldr-badge w-7 min-w-[28px] text-[10px] font-sans font-bold tracking-wider py-0.5 rounded-md bg-surface-raised border border-border-subtle text-text-muted transition-colors inline-flex items-center justify-center text-center shrink-0">OFF</span>
-      </button>
-
-      <!-- Theme Toggle -->
-      <button
-        id="theme-toggle-hero"
-        type="button"
-        aria-label="Toggle color theme"
-        title="Theme: System (default), Light, Dark"
-        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-border bg-surface hover:bg-surface-raised text-xs text-text transition-colors cursor-pointer shadow-2xs font-medium touch-manipulation select-none"
-      >
-        <span id="theme-toggle-hero-icon" class="text-accent">◐</span>
-        <span id="theme-toggle-hero-text">System</span>
-      </button>
-    </div>
-
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start reveal-on-scroll my-auto w-full">
       <!-- Left Column -->
       <div class="lg:col-span-6 flex flex-col justify-start space-y-4 sm:space-y-6">

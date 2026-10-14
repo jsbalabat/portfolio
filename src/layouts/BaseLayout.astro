@@ -168,15 +168,15 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
       </div>
     </aside>
 
-    <!-- Dynamic Header (Reveals on scroll) -->
+    <!-- Dynamic Header (Reveals on scroll, desktop only) -->
     <header
       id="site-header"
-      class="fixed top-0 left-0 right-0 z-40 bg-bg/85 backdrop-blur-lg border-b border-border/60 shadow-xs transition-all duration-300 opacity-0 pointer-events-none -translate-y-2 pt-[env(safe-area-inset-top,0px)]"
+      class="hidden md:block fixed top-0 left-0 right-0 z-40 bg-bg/85 backdrop-blur-lg border-b border-border/60 shadow-xs transition-all duration-300 opacity-0 pointer-events-none -translate-y-2 pt-[env(safe-area-inset-top,0px)]"
     >
       <div class="w-full lg:w-[80%] mx-auto px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-4">
         <a href="/" class="group flex items-center gap-2 text-sm tracking-tight text-text shrink-0 touch-manipulation">
           <span class="inline-block size-2 rounded-full bg-accent group-hover:scale-125 transition-transform duration-200 shrink-0"></span>
-          <span class="font-bold text-base tracking-tight">MARC</span>
+          <span class="font-bold text-base tracking-tight font-display">MARC</span>
           <span class="text-text-muted/60 hidden sm:inline">/</span>
           <span class="text-text-muted text-xs font-medium tracking-normal hidden sm:inline">SOFTWARE ENGINEER</span>
         </a>
@@ -213,64 +213,79 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
             <span id="theme-toggle-text">System</span>
           </button>
         </nav>
+      </div>
+    </header>
 
-        <!-- Mobile Controls (44x44px minimum touch targets) -->
-        <div class="flex md:hidden items-center gap-1.5 shrink-0">
+    <!-- Mobile Floating Burger Button -->
+    <button
+      id="mobile-menu-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      aria-label="Toggle navigation menu"
+      class="fixed top-[max(0.75rem,env(safe-area-inset-top))] right-4 z-50 md:hidden size-11 min-w-[44px] min-h-[44px] rounded-xl flex items-center justify-center bg-text/10 hover:bg-text/15 active:bg-text/20 active:scale-[0.95] border border-text/20 backdrop-blur-md text-text transition-all shadow-xs cursor-pointer touch-manipulation"
+    >
+      <svg id="hamburger-icon" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line id="line-top" x1="4" y1="6" x2="20" y2="6" class="transition-transform duration-300 origin-center"></line>
+        <line id="line-mid" x1="4" y1="12" x2="20" y2="12" class="transition-opacity duration-200"></line>
+        <line id="line-bot" x1="4" y1="18" x2="20" y2="18" class="transition-transform duration-300 origin-center"></line>
+      </svg>
+    </button>
+
+    <!-- Mobile Navigation Overlay (Clean Fullscreen Overlay/Drawer) -->
+    <div
+      id="mobile-menu"
+      class="fixed inset-0 z-40 md:hidden bg-bg/95 backdrop-blur-xl transition-all duration-300 opacity-0 pointer-events-none flex flex-col pt-[calc(3.75rem+env(safe-area-inset-top,0px))] px-6 pb-8"
+    >
+      <div id="mobile-menu-content" class="w-full max-w-sm mx-auto flex flex-col space-y-4 transition-transform duration-300 -translate-y-4">
+        <!-- Brand link -->
+        <a href="/" class="mobile-nav-link flex items-center gap-2 pb-3 border-b border-border/40 text-text touch-manipulation">
+          <span class="inline-block size-2 rounded-full bg-accent"></span>
+          <span class="font-bold text-base tracking-tight font-display">MARC</span>
+          <span class="text-text-muted/60 text-xs">/</span>
+          <span class="text-text-muted text-xs font-medium tracking-normal">SOFTWARE ENGINEER</span>
+        </a>
+
+        <!-- Nav links -->
+        <div class="flex flex-col space-y-1 text-sm uppercase font-semibold text-text">
+          <a href="/#projects" class="mobile-nav-link min-h-[44px] flex items-center px-3 py-2.5 rounded-xl hover:bg-surface-raised active:bg-surface-raised hover:text-accent transition-colors touch-manipulation">Projects</a>
+          <a href="/#skills" class="mobile-nav-link min-h-[44px] flex items-center px-3 py-2.5 rounded-xl hover:bg-surface-raised active:bg-surface-raised hover:text-accent transition-colors touch-manipulation">Stack</a>
+          <a href="/#contact" class="mobile-nav-link min-h-[44px] flex items-center px-3 py-2.5 rounded-xl hover:bg-surface-raised active:bg-surface-raised hover:text-accent transition-colors touch-manipulation">Contact</a>
+        </div>
+
+        <!-- Controls: Expanded TLDR and Theme Toggles -->
+        <div class="pt-4 border-t border-border/40 flex flex-col gap-3">
+          <!-- Expanded TLDR Toggle -->
           <button
             id="tldr-toggle-mobile"
             data-tldr-toggle
             type="button"
-            aria-label="Toggle TLDR mode"
-            class="inline-flex items-center justify-center size-10 min-w-[44px] min-h-[44px] rounded-xl hover:bg-surface-raised active:bg-surface-raised active:scale-90 border border-border text-xs font-sans font-semibold text-text cursor-pointer transition-transform touch-manipulation gap-1"
-            title="Toggle TLDR"
+            class="w-full min-h-[48px] px-4 py-3 rounded-xl border border-border bg-surface hover:bg-surface-raised active:scale-[0.98] flex items-center justify-between text-xs font-sans font-medium text-text transition-all touch-manipulation cursor-pointer"
+            title="Toggle TLDR mode"
           >
-            <span class="tldr-indicator size-1.5 rounded-full bg-text-muted/60 transition-colors"></span>
-            <span class="font-semibold tracking-wider">TLDR</span>
+            <div class="flex items-center gap-2.5">
+              <span class="tldr-indicator size-2 rounded-full bg-text-muted/60 transition-colors"></span>
+              <span class="font-semibold tracking-wider uppercase text-xs">TLDR Mode</span>
+            </div>
+            <span class="tldr-badge px-3 py-1 text-xs font-sans font-bold tracking-wider rounded-lg bg-surface-raised border border-border-subtle text-text-muted transition-colors">OFF</span>
           </button>
 
+          <!-- Theme Toggle -->
           <button
             id="theme-toggle-mobile"
             type="button"
-            aria-label="Toggle color theme"
-            class="inline-flex items-center justify-center size-10 min-w-[44px] min-h-[44px] rounded-xl hover:bg-surface-raised active:bg-surface-raised active:scale-90 border border-border text-sm text-text cursor-pointer transition-transform touch-manipulation"
+            class="w-full min-h-[48px] px-4 py-3 rounded-xl border border-border bg-surface hover:bg-surface-raised active:scale-[0.98] flex items-center justify-between text-xs font-sans font-medium text-text transition-all touch-manipulation cursor-pointer"
+            title="Toggle color theme"
           >
-            <span id="theme-toggle-mobile-icon">◐</span>
-          </button>
-
-          <button
-            id="mobile-menu-toggle"
-            type="button"
-            aria-expanded="false"
-            aria-controls="mobile-menu"
-            aria-label="Toggle navigation menu"
-            class="inline-flex items-center justify-center size-10 min-w-[44px] min-h-[44px] rounded-xl border border-border bg-surface hover:bg-surface-raised active:bg-surface-raised active:scale-[0.96] transition-transform duration-150 text-text cursor-pointer touch-manipulation"
-          >
-            <svg id="hamburger-icon" class="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line id="line-top" x1="4" y1="6" x2="20" y2="6" class="transition-transform duration-300 origin-center"></line>
-              <line id="line-mid" x1="4" y1="12" x2="20" y2="12" class="transition-opacity duration-200"></line>
-              <line id="line-bot" x1="4" y1="18" x2="20" y2="18" class="transition-transform duration-300 origin-center"></line>
-            </svg>
+            <span class="font-semibold tracking-wider uppercase text-xs">Theme</span>
+            <div class="flex items-center gap-1.5 text-text-muted font-medium text-xs">
+              <span id="theme-toggle-mobile-icon" class="text-accent">◐</span>
+              <span id="theme-toggle-mobile-text">System</span>
+            </div>
           </button>
         </div>
       </div>
-
-      <!-- Mobile Navigation Drawer (Smooth CSS Grid & Opacity Animation) -->
-      <div
-        id="mobile-menu"
-        class="md:hidden grid grid-rows-[0fr] transition-[grid-template-rows,opacity] duration-200 ease-out opacity-0 pointer-events-none w-full border-t border-border/0 bg-bg/98 backdrop-blur-md"
-      >
-        <div class="overflow-hidden">
-          <div
-            id="mobile-menu-content"
-            class="w-full lg:w-[80%] mx-auto px-4 sm:px-6 py-3 flex flex-col space-y-1 text-xs uppercase font-medium text-text transition-transform duration-200 -translate-y-2"
-          >
-            <a href="/#projects" class="mobile-nav-link min-h-[44px] flex items-center px-3 py-2 rounded-lg hover:bg-surface-raised active:bg-surface-raised hover:text-text transition-colors touch-manipulation">Projects</a>
-            <a href="/#skills" class="mobile-nav-link min-h-[44px] flex items-center px-3 py-2 rounded-lg hover:bg-surface-raised active:bg-surface-raised hover:text-text transition-colors touch-manipulation">Stack</a>
-            <a href="/#contact" class="mobile-nav-link min-h-[44px] flex items-center px-3 py-2 rounded-lg hover:bg-surface-raised active:bg-surface-raised hover:text-text transition-colors touch-manipulation">Contact</a>
-          </div>
-        </div>
-      </div>
-    </header>
+    </div>
 
     <!-- Main Container (Tightened max-w-5xl to reduce dead empty lateral margin) -->
     <div class="w-full lg:w-[80%] mx-auto px-4 sm:px-6 flex flex-col min-h-dvh">
@@ -766,8 +781,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
           const iconEl = document.getElementById("theme-toggle-icon");
           const textEl = document.getElementById("theme-toggle-text");
           const iconMobileEl = document.getElementById("theme-toggle-mobile-icon");
-          const iconHeroEl = document.getElementById("theme-toggle-hero-icon");
-          const textHeroEl = document.getElementById("theme-toggle-hero-text");
+          const textMobileEl = document.getElementById("theme-toggle-mobile-text");
 
           const iconMap: Record<string, string> = { system: "◐", light: "☼", dark: "☾" };
           const textMap: Record<string, string> = { system: "System", light: "Light", dark: "Dark" };
@@ -775,8 +789,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
           if (iconEl) iconEl.textContent = iconMap[pref] || "◐";
           if (textEl) textEl.textContent = textMap[pref] || "System";
           if (iconMobileEl) iconMobileEl.textContent = iconMap[pref] || "◐";
-          if (iconHeroEl) iconHeroEl.textContent = iconMap[pref] || "◐";
-          if (textHeroEl) textHeroEl.textContent = textMap[pref] || "System";
+          if (textMobileEl) textMobileEl.textContent = textMap[pref] || "System";
         };
 
         const cycleTheme = () => {
@@ -797,7 +810,6 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
 
         document.getElementById("theme-toggle")?.addEventListener("click", cycleTheme);
         document.getElementById("theme-toggle-mobile")?.addEventListener("click", cycleTheme);
-        document.getElementById("theme-toggle-hero")?.addEventListener("click", cycleTheme);
         updateThemeToggleUI();
 
         // 7. TLDR Mode Logic (Zero Layout Shift)
@@ -874,9 +886,9 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         const setMobileMenuState = (isOpen: boolean) => {
           menuToggle?.setAttribute("aria-expanded", isOpen ? "true" : "false");
           if (isOpen) {
-            mobileMenu?.classList.remove("grid-rows-[0fr]", "opacity-0", "pointer-events-none", "border-border/0");
-            mobileMenu?.classList.add("grid-rows-[1fr]", "opacity-100", "pointer-events-auto", "border-border");
-            menuContent?.classList.remove("-translate-y-2");
+            mobileMenu?.classList.remove("opacity-0", "pointer-events-none");
+            mobileMenu?.classList.add("opacity-100", "pointer-events-auto");
+            menuContent?.classList.remove("-translate-y-4");
             menuContent?.classList.add("translate-y-0");
             lineTop?.style.setProperty("transform", "translateY(6px) rotate(45deg)");
             lineMid?.style.setProperty("opacity", "0");
@@ -885,8 +897,12 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
             if (!outsideClickListener) {
               outsideClickListener = (e: MouseEvent) => {
                 const target = e.target as Node;
-                const header = document.getElementById("site-header");
-                if (header && !header.contains(target)) {
+                if (
+                  menuContent &&
+                  !menuContent.contains(target) &&
+                  menuToggle &&
+                  !menuToggle.contains(target)
+                ) {
                   setMobileMenuState(false);
                 }
               };
@@ -906,9 +922,9 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
               document.addEventListener("keydown", escapeKeyHandler);
             }
           } else {
-            mobileMenu?.classList.add("grid-rows-[0fr]", "opacity-0", "pointer-events-none", "border-border/0");
-            mobileMenu?.classList.remove("grid-rows-[1fr]", "opacity-100", "pointer-events-auto", "border-border");
-            menuContent?.classList.add("-translate-y-2");
+            mobileMenu?.classList.add("opacity-0", "pointer-events-none");
+            mobileMenu?.classList.remove("opacity-100", "pointer-events-auto");
+            menuContent?.classList.add("-translate-y-4");
             menuContent?.classList.remove("translate-y-0");
             lineTop?.style.removeProperty("transform");
             lineMid?.style.removeProperty("opacity");
