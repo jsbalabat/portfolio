@@ -216,20 +216,21 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
       </div>
     </header>
 
-    <!-- Mobile Floating Burger Button -->
+    <!-- Mobile Floating Burger Button (Minimalist borderless 3-line burger) -->
     <button
       id="mobile-menu-toggle"
       type="button"
       aria-expanded="false"
       aria-controls="mobile-menu"
       aria-label="Toggle navigation menu"
-      class="fixed top-[max(0.75rem,env(safe-area-inset-top))] right-4 z-50 md:hidden size-11 min-w-[44px] min-h-[44px] rounded-xl flex items-center justify-center bg-text/10 hover:bg-text/15 active:bg-text/20 active:scale-[0.95] border border-text/20 backdrop-blur-md text-text transition-all shadow-xs cursor-pointer touch-manipulation"
+      class="fixed top-[max(0.75rem,env(safe-area-inset-top))] right-4 z-50 md:hidden min-w-[48px] min-h-[48px] p-2.5 flex flex-col justify-center items-center mix-blend-difference text-white bg-transparent border-0 cursor-pointer select-none touch-manipulation opacity-0 pointer-events-none -translate-y-2 transition-all duration-300"
     >
-      <svg id="hamburger-icon" class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line id="line-top" x1="4" y1="6" x2="20" y2="6" class="transition-transform duration-300 origin-center"></line>
-        <line id="line-mid" x1="4" y1="12" x2="20" y2="12" class="transition-opacity duration-200"></line>
-        <line id="line-bot" x1="4" y1="18" x2="20" y2="18" class="transition-transform duration-300 origin-center"></line>
-      </svg>
+      <span class="sr-only">Toggle Menu</span>
+      <div class="relative w-7 h-5 flex flex-col justify-between items-center pointer-events-none">
+        <span id="burger-bar-1" class="w-full h-[2px] bg-white rounded-full transition-all duration-300 ease-in-out origin-center"></span>
+        <span id="burger-bar-2" class="w-full h-[2px] bg-white rounded-full transition-all duration-200 ease-in-out"></span>
+        <span id="burger-bar-3" class="w-full h-[2px] bg-white rounded-full transition-all duration-300 ease-in-out origin-center"></span>
+      </div>
     </button>
 
     <!-- Mobile Navigation Overlay (Clean Fullscreen Overlay/Drawer) -->
@@ -708,12 +709,23 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         const handleScrollHeader = () => {
           const scrollY = window.scrollY || window.pageYOffset || 0;
           const isHome = window.location.pathname === "/" || window.location.pathname === "";
+          const mobileToggle = document.getElementById("mobile-menu-toggle");
+          const isMobileMenuOpen = mobileToggle?.getAttribute("aria-expanded") === "true";
+
           if (!isHome || scrollY > 120) {
             siteHeader?.classList.remove("opacity-0", "pointer-events-none", "-translate-y-2");
             siteHeader?.classList.add("opacity-100", "pointer-events-auto", "translate-y-0");
           } else {
             siteHeader?.classList.add("opacity-0", "pointer-events-none", "-translate-y-2");
             siteHeader?.classList.remove("opacity-100", "pointer-events-auto", "translate-y-0");
+          }
+
+          if (!isHome || scrollY > 120 || isMobileMenuOpen) {
+            mobileToggle?.classList.remove("opacity-0", "pointer-events-none", "-translate-y-2");
+            mobileToggle?.classList.add("opacity-100", "pointer-events-auto", "translate-y-0");
+          } else {
+            mobileToggle?.classList.add("opacity-0", "pointer-events-none", "-translate-y-2");
+            mobileToggle?.classList.remove("opacity-100", "pointer-events-auto", "translate-y-0");
           }
         };
 
@@ -876,9 +888,9 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         const menuToggle = document.getElementById("mobile-menu-toggle");
         const mobileMenu = document.getElementById("mobile-menu");
         const menuContent = document.getElementById("mobile-menu-content");
-        const lineTop = document.getElementById("line-top");
-        const lineMid = document.getElementById("line-mid");
-        const lineBot = document.getElementById("line-bot");
+        const bar1 = document.getElementById("burger-bar-1");
+        const bar2 = document.getElementById("burger-bar-2");
+        const bar3 = document.getElementById("burger-bar-3");
 
         let outsideClickListener: ((e: MouseEvent) => void) | null = null;
         let escapeKeyHandler: ((e: KeyboardEvent) => void) | null = null;
@@ -890,9 +902,15 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
             mobileMenu?.classList.add("opacity-100", "pointer-events-auto");
             menuContent?.classList.remove("-translate-y-4");
             menuContent?.classList.add("translate-y-0");
-            lineTop?.style.setProperty("transform", "translateY(6px) rotate(45deg)");
-            lineMid?.style.setProperty("opacity", "0");
-            lineBot?.style.setProperty("transform", "translateY(-6px) rotate(-45deg)");
+
+            bar1?.style.setProperty("transform", "translateY(9px) rotate(45deg)");
+            bar2?.style.setProperty("opacity", "0");
+            bar2?.style.setProperty("transform", "scaleX(0)");
+            bar3?.style.setProperty("transform", "translateY(-9px) rotate(-45deg)");
+
+            // Make sure the toggle button itself is visible when menu is open
+            menuToggle?.classList.remove("opacity-0", "pointer-events-none", "-translate-y-2");
+            menuToggle?.classList.add("opacity-100", "pointer-events-auto", "translate-y-0");
 
             if (!outsideClickListener) {
               outsideClickListener = (e: MouseEvent) => {
@@ -926,9 +944,11 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
             mobileMenu?.classList.remove("opacity-100", "pointer-events-auto");
             menuContent?.classList.add("-translate-y-4");
             menuContent?.classList.remove("translate-y-0");
-            lineTop?.style.removeProperty("transform");
-            lineMid?.style.removeProperty("opacity");
-            lineBot?.style.removeProperty("transform");
+
+            bar1?.style.removeProperty("transform");
+            bar2?.style.removeProperty("opacity");
+            bar2?.style.removeProperty("transform");
+            bar3?.style.removeProperty("transform");
 
             if (outsideClickListener) {
               document.removeEventListener("click", outsideClickListener);
@@ -938,6 +958,8 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
               document.removeEventListener("keydown", escapeKeyHandler);
               escapeKeyHandler = null;
             }
+
+            handleScrollHeader();
           }
         };
 
