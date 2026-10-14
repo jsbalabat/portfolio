@@ -20,7 +20,7 @@ const canonicalURL = new URL(
   Astro.site || "https://marcbalabat.tech",
 );
 
-const appVersion = import.meta.env.PUBLIC_APP_VERSION || "1.0.5";
+const appVersion = import.meta.env.PUBLIC_APP_VERSION || "1.0.6";
 const gitSha = import.meta.env.PUBLIC_GIT_SHA || "dev";
 const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
 ---
@@ -307,46 +307,25 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
       </main>
 
       <!-- Minimalist Editorial Footer -->
-      <footer class="py-8 border-t border-border flex flex-col sm:flex-row gap-6 justify-between items-start sm:items-center text-xs text-text-muted pb-[calc(2rem+env(safe-area-inset-bottom,0px))]">
-        <div class="flex flex-col gap-2">
+      <footer class="py-8 border-t border-border flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs text-text-muted pb-[calc(2rem+env(safe-area-inset-bottom,0px))]">
+        <div class="flex flex-col gap-0.5">
           <div class="flex items-center gap-2">
             <span class="size-2 rounded-full bg-emerald-500"></span>
-            <span class="text-text font-semibold uppercase tracking-wider text-xs">AVAILABLE FOR NEW OPPORTUNITIES</span>
+            <span class="text-text font-semibold uppercase tracking-wider text-[11px]">AVAILABLE FOR NEW OPPORTUNITIES</span>
           </div>
-          <p class="text-text-muted text-xs">© {new Date().getFullYear()} Marc Balabat. v{appVersion} · {gitSha} ({gitBranch})</p>
-          <a
-            href="mailto:johnfelixmarc@gmail.com"
-            class="text-xs text-text font-medium hover:text-accent underline underline-offset-4 decoration-border transition-colors touch-manipulation"
-          >
-            johnfelixmarc@gmail.com
-          </a>
+          <p>© {new Date().getFullYear()} Marc Balabat. v{appVersion} · {gitSha} ({gitBranch})</p>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+        <div class="flex flex-wrap items-center gap-x-5 gap-y-1.5 uppercase tracking-wider text-text font-medium text-[11px]">
+          <a href="https://github.com/jsbalabat" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">GitHub</a>
+          <a href="https://www.linkedin.com/in/marc-balabat" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">LinkedIn</a>
           <button
             type="button"
             onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
-            class="min-h-[44px] px-4 py-2.5 rounded-xl bg-accent text-accent-text hover:opacity-90 active:scale-[0.98] font-semibold text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5 touch-manipulation shadow-xs"
+            class="hover:text-accent transition-colors cursor-pointer uppercase"
           >
-            <span>Send Message</span>
-            <span>✉</span>
+            Email
           </button>
-          <a
-            href="https://github.com/jsbalabat"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="min-h-[44px] px-3.5 py-2.5 rounded-xl border border-border bg-surface hover:bg-surface-raised active:scale-[0.98] text-text font-semibold text-xs uppercase tracking-wider transition-all flex items-center justify-center touch-manipulation"
-          >
-            GitHub
-          </a>
-          <a
-            href="https://www.linkedin.com/in/marc-balabat"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="min-h-[44px] px-3.5 py-2.5 rounded-xl border border-border bg-surface hover:bg-surface-raised active:scale-[0.98] text-text font-semibold text-xs uppercase tracking-wider transition-all flex items-center justify-center touch-manipulation"
-          >
-            LinkedIn
-          </a>
         </div>
       </footer>
     </div>

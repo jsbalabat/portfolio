@@ -348,38 +348,41 @@ const skills = {
         Whether you are replacing fragmented legacy spreadsheets, architecting a multi-tenant platform, or launching a new product from scratch, I'm available for engineering roles and select contract work.
       </p>
 
-      <div class="flex flex-wrap items-center gap-2.5">
+      <div class="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2.5">
         <button
           type="button"
           onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
-          class="px-5 py-2.5 rounded-xl bg-accent text-accent-text hover:opacity-90 active:scale-[0.97] transition-all text-xs font-bold uppercase tracking-wider cursor-pointer shadow-xs"
+          class="min-h-[44px] px-5 py-2.5 rounded-xl bg-accent text-accent-text hover:opacity-90 active:scale-[0.97] transition-all text-xs font-bold uppercase tracking-wider cursor-pointer shadow-xs flex items-center justify-center gap-1.5 touch-manipulation"
         >
-          Send Message ✉
+          <span>Send Message</span>
+          <span>✉</span>
         </button>
         <a
           href="mailto:johnfelixmarc@gmail.com"
-          class="px-4 py-2.5 rounded-xl border border-border bg-surface hover:bg-surface-raised hover:border-text-muted active:scale-[0.97] text-text transition-all text-xs font-semibold uppercase tracking-wider"
+          class="min-h-[44px] px-4 py-2.5 rounded-xl border border-border bg-surface hover:bg-surface-raised hover:border-text-muted active:scale-[0.97] text-text transition-all text-xs font-semibold uppercase tracking-wider flex items-center justify-center touch-manipulation text-center truncate"
         >
           johnfelixmarc@gmail.com
         </a>
-        <a
-          href="https://github.com/jsbalabat"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="px-4 py-2.5 rounded-xl border border-border bg-surface hover:bg-surface-raised hover:border-text-muted active:scale-[0.97] text-text-muted hover:text-text transition-all text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5"
-        >
-          <TechIcon name="github" class="w-3.5 h-3.5" />
-          <span>GitHub</span>
-        </a>
-        <a
-          href="https://www.linkedin.com/in/marc-balabat"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="px-4 py-2.5 rounded-xl border border-border bg-surface hover:bg-surface-raised hover:border-text-muted active:scale-[0.97] text-text-muted hover:text-text transition-all text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5"
-        >
-          <TechIcon name="linkedin" class="w-3.5 h-3.5" />
-          <span>LinkedIn</span>
-        </a>
+        <div class="grid grid-cols-2 gap-2.5 sm:flex sm:items-center">
+          <a
+            href="https://github.com/jsbalabat"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="min-h-[44px] px-4 py-2.5 rounded-xl border border-border bg-surface hover:bg-surface-raised hover:border-text-muted active:scale-[0.97] text-text-muted hover:text-text transition-all text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5 touch-manipulation"
+          >
+            <TechIcon name="github" class="w-3.5 h-3.5" />
+            <span>GitHub</span>
+          </a>
+          <a
+            href="https://www.linkedin.com/in/marc-balabat"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="min-h-[44px] px-4 py-2.5 rounded-xl border border-border bg-surface hover:bg-surface-raised hover:border-text-muted active:scale-[0.97] text-text-muted hover:text-text transition-all text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5 touch-manipulation"
+          >
+            <TechIcon name="linkedin" class="w-3.5 h-3.5" />
+            <span>LinkedIn</span>
+          </a>
+        </div>
       </div>
     </div>
   </section>
