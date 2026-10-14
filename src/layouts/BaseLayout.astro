@@ -41,22 +41,9 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=Alumni+Sans:wght@700;800;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap"
-    />
-    <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Alumni+Sans:wght@700;800;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap"
-      media="print"
-      onload="this.setAttribute('media', 'all')"
+      href="https://fonts.googleapis.com/css2?family=Alumni+Sans:wght@700;800;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=block"
     />
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Alumni+Sans:wght@700;800;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap"
-      />
-    </noscript>
 
     <!-- Primary Meta Tags -->
     <title>{title}</title>
@@ -186,7 +173,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
       id="site-header"
       class="fixed top-0 left-0 right-0 z-40 bg-bg/85 backdrop-blur-lg border-b border-border/60 shadow-xs transition-all duration-300 opacity-0 pointer-events-none -translate-y-2 pt-[env(safe-area-inset-top,0px)]"
     >
-      <div class="w-full max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex items-center justify-between gap-4">
+      <div class="w-full lg:w-[80%] mx-auto px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-4">
         <a href="/" class="group flex items-center gap-2 text-sm tracking-tight text-text shrink-0 touch-manipulation">
           <span class="inline-block size-2 rounded-full bg-accent group-hover:scale-125 transition-transform duration-200 shrink-0"></span>
           <span class="font-bold text-base tracking-tight">MARC</span>
@@ -275,7 +262,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         <div class="overflow-hidden">
           <div
             id="mobile-menu-content"
-            class="w-full max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col space-y-1 text-xs uppercase font-medium text-text transition-transform duration-200 -translate-y-2"
+            class="w-full lg:w-[80%] mx-auto px-4 sm:px-6 py-3 flex flex-col space-y-1 text-xs uppercase font-medium text-text transition-transform duration-200 -translate-y-2"
           >
             <a href="/#projects" class="mobile-nav-link min-h-[44px] flex items-center px-3 py-2 rounded-lg hover:bg-surface-raised active:bg-surface-raised hover:text-text transition-colors touch-manipulation">Projects</a>
             <a href="/#skills" class="mobile-nav-link min-h-[44px] flex items-center px-3 py-2 rounded-lg hover:bg-surface-raised active:bg-surface-raised hover:text-text transition-colors touch-manipulation">Stack</a>
@@ -286,7 +273,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
     </header>
 
     <!-- Main Container (Tightened max-w-5xl to reduce dead empty lateral margin) -->
-    <div class="w-full max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col min-h-dvh">
+    <div class="w-full lg:w-[80%] mx-auto px-4 sm:px-6 flex flex-col min-h-dvh">
       <main class="flex-1">
         <slot />
       </main>
@@ -555,6 +542,52 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         });
       }
 
+      let isWiping = false;
+      const wipeSplashTransition = (onCovered?: () => void) => {
+        if (isWiping) return;
+        const splash = document.getElementById("splash-loader");
+        const progress = document.getElementById("splash-progress");
+        const splashContent = document.getElementById("splash-content");
+        if (!splash || prefersReducedMotion) {
+          onCovered?.();
+          return;
+        }
+        isWiping = true;
+        if (splashContent) {
+          splashContent.classList.remove("opacity-0");
+        }
+        splash.style.transition = "none";
+        splash.style.display = "flex";
+        splash.style.transform = "translateY(100%)";
+        splash.style.pointerEvents = "auto";
+        if (progress) {
+          progress.style.transition = "none";
+          progress.style.width = "0%";
+        }
+        void splash.offsetHeight;
+
+        splash.style.transition = "transform 0.42s cubic-bezier(0.76, 0, 0.24, 1)";
+        splash.style.transform = "translateY(0%)";
+
+        setTimeout(() => {
+          onCovered?.();
+          if (progress) {
+            progress.style.transition = "width 0.28s ease-out";
+            progress.style.width = "100%";
+          }
+          setTimeout(() => {
+            splash.style.transition = "transform 0.45s cubic-bezier(0.76, 0, 0.24, 1)";
+            splash.style.transform = "translateY(-100%)";
+            splash.style.pointerEvents = "none";
+            setTimeout(() => {
+              splash.style.display = "none";
+              splash.style.transform = "translateY(100%)";
+              isWiping = false;
+            }, 460);
+          }, 280);
+        }, 430);
+      };
+
       const initPage = () => {
         // 1. Lenis Smooth Scrolling (Bypassed on touch devices or reduced motion)
         let lenis: any = null;
@@ -609,7 +642,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
           }
         }
 
-        // 2. Header "MARC" logo: smooth scroll to top in <600ms or router navigate
+        // 2. Header "MARC" logo: navigate back to base URL with transition splash wipe
         const headerLogo = document.querySelector('#site-header a[href="/"]');
         if (headerLogo) {
           headerLogo.addEventListener("click", (e) => {
@@ -618,23 +651,21 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
               window.location.pathname === "" ||
               window.location.pathname.endsWith("/index.html");
 
+            if (window.location.hash || !isHome) {
+              history.pushState(null, "", "/");
+            }
+            e.preventDefault();
             closeMobileMenu();
 
-            if (isHome) {
-              e.preventDefault();
-              if (window.location.hash) {
-                history.pushState(null, "", "/");
-              }
-              const activeLenis = (window as any).lenis;
-              if (activeLenis && !prefersReducedMotion) {
-                activeLenis.scrollTo(0, { duration: 0.55 });
+            wipeSplashTransition(() => {
+              if (!isHome) {
+                window.location.href = "/";
               } else {
-                window.scrollTo({
-                  top: 0,
-                  behavior: prefersReducedMotion ? "auto" : "smooth",
-                });
+                window.scrollTo(0, 0);
+                const activeLenis = (window as any).lenis;
+                if (activeLenis) activeLenis.scrollTo(0, { immediate: true });
               }
-            }
+            });
           });
         }
 
