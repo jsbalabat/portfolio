@@ -85,7 +85,10 @@ const skills = {
         <!-- Status Row -->
         <div class="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 min-h-[28px]">
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface text-xs text-text shadow-2xs">
-            <span class="size-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+            <span class="relative flex size-2 shrink-0">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full size-2 bg-emerald-500"></span>
+            </span>
             <span class="tracking-wide uppercase text-[10px] sm:text-[11px] font-semibold whitespace-nowrap">AVAILABLE FOR NEW ROLES</span>
           </div>
           <div class="text-[11px] sm:text-xs text-text-muted font-medium uppercase tracking-wider whitespace-nowrap">
@@ -94,7 +97,7 @@ const skills = {
         </div>
 
         <!-- Display Headline -->
-        <h1 class="font-display font-black text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl 2xl:text-9xl tracking-tight leading-[0.9] text-text uppercase">
+        <h1 class="font-display font-black text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl 2xl:text-9xl tracking-tight leading-[0.9] text-text uppercase text-balance">
           <span class="block">PRODUCTION</span>
           <span class="block">SYSTEMS THAT</span>
           <span class="block text-text-muted">NEVER BREAK.</span>
@@ -107,7 +110,7 @@ const skills = {
         <div class="flex items-center min-h-[28px]">
           <div class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold tracking-wide text-text-muted font-mono uppercase">
             <span>Hi, I'm</span>
-            <span id="hero-rotating-word" class="text-text font-black transition-all duration-300">
+            <span id="hero-rotating-word" class="inline-block min-w-[15ch] text-text font-black transition-all duration-300">
               Marc
             </span>
           </div>
@@ -189,7 +192,7 @@ const skills = {
         <span class="text-xs uppercase tracking-widest text-text-muted font-semibold block mb-1">
           SELECTED WORK ({projects.length < 10 ? `0${projects.length}` : projects.length})
         </span>
-        <h2 class="font-display font-black text-4xl sm:text-6xl tracking-tight uppercase text-text">
+        <h2 class="font-display font-black text-4xl sm:text-6xl tracking-tight uppercase text-text text-balance">
           PROJECTS
         </h2>
       </div>
@@ -257,7 +260,7 @@ const skills = {
                   {project.data.tagline}
                 </p>
 
-                <div class="text-xs sm:text-sm text-text-muted leading-relaxed prose prose-invert tldr-dim">
+                <div class="text-xs sm:text-sm text-text-muted leading-relaxed [&>p]:leading-relaxed [&>p]:text-pretty [&>p+p]:mt-2 tldr-dim">
                   <project.Content />
                 </div>
 
@@ -274,7 +277,7 @@ const skills = {
                 <div class="space-y-2.5">
                   <span class="text-[10px] uppercase tracking-wider text-text-muted font-bold block">ARCHITECTURE & STACK</span>
                   <div>
-                    <span class="inline-block px-2.5 py-1 rounded-lg bg-surface-raised border border-border-subtle text-[11px] text-text font-semibold uppercase tracking-wider tldr-highlight transition-all">{project.data.metrics}</span>
+                    <span class="inline-block px-2.5 py-1 rounded-lg bg-surface-raised border border-border-subtle text-[11px] text-text font-semibold uppercase tracking-wider tabular-nums tldr-highlight transition-all">{project.data.metrics}</span>
                   </div>
                   <div class="flex flex-wrap gap-1.5 pt-0.5">
                     {project.data.stack.map((tech) => (
@@ -293,7 +296,7 @@ const skills = {
                       href={project.data.liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-accent text-accent-text text-[10px] font-bold uppercase tracking-wider hover:opacity-90 active:scale-95 transition-all shadow-xs whitespace-nowrap shrink-0 pointer-events-auto touch-manipulation"
+                      class="min-h-[36px] sm:min-h-[30px] px-3 py-1.5 inline-flex items-center gap-1.5 rounded-lg bg-accent text-accent-text text-[10px] font-bold uppercase tracking-wider hover:opacity-90 active:scale-95 transition-all shadow-xs whitespace-nowrap shrink-0 pointer-events-auto touch-manipulation"
                       title={`Open live site for ${project.data.title}`}
                     >
                       <span class="whitespace-nowrap leading-none">Live Site</span>
@@ -305,7 +308,7 @@ const skills = {
                       href={project.data.repoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-border-subtle bg-surface-raised text-text-muted hover:text-text hover:border-text-muted text-[10px] font-semibold uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 pointer-events-auto touch-manipulation"
+                      class="min-h-[36px] sm:min-h-[30px] px-3 py-1.5 inline-flex items-center gap-1.5 rounded-lg border border-border-subtle bg-surface-raised text-text-muted hover:text-text hover:border-text-muted text-[10px] font-semibold uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 pointer-events-auto touch-manipulation"
                       title={`View source code for ${project.data.title}`}
                     >
                       <TechIcon name="github" class="w-2.5 h-2.5" />
@@ -330,7 +333,7 @@ const skills = {
       <span class="text-xs uppercase tracking-widest text-text-muted font-semibold block mb-1">
         TOOLING & ECOSYSTEM
       </span>
-      <h2 class="font-display font-black text-4xl sm:text-6xl tracking-tight uppercase text-text">
+      <h2 class="font-display font-black text-4xl sm:text-6xl tracking-tight uppercase text-text text-balance">
         TECHNICAL STACK
       </h2>
     </div>
@@ -367,7 +370,7 @@ const skills = {
       <span class="text-xs uppercase tracking-widest text-text-muted font-semibold block mb-1.5">
         NEXT STEPS
       </span>
-      <h2 class="font-display font-black text-5xl xs:text-6xl sm:text-7xl md:text-8xl tracking-tight leading-[0.92] uppercase text-text mb-4 sm:mb-5">
+      <h2 class="font-display font-black text-5xl xs:text-6xl sm:text-7xl md:text-8xl tracking-tight leading-[0.92] uppercase text-text mb-4 sm:mb-5 text-balance">
         LET'S BUILD SOMETHING RELIABLE.
       </h2>
       <p class="text-sm sm:text-base text-text-muted max-w-2xl mb-6 leading-relaxed tldr-dim">
@@ -425,7 +428,7 @@ const skills = {
       return;
     }
 
-    const words = ["Marc", "a developer", "a gamer", "a software engineer"];
+    const words = ["Marc", "Systems Engineer", "Full-Stack Builder", "Database Architect"];
     let idx = 0;
 
     intervalId = setInterval(() => {

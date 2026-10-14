@@ -23,7 +23,7 @@ export default function ContactModal() {
       setIsOpen(false);
       setIsClosing(false);
       isClosingRef.current = false;
-    }, 220);
+    }, 180);
   }, [isOpen]);
 
   // Listen for global custom events to open the modal from anywhere
@@ -158,7 +158,7 @@ export default function ContactModal() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="contact-modal-title"
-      className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 ${
+      className={`fixed inset-0 z-50 flex sm:items-center items-end justify-center p-0 sm:p-4 bg-black/75 ${
         isClosing ? 'animate-modal-backdrop-out' : 'animate-modal-backdrop'
       }`}
       onMouseDown={(e) => {
@@ -174,7 +174,7 @@ export default function ContactModal() {
     >
       <div
         ref={dialogRef}
-        className={`relative w-full max-w-lg max-h-[calc(100svh-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-border bg-surface p-5 sm:p-8 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))] text-text shadow-2xl ${
+        className={`relative w-full max-w-lg max-h-[calc(100svh-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-t-2xl sm:rounded-2xl border border-border bg-surface p-5 sm:p-8 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-text shadow-2xl ${
           isClosing ? 'animate-modal-content-out' : 'animate-modal-content'
         }`}
       >

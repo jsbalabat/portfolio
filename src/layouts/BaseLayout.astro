@@ -41,9 +41,22 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Alumni+Sans:ital,wght@0,700;0,800;0,900;1,700&family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Alumni+Sans:wght@700;800;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap"
     />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Alumni+Sans:wght@700;800;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap"
+      media="print"
+      onload="this.setAttribute('media', 'all')"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Alumni+Sans:wght@700;800;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap"
+      />
+    </noscript>
 
     <!-- Primary Meta Tags -->
     <title>{title}</title>
@@ -169,12 +182,11 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
     </aside>
 
     <!-- Dynamic Header (Reveals on scroll) -->
-    <!-- Dynamic Header (Reveals on scroll) -->
     <header
       id="site-header"
-      class="fixed top-0 left-0 right-0 z-40 bg-bg/90 backdrop-blur-md transition-all duration-300 opacity-0 pointer-events-none -translate-y-2 pt-[env(safe-area-inset-top,0px)] border-b border-border/40"
+      class="fixed top-0 left-0 right-0 z-40 bg-bg/85 backdrop-blur-lg border-b border-border/60 shadow-xs transition-all duration-300 opacity-0 pointer-events-none -translate-y-2 pt-[env(safe-area-inset-top,0px)]"
     >
-      <div class="w-[90%] mx-auto px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-4">
+      <div class="w-full max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex items-center justify-between gap-4">
         <a href="/" class="group flex items-center gap-2 text-sm tracking-tight text-text shrink-0 touch-manipulation">
           <span class="inline-block size-2 rounded-full bg-accent group-hover:scale-125 transition-transform duration-200 shrink-0"></span>
           <span class="font-bold text-base tracking-tight">MARC</span>
@@ -244,7 +256,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
             aria-expanded="false"
             aria-controls="mobile-menu"
             aria-label="Toggle navigation menu"
-            class="inline-flex items-center justify-center size-10 min-w-[44px] min-h-[44px] rounded-xl border border-border bg-surface hover:bg-surface-raised active:bg-surface-raised active:scale-90 text-text cursor-pointer transition-transform touch-manipulation"
+            class="inline-flex items-center justify-center size-10 min-w-[44px] min-h-[44px] rounded-xl border border-border bg-surface hover:bg-surface-raised active:bg-surface-raised active:scale-[0.96] transition-transform duration-150 text-text cursor-pointer touch-manipulation"
           >
             <svg id="hamburger-icon" class="size-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line id="line-top" x1="4" y1="6" x2="20" y2="6" class="transition-transform duration-300 origin-center"></line>
@@ -263,7 +275,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         <div class="overflow-hidden">
           <div
             id="mobile-menu-content"
-            class="w-[90%] mx-auto px-4 py-3 flex flex-col space-y-1 text-xs uppercase font-medium text-text transition-transform duration-200 -translate-y-2"
+            class="w-full max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col space-y-1 text-xs uppercase font-medium text-text transition-transform duration-200 -translate-y-2"
           >
             <a href="/#projects" class="mobile-nav-link min-h-[44px] flex items-center px-3 py-2 rounded-lg hover:bg-surface-raised active:bg-surface-raised hover:text-text transition-colors touch-manipulation">Projects</a>
             <a href="/#skills" class="mobile-nav-link min-h-[44px] flex items-center px-3 py-2 rounded-lg hover:bg-surface-raised active:bg-surface-raised hover:text-text transition-colors touch-manipulation">Stack</a>
@@ -274,7 +286,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
     </header>
 
     <!-- Main Container (Tightened max-w-5xl to reduce dead empty lateral margin) -->
-    <div class="w-[90%] mx-auto px-4 sm:px-6 flex flex-col min-h-dvh">
+    <div class="w-full max-w-5xl xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col min-h-dvh">
       <main class="flex-1">
         <slot />
       </main>
@@ -324,22 +336,79 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
     <script>
       import Lenis from "lenis";
 
-      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      let prefersReducedMotion =
+        typeof window !== "undefined"
+          ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          : false;
+
+      const isTouchDevice = () =>
+        typeof window !== "undefined" &&
+        (window.matchMedia("(pointer: coarse)").matches || "ontouchstart" in window);
+
+      const isFinePointer = () =>
+        typeof window !== "undefined" &&
+        window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+      if (typeof window !== "undefined" && !(window as any).__motionMediaListening) {
+        (window as any).__motionMediaListening = true;
+        window.matchMedia("(prefers-reduced-motion: reduce)").addEventListener("change", (e) => {
+          prefersReducedMotion = e.matches;
+          const activeLenis = (window as any).lenis;
+          if (prefersReducedMotion && activeLenis) {
+            try {
+              activeLenis.destroy();
+            } catch (err) {}
+            (window as any).lenis = null;
+            if ((window as any).__lenisRafId) {
+              cancelAnimationFrame((window as any).__lenisRafId);
+              (window as any).__lenisRafId = null;
+            }
+          }
+        });
+      }
+
       if (typeof window !== "undefined" && "scrollRestoration" in history) {
         history.scrollRestoration = "manual";
       }
 
-      // Invert Aura Cursor (Global listeners attached once across transitions)
-      if (typeof window !== "undefined" && !(window as any).__cursorInitialized) {
+      // Invert Aura Cursor (Gated strictly to fine pointer / hover capable devices)
+      if (typeof window !== "undefined" && isFinePointer() && !(window as any).__cursorInitialized) {
         (window as any).__cursorInitialized = true;
+        document.documentElement.classList.add("custom-cursor-enabled");
 
         let targetX = -100, targetY = -100;
         let auraX = -100, auraY = -100;
         let isMouseDown = false;
         let cursorActive = false;
+        let rafId: number | null = null;
+
+        function renderCursor() {
+          const aura = document.getElementById("cursor-aura");
+          if (cursorActive && aura) {
+            auraX += (targetX - auraX) * 0.12;
+            auraY += (targetY - auraY) * 0.12;
+            const scale = isMouseDown ? 0.75 : 1;
+            aura.style.transform = `translate3d(${auraX}px, ${auraY}px, 0) translate(-50%, -50%) scale(${scale})`;
+
+            // Pause rAF when cursor rests within subpixel threshold
+            if (Math.abs(targetX - auraX) < 0.1 && Math.abs(targetY - auraY) < 0.1) {
+              auraX = targetX;
+              auraY = targetY;
+              aura.style.transform = `translate3d(${auraX}px, ${auraY}px, 0) translate(-50%, -50%) scale(${scale})`;
+              rafId = null;
+              return;
+            }
+          }
+          rafId = requestAnimationFrame(renderCursor);
+        }
+
+        const wakeCursorLoop = () => {
+          if (!rafId && cursorActive) {
+            rafId = requestAnimationFrame(renderCursor);
+          }
+        };
 
         window.addEventListener("mousemove", (e: MouseEvent) => {
-          if (!window.matchMedia("(pointer: fine)").matches) return;
           const dot = document.getElementById("cursor-dot");
           const aura = document.getElementById("cursor-aura");
           if (!dot || !aura) return;
@@ -357,30 +426,25 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
           if (aura.classList.contains("opacity-0")) aura.classList.remove("opacity-0");
 
           dot.style.transform = `translate3d(${targetX}px, ${targetY}px, 0) translate(-50%, -50%)`;
+          wakeCursorLoop();
         }, { passive: true });
-
-        function renderCursor() {
-          const aura = document.getElementById("cursor-aura");
-          if (cursorActive && aura) {
-            auraX += (targetX - auraX) * 0.12;
-            auraY += (targetY - auraY) * 0.12;
-            const scale = isMouseDown ? 0.75 : 1;
-            aura.style.transform = `translate3d(${auraX}px, ${auraY}px, 0) translate(-50%, -50%) scale(${scale})`;
-          }
-          requestAnimationFrame(renderCursor);
-        }
-        requestAnimationFrame(renderCursor);
 
         window.addEventListener("mousedown", () => {
           isMouseDown = true;
+          wakeCursorLoop();
         });
 
         window.addEventListener("mouseup", () => {
           isMouseDown = false;
+          wakeCursorLoop();
         });
 
         document.addEventListener("mouseleave", () => {
           cursorActive = false;
+          if (rafId) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
+          }
           const dot = document.getElementById("cursor-dot");
           const aura = document.getElementById("cursor-aura");
           if (dot) dot.classList.add("opacity-0");
@@ -388,10 +452,12 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         });
 
         document.addEventListener("astro:page-load", () => {
+          if (isFinePointer()) {
+            document.documentElement.classList.add("custom-cursor-enabled");
+          }
           const dot = document.getElementById("cursor-dot");
           const aura = document.getElementById("cursor-aura");
-          if ((cursorActive || window.matchMedia("(pointer: fine)").matches) && targetX >= 0) {
-            cursorActive = true;
+          if (cursorActive && targetX >= 0) {
             if (dot) {
               dot.classList.remove("opacity-0");
               dot.style.transform = `translate3d(${targetX}px, ${targetY}px, 0) translate(-50%, -50%)`;
@@ -400,6 +466,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
               aura.classList.remove("opacity-0");
               aura.style.transform = `translate3d(${auraX}px, ${auraY}px, 0) translate(-50%, -50%)`;
             }
+            wakeCursorLoop();
           }
         });
       }
@@ -437,10 +504,9 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         const el = typeof target === "string" ? (document.querySelector(target) as HTMLElement | null) : target;
         if (!el) return;
         const targetY = getTargetScrollY(el);
-        const isTouch = window.matchMedia("(pointer: coarse)").matches || "ontouchstart" in window;
         const activeLenis = (window as any).lenis;
 
-        if (!isTouch && activeLenis && !prefersReducedMotion) {
+        if (!isTouchDevice() && activeLenis && !prefersReducedMotion) {
           activeLenis.scrollTo(targetY, {
             duration: immediate ? 0 : 0.85,
             immediate,
@@ -476,8 +542,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
                 closeMobileMenu();
                 history.pushState(null, "", targetUrl.hash);
 
-                const isTouch = window.matchMedia("(pointer: coarse)").matches || "ontouchstart" in window;
-                if (isTouch) {
+                if (isTouchDevice()) {
                   requestAnimationFrame(() => {
                     scrollToTarget(targetEl, false);
                   });
@@ -490,52 +555,10 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         });
       }
 
-      let isWiping = false;
-      const wipeSplashTransition = (onCovered?: () => void) => {
-        if (isWiping) return;
-        const splash = document.getElementById("splash-loader");
-        const progress = document.getElementById("splash-progress");
-        if (!splash || prefersReducedMotion) {
-          onCovered?.();
-          return;
-        }
-        isWiping = true;
-        splash.style.transition = "none";
-        splash.style.display = "flex";
-        splash.style.transform = "translateY(100%)";
-        splash.style.pointerEvents = "auto";
-        if (progress) {
-          progress.style.transition = "none";
-          progress.style.width = "0%";
-        }
-        void splash.offsetHeight;
-
-        splash.style.transition = "transform 0.42s cubic-bezier(0.76, 0, 0.24, 1)";
-        splash.style.transform = "translateY(0%)";
-
-        setTimeout(() => {
-          onCovered?.();
-          if (progress) {
-            progress.style.transition = "width 0.28s ease-out";
-            progress.style.width = "100%";
-          }
-          setTimeout(() => {
-            splash.style.transition = "transform 0.45s cubic-bezier(0.76, 0, 0.24, 1)";
-            splash.style.transform = "translateY(-100%)";
-            splash.style.pointerEvents = "none";
-            setTimeout(() => {
-              splash.style.display = "none";
-              splash.style.transform = "translateY(100%)";
-              isWiping = false;
-            }, 460);
-          }, 280);
-        }, 430);
-      };
-
       const initPage = () => {
-        // 1. Lenis Elastic Smooth Scrolling
+        // 1. Lenis Smooth Scrolling (Bypassed on touch devices or reduced motion)
         let lenis: any = null;
-        if (!prefersReducedMotion) {
+        if (!prefersReducedMotion && !isTouchDevice()) {
           if ((window as any).lenis) {
             try {
               (window as any).lenis.destroy();
@@ -555,10 +578,23 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
             cancelAnimationFrame((window as any).__lenisRafId);
           }
           function raf(time: number) {
-            lenis.raf(time);
-            (window as any).__lenisRafId = requestAnimationFrame(raf);
+            if ((window as any).lenis) {
+              (window as any).lenis.raf(time);
+              (window as any).__lenisRafId = requestAnimationFrame(raf);
+            }
           }
           (window as any).__lenisRafId = requestAnimationFrame(raf);
+        } else {
+          if ((window as any).lenis) {
+            try {
+              (window as any).lenis.destroy();
+            } catch (e) {}
+            (window as any).lenis = null;
+          }
+          if ((window as any).__lenisRafId) {
+            cancelAnimationFrame((window as any).__lenisRafId);
+            (window as any).__lenisRafId = null;
+          }
         }
 
         // Handle initial hash on navigation or load (e.g. returning from a project)
@@ -573,32 +609,40 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
           }
         }
 
-        // 2. Header "MARC" logo: navigate back to base URL with transition splash wipe
+        // 2. Header "MARC" logo: smooth scroll to top in <600ms or router navigate
         const headerLogo = document.querySelector('#site-header a[href="/"]');
         if (headerLogo) {
           headerLogo.addEventListener("click", (e) => {
-            const isHome = window.location.pathname === "/" || window.location.pathname === "" || window.location.pathname.endsWith("/index.html");
-            if (window.location.hash || !isHome) {
-              history.pushState(null, "", "/");
-            }
-            e.preventDefault();
+            const isHome =
+              window.location.pathname === "/" ||
+              window.location.pathname === "" ||
+              window.location.pathname.endsWith("/index.html");
+
             closeMobileMenu();
 
-            wipeSplashTransition(() => {
-              if (!isHome) {
-                window.location.href = "/";
-              } else {
-                window.scrollTo(0, 0);
-                const activeLenis = (window as any).lenis;
-                if (activeLenis) activeLenis.scrollTo(0, { immediate: true });
+            if (isHome) {
+              e.preventDefault();
+              if (window.location.hash) {
+                history.pushState(null, "", "/");
               }
-            });
+              const activeLenis = (window as any).lenis;
+              if (activeLenis && !prefersReducedMotion) {
+                activeLenis.scrollTo(0, { duration: 0.55 });
+              } else {
+                window.scrollTo({
+                  top: 0,
+                  behavior: prefersReducedMotion ? "auto" : "smooth",
+                });
+              }
+            }
           });
         }
 
-        // 3. Custom Floating Long Pill Scrollbar
+        // 3. Custom Floating Long Pill Scrollbar & Header Reveal (Consolidated Listeners)
         const customScrollbar = document.getElementById("custom-scrollbar");
         const scrollbarFill = document.getElementById("scrollbar-fill");
+        const siteHeader = document.getElementById("site-header");
+
         const updateCustomScrollbar = () => {
           if (!customScrollbar || !scrollbarFill) return;
           const scrollY = window.scrollY || window.pageYOffset || 0;
@@ -614,12 +658,30 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
             scrollbarFill.style.height = `${progress}%`;
           }
         };
-        window.addEventListener("scroll", updateCustomScrollbar, { passive: true });
+
+        const handleScrollHeader = () => {
+          const scrollY = window.scrollY || window.pageYOffset || 0;
+          const isHome = window.location.pathname === "/" || window.location.pathname === "";
+          if (!isHome || scrollY > 120) {
+            siteHeader?.classList.remove("opacity-0", "pointer-events-none", "-translate-y-2");
+            siteHeader?.classList.add("opacity-100", "pointer-events-auto", "translate-y-0");
+          } else {
+            siteHeader?.classList.add("opacity-0", "pointer-events-none", "-translate-y-2");
+            siteHeader?.classList.remove("opacity-100", "pointer-events-auto", "translate-y-0");
+          }
+        };
+
+        const handleCombinedScroll = () => {
+          updateCustomScrollbar();
+          handleScrollHeader();
+        };
+
+        window.addEventListener("scroll", handleCombinedScroll, { passive: true });
         if (lenis) {
-          lenis.on("scroll", updateCustomScrollbar);
+          lenis.on("scroll", handleCombinedScroll);
         }
-        window.addEventListener("resize", updateCustomScrollbar);
-        updateCustomScrollbar();
+        window.addEventListener("resize", handleCombinedScroll);
+        handleCombinedScroll();
 
         // 4. Dynamic Active Navigation Scroll Spy
         const sectionIds = ["projects", "skills", "contact"];
@@ -656,25 +718,6 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
           );
           sections.forEach((section) => spyObserver.observe(section));
         }
-
-        // 5. Dynamic Header Scroll Reveal
-        const siteHeader = document.getElementById("site-header");
-        const handleScrollHeader = () => {
-          const scrollY = window.scrollY || window.pageYOffset || 0;
-          const isHome = window.location.pathname === "/" || window.location.pathname === "";
-          if (!isHome || scrollY > 120) {
-            siteHeader?.classList.remove("opacity-0", "pointer-events-none", "-translate-y-2");
-            siteHeader?.classList.add("opacity-100", "pointer-events-auto", "translate-y-0");
-          } else {
-            siteHeader?.classList.add("opacity-0", "pointer-events-none", "-translate-y-2");
-            siteHeader?.classList.remove("opacity-100", "pointer-events-auto", "translate-y-0");
-          }
-        };
-        window.addEventListener("scroll", handleScrollHeader, { passive: true });
-        if (lenis) {
-          lenis.on("scroll", () => handleScrollHeader());
-        }
-        handleScrollHeader();
 
         // 6. Theme Logic
         const getActiveThemePreference = (): string => {
@@ -786,13 +829,16 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         });
         updateTldrUI(isTldrActive());
 
-        // 8. Mobile Menu Toggle with Smooth Animation
+        // 8. Mobile Menu Toggle with Outside Click & Escape Handlers
         const menuToggle = document.getElementById("mobile-menu-toggle");
         const mobileMenu = document.getElementById("mobile-menu");
         const menuContent = document.getElementById("mobile-menu-content");
         const lineTop = document.getElementById("line-top");
         const lineMid = document.getElementById("line-mid");
         const lineBot = document.getElementById("line-bot");
+
+        let outsideClickListener: ((e: MouseEvent) => void) | null = null;
+        let escapeKeyHandler: ((e: KeyboardEvent) => void) | null = null;
 
         const setMobileMenuState = (isOpen: boolean) => {
           menuToggle?.setAttribute("aria-expanded", isOpen ? "true" : "false");
@@ -804,6 +850,30 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
             lineTop?.style.setProperty("transform", "translateY(6px) rotate(45deg)");
             lineMid?.style.setProperty("opacity", "0");
             lineBot?.style.setProperty("transform", "translateY(-6px) rotate(-45deg)");
+
+            if (!outsideClickListener) {
+              outsideClickListener = (e: MouseEvent) => {
+                const target = e.target as Node;
+                const header = document.getElementById("site-header");
+                if (header && !header.contains(target)) {
+                  setMobileMenuState(false);
+                }
+              };
+              setTimeout(() => {
+                if (outsideClickListener) {
+                  document.addEventListener("click", outsideClickListener);
+                }
+              }, 10);
+            }
+
+            if (!escapeKeyHandler) {
+              escapeKeyHandler = (e: KeyboardEvent) => {
+                if (e.key === "Escape") {
+                  setMobileMenuState(false);
+                }
+              };
+              document.addEventListener("keydown", escapeKeyHandler);
+            }
           } else {
             mobileMenu?.classList.add("grid-rows-[0fr]", "opacity-0", "pointer-events-none", "border-border/0");
             mobileMenu?.classList.remove("grid-rows-[1fr]", "opacity-100", "pointer-events-auto", "border-border");
@@ -812,11 +882,21 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
             lineTop?.style.removeProperty("transform");
             lineMid?.style.removeProperty("opacity");
             lineBot?.style.removeProperty("transform");
+
+            if (outsideClickListener) {
+              document.removeEventListener("click", outsideClickListener);
+              outsideClickListener = null;
+            }
+            if (escapeKeyHandler) {
+              document.removeEventListener("keydown", escapeKeyHandler);
+              escapeKeyHandler = null;
+            }
           }
         };
 
         if (menuToggle && mobileMenu) {
-          menuToggle.addEventListener("click", () => {
+          menuToggle.addEventListener("click", (e) => {
+            e.stopPropagation();
             const isExpanded = menuToggle.getAttribute("aria-expanded") === "true";
             setMobileMenuState(!isExpanded);
           });
@@ -826,15 +906,9 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
               setMobileMenuState(false);
             });
           });
-
-          document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape" && menuToggle.getAttribute("aria-expanded") === "true") {
-              setMobileMenuState(false);
-            }
-          });
         }
 
-        // 8. Smooth Scroll Entrance Observer (GPU-composited micro-animations)
+        // 9. Smooth Scroll Entrance Observer (GPU-composited micro-animations)
         if (!("IntersectionObserver" in window)) {
           document.querySelectorAll(".reveal-on-scroll").forEach((el) => el.classList.add("is-visible"));
         } else {
@@ -848,8 +922,8 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
               });
             },
             {
-              threshold: 0.08,
-              rootMargin: "0px 0px -30px 0px",
+              threshold: 0.05,
+              rootMargin: "0px 0px -50px 0px",
             }
           );
 
