@@ -226,10 +226,10 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
       class="fixed top-[max(0.75rem,env(safe-area-inset-top))] right-4 z-50 md:hidden min-w-[52px] min-h-[52px] p-2 flex flex-col justify-center items-center bg-transparent border-0 cursor-pointer select-none touch-manipulation active:scale-90 transition-all duration-300 opacity-0 pointer-events-none -translate-y-2"
     >
       <span class="sr-only">Toggle Menu</span>
-      <div class="pointer-events-none mix-blend-difference text-white relative w-10 h-6 flex flex-col justify-between items-center">
-        <span id="burger-bar-1" class="w-full h-[4px] bg-white rounded-full transition-all duration-300 ease-in-out origin-center"></span>
-        <span id="burger-bar-2" class="w-full h-[4px] bg-white rounded-full transition-all duration-200 ease-in-out"></span>
-        <span id="burger-bar-3" class="w-full h-[4px] bg-white rounded-full transition-all duration-300 ease-in-out origin-center"></span>
+      <div class="pointer-events-none mix-blend-difference text-white relative w-10 h-[38px] flex flex-col justify-between items-center">
+        <span id="burger-bar-1" class="w-full h-[10px] bg-white rounded-[2px] transition-all duration-300 ease-in-out origin-center"></span>
+        <span id="burger-bar-2" class="w-full h-[10px] bg-white rounded-[2px] transition-all duration-200 ease-in-out"></span>
+        <span id="burger-bar-3" class="w-full h-[10px] bg-white rounded-[2px] transition-all duration-300 ease-in-out origin-center"></span>
       </div>
     </button>
 
@@ -925,10 +925,10 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
             menuContent?.classList.remove("-translate-y-4");
             menuContent?.classList.add("translate-y-0");
 
-            bar1?.style.setProperty("transform", "translateY(10px) rotate(45deg)");
+            bar1?.style.setProperty("transform", "translateY(14px) rotate(45deg)");
             bar2?.style.setProperty("opacity", "0");
             bar2?.style.setProperty("transform", "scaleX(0)");
-            bar3?.style.setProperty("transform", "translateY(-10px) rotate(-45deg)");
+            bar3?.style.setProperty("transform", "translateY(-14px) rotate(-45deg)");
 
             // Make sure the toggle button itself is visible when menu is open
             menuToggle?.classList.remove("opacity-0", "pointer-events-none", "-translate-y-2");
