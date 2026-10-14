@@ -26,7 +26,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
 ---
 
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta
@@ -301,7 +301,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
     </div>
 
     <!-- Main Container (Tightened max-w-5xl to reduce dead empty lateral margin) -->
-    <div class="w-full lg:w-[80%] mx-auto px-4 sm:px-6 flex flex-col min-h-dvh">
+    <div class="w-full lg:w-[80%] mx-auto px-4 sm:px-6 flex flex-col min-h-[100svh]">
       <main class="flex-1">
         <slot />
       </main>
@@ -638,6 +638,8 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         }, 430);
       };
 
+      let activeBaseScrollHandler: (() => void) | null = null;
+
       const initPage = () => {
         // 1. Lenis Smooth Scrolling (Bypassed on touch devices or reduced motion)
         let lenis: any = null;
@@ -723,9 +725,11 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         const customScrollbar = document.getElementById("custom-scrollbar");
         const scrollbarFill = document.getElementById("scrollbar-fill");
         const siteHeader = document.getElementById("site-header");
+        const mobileToggle = document.getElementById("mobile-menu-toggle");
+        const burgerVisual = document.getElementById("mobile-menu-burger-visual");
 
         const updateCustomScrollbar = () => {
-          if (!customScrollbar || !scrollbarFill) return;
+          if (isTouchDevice() || window.innerWidth < 640 || !customScrollbar || !scrollbarFill) return;
           const scrollY = window.scrollY || window.pageYOffset || 0;
           const docHeight = document.documentElement.scrollHeight;
           const winHeight = window.innerHeight;
@@ -740,45 +744,70 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
           }
         };
 
+        let headerRevealed = false;
+        let burgerRevealed = false;
+
         const handleScrollHeader = () => {
           const scrollY = window.scrollY || window.pageYOffset || 0;
           const isHome = window.location.pathname === "/" || window.location.pathname === "";
-          const mobileToggle = document.getElementById("mobile-menu-toggle");
-          const burgerVisual = document.getElementById("mobile-menu-burger-visual");
           const isMobileMenuOpen = mobileToggle?.getAttribute("aria-expanded") === "true";
 
-          if (!isHome || scrollY > 120) {
-            siteHeader?.classList.remove("opacity-0", "pointer-events-none", "-translate-y-2");
-            siteHeader?.classList.add("opacity-100", "pointer-events-auto", "translate-y-0");
-          } else {
-            siteHeader?.classList.add("opacity-0", "pointer-events-none", "-translate-y-2");
-            siteHeader?.classList.remove("opacity-100", "pointer-events-auto", "translate-y-0");
+          const shouldRevealHeader = !isHome || scrollY > 120;
+          if (shouldRevealHeader !== headerRevealed) {
+            headerRevealed = shouldRevealHeader;
+            if (shouldRevealHeader) {
+              siteHeader?.classList.remove("opacity-0", "pointer-events-none", "-translate-y-2");
+              siteHeader?.classList.add("opacity-100", "pointer-events-auto", "translate-y-0");
+            } else {
+              siteHeader?.classList.add("opacity-0", "pointer-events-none", "-translate-y-2");
+              siteHeader?.classList.remove("opacity-100", "pointer-events-auto", "translate-y-0");
+            }
           }
 
-          if (!isHome || scrollY > 120 || isMobileMenuOpen) {
-            mobileToggle?.classList.remove("opacity-0", "pointer-events-none");
-            mobileToggle?.classList.add("opacity-100", "pointer-events-auto");
-            burgerVisual?.classList.remove("opacity-0");
-            burgerVisual?.classList.add("opacity-100");
-          } else {
-            mobileToggle?.classList.add("opacity-0", "pointer-events-none");
-            mobileToggle?.classList.remove("opacity-100", "pointer-events-auto");
-            burgerVisual?.classList.add("opacity-0");
-            burgerVisual?.classList.remove("opacity-100");
+          const shouldRevealBurger = !isHome || scrollY > 120 || isMobileMenuOpen;
+          if (shouldRevealBurger !== burgerRevealed) {
+            burgerRevealed = shouldRevealBurger;
+            if (shouldRevealBurger) {
+              mobileToggle?.classList.remove("opacity-0", "pointer-events-none");
+              mobileToggle?.classList.add("opacity-100", "pointer-events-auto");
+              burgerVisual?.classList.remove("opacity-0");
+              burgerVisual?.classList.add("opacity-100");
+            } else {
+              mobileToggle?.classList.add("opacity-0", "pointer-events-none");
+              mobileToggle?.classList.remove("opacity-100", "pointer-events-auto");
+              burgerVisual?.classList.add("opacity-0");
+              burgerVisual?.classList.remove("opacity-100");
+            }
           }
         };
 
-        const handleCombinedScroll = () => {
-          updateCustomScrollbar();
-          handleScrollHeader();
+        let scrollTicking = false;
+        const onScroll = () => {
+          if (!scrollTicking) {
+            requestAnimationFrame(() => {
+              updateCustomScrollbar();
+              handleScrollHeader();
+              scrollTicking = false;
+            });
+            scrollTicking = true;
+          }
         };
 
-        window.addEventListener("scroll", handleCombinedScroll, { passive: true });
-        if (lenis) {
-          lenis.on("scroll", handleCombinedScroll);
+        if (activeBaseScrollHandler) {
+          window.removeEventListener("scroll", activeBaseScrollHandler);
+          window.removeEventListener("resize", activeBaseScrollHandler);
+          if (lenis) lenis.off("scroll", activeBaseScrollHandler);
+          activeBaseScrollHandler = null;
         }
-        window.addEventListener("resize", handleCombinedScroll);
-        handleCombinedScroll();
+
+        activeBaseScrollHandler = onScroll;
+        window.addEventListener("scroll", onScroll, { passive: true });
+        if (lenis) {
+          lenis.on("scroll", onScroll);
+        }
+        window.addEventListener("resize", onScroll);
+        updateCustomScrollbar();
+        handleScrollHeader();
 
         // 4. Dynamic Active Navigation Scroll Spy
         const sectionIds = ["projects", "skills", "contact"];
@@ -924,8 +953,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         updateTldrUI(isTldrActive());
 
         // 8. Mobile Menu Toggle with Outside Click & Escape Handlers
-        const menuToggle = document.getElementById("mobile-menu-toggle");
-        const burgerVisual = document.getElementById("mobile-menu-burger-visual");
+        const menuToggle = mobileToggle;
         const mobileMenu = document.getElementById("mobile-menu");
         const menuContent = document.getElementById("mobile-menu-content");
         const bar1 = document.getElementById("burger-bar-1");
@@ -953,6 +981,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
             menuToggle?.classList.add("opacity-100", "pointer-events-auto");
             burgerVisual?.classList.remove("opacity-0");
             burgerVisual?.classList.add("opacity-100");
+            burgerRevealed = true;
 
             if (!outsideClickListener) {
               outsideClickListener = (e: MouseEvent) => {
@@ -1081,6 +1110,15 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
       };
 
       document.addEventListener("astro:page-load", initPage);
+      document.addEventListener("astro:before-swap", () => {
+        if (activeBaseScrollHandler) {
+          window.removeEventListener("scroll", activeBaseScrollHandler);
+          window.removeEventListener("resize", activeBaseScrollHandler);
+          const activeLenis = (window as any).lenis;
+          if (activeLenis) activeLenis.off("scroll", activeBaseScrollHandler);
+          activeBaseScrollHandler = null;
+        }
+      });
     </script>
   </body>
 </html>

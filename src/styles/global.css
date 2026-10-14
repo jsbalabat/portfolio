@@ -29,12 +29,17 @@
 }
 
 html {
-  overflow-y: scroll;
-  scrollbar-gutter: stable;
   scrollbar-width: none;
   -ms-overflow-style: none;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+}
+
+@media (min-width: 768px) {
+  html {
+    overflow-y: scroll;
+    scrollbar-gutter: stable;
+  }
 }
 
 /* Touch & Mobile Optimizations (Apple WWDC Fluid Interfaces & iOS compatibility) */
@@ -50,18 +55,6 @@ a, button, input, textarea, select {
 @media screen and (max-width: 767px) {
   input, select, textarea {
     font-size: 16px;
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
   }
 }
 
@@ -100,7 +93,7 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
   overflow-x: clip;
   width: 100%;
-  min-height: 100dvh;
+  min-height: 100svh;
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
 }

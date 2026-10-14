@@ -63,22 +63,39 @@
       }
     });
 
+    let backToTopVisible = false;
+    let backToTopTicking = false;
+
     const updateBackToTop = () => {
       const scrollY = window.scrollY || window.pageYOffset || 0;
-      if (scrollY > 250) {
-        backToTop.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
-        backToTop.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
-      } else {
-        backToTop.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
-        backToTop.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
+      const shouldShow = scrollY > 250;
+      if (shouldShow !== backToTopVisible) {
+        backToTopVisible = shouldShow;
+        if (shouldShow) {
+          backToTop.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
+          backToTop.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
+        } else {
+          backToTop.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+          backToTop.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
+        }
       }
     };
 
-    activeScrollHandler = updateBackToTop;
-    window.addEventListener('scroll', updateBackToTop, { passive: true });
+    const onScroll = () => {
+      if (!backToTopTicking) {
+        requestAnimationFrame(() => {
+          updateBackToTop();
+          backToTopTicking = false;
+        });
+        backToTopTicking = true;
+      }
+    };
+
+    activeScrollHandler = onScroll;
+    window.addEventListener('scroll', onScroll, { passive: true });
     const lenis = (window as any).lenis;
     if (lenis) {
-      lenis.on('scroll', updateBackToTop);
+      lenis.on('scroll', onScroll);
     }
     updateBackToTop();
   };
