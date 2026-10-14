@@ -47,13 +47,16 @@ function getAppVersion() {
   if (process.env.PUBLIC_APP_VERSION) {
     return process.env.PUBLIC_APP_VERSION.replace(/^v/, '');
   }
+  if (pkg.version) {
+    return pkg.version.replace(/^v/, '');
+  }
   try {
     const gitTag = execSync('git describe --tags --abbrev=0', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
     if (gitTag) {
       return gitTag.replace(/^v/, '');
     }
   } catch {}
-  return pkg.version || '1.0.1';
+  return '1.0.4';
 }
 
 const commitSha = getGitCommitSha();
