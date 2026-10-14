@@ -56,7 +56,7 @@ function getAppVersion() {
       return gitTag.replace(/^v/, '');
     }
   } catch {}
-  return '1.0.4';
+  return '1.0.5';
 }
 
 const commitSha = getGitCommitSha();
