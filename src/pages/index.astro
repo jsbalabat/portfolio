@@ -97,7 +97,7 @@ const skills = {
         </div>
 
         <!-- Display Headline -->
-        <h1 class="font-display font-black text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-8xl 2xl:text-9xl tracking-tight leading-[0.9] text-text uppercase text-balance">
+        <h1 class="font-display font-black text-6xl xs:text-7xl sm:text-7xl md:text-8xl lg:text-8xl 2xl:text-9xl tracking-tight leading-[0.88] sm:leading-[0.9] text-text uppercase text-balance">
           <span class="block">PRODUCTION</span>
           <span class="block">SYSTEMS THAT</span>
           <span class="block text-text-muted">NEVER BREAK.</span>
@@ -109,9 +109,9 @@ const skills = {
         <!-- Identity Row (Aligned with Status Row baseline) -->
         <div class="flex items-center min-h-[28px]">
           <div class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold tracking-wide text-text-muted font-mono uppercase">
-            <span>Hi, I'm</span>
-            <span id="hero-rotating-word" class="inline-block min-w-[15ch] text-text font-black transition-all duration-300">
-              Marc
+            <span>Hi, I'm Marc, a</span>
+            <span id="hero-rotating-word" class="inline-block min-w-[20ch] text-text font-black transition-all duration-300">
+              software engineer
             </span>
           </div>
         </div>
@@ -120,7 +120,7 @@ const skills = {
           <h2 class="text-lg sm:text-2xl 2xl:text-3xl font-bold tracking-tight text-text text-balance leading-snug">
             I design and build resilient digital products with zero patience for software that fails silently.
           </h2>
-          <p class="text-xs sm:text-base text-text-muted leading-relaxed text-pretty font-normal tldr-dim">
+          <p class="hidden sm:block text-xs sm:text-base text-text-muted leading-relaxed text-pretty font-normal tldr-dim">
             Sole engineer across four production applications with 700+ commits. I engineer systems where correctness and edge cases matter: replacing fragile Excel invoicing with offline-first mobile apps, eliminating cash waterfall drift with normalized relational schemas, and safeguarding clinical intake data with deterministic runtime validation.
           </p>
         </div>
@@ -424,11 +424,11 @@ const skills = {
     if (!el) return;
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      el.textContent = "Marc";
+      el.textContent = "software engineer";
       return;
     }
 
-    const words = ["Marc", "Systems Engineer", "Full-Stack Builder", "Database Architect"];
+    const words = ["software engineer", "systems builder", "database architect", "gamer"];
     let idx = 0;
 
     intervalId = setInterval(() => {
