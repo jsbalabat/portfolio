@@ -55,10 +55,12 @@
       const lenis = (window as any).lenis;
       if (!isTouch && lenis && !prefersReducedMotion) {
         lenis.scrollTo(0, { duration: 0.8 });
+      } else if (typeof (window as any).__smoothScrollTo === "function" && !prefersReducedMotion) {
+        (window as any).__smoothScrollTo(0, 650);
       } else {
         window.scrollTo({
           top: 0,
-          behavior: prefersReducedMotion ? 'auto' : 'smooth',
+          behavior: prefersReducedMotion ? "auto" : "smooth",
         });
       }
     });

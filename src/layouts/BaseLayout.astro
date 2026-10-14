@@ -537,22 +537,79 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         bar3?.style.removeProperty("transform");
       };
 
+      let activeScrollAnimationId: number | null = null;
+
+      const cancelProgrammaticScroll = () => {
+        if (activeScrollAnimationId !== null) {
+          cancelAnimationFrame(activeScrollAnimationId);
+          activeScrollAnimationId = null;
+        }
+      };
+
+      if (typeof window !== "undefined" && !(window as any).__scrollCancelListeners) {
+        (window as any).__scrollCancelListeners = true;
+        window.addEventListener("touchstart", cancelProgrammaticScroll, { passive: true });
+        window.addEventListener("wheel", cancelProgrammaticScroll, { passive: true });
+      }
+
+      const smoothScrollToY = (targetY: number, duration = 650) => {
+        cancelProgrammaticScroll();
+
+        if (prefersReducedMotion) {
+          window.scrollTo({ top: targetY, behavior: "auto" });
+          return;
+        }
+
+        const startY = window.scrollY || window.pageYOffset || 0;
+        const distance = targetY - startY;
+
+        if (Math.abs(distance) < 2) {
+          window.scrollTo({ top: targetY, behavior: "auto" });
+          return;
+        }
+
+        const startTime = performance.now();
+        const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
+        const step = (currentTime: number) => {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const ease = easeOutCubic(progress);
+
+          window.scrollTo(0, Math.round(startY + distance * ease));
+
+          if (progress < 1) {
+            activeScrollAnimationId = requestAnimationFrame(step);
+          } else {
+            activeScrollAnimationId = null;
+          }
+        };
+
+        activeScrollAnimationId = requestAnimationFrame(step);
+      };
+
+      (window as any).__smoothScrollTo = smoothScrollToY;
+
       const scrollToTarget = (target: HTMLElement | string, immediate = false) => {
         const el = typeof target === "string" ? (document.querySelector(target) as HTMLElement | null) : target;
         if (!el) return;
         const targetY = getTargetScrollY(el);
         const activeLenis = (window as any).lenis;
 
-        if (!isTouchDevice() && activeLenis && !prefersReducedMotion) {
-          activeLenis.scrollTo(targetY, {
-            duration: immediate ? 0 : 0.85,
-            immediate,
-          });
+        if (immediate || prefersReducedMotion) {
+          cancelProgrammaticScroll();
+          if (!isTouchDevice() && activeLenis) {
+            activeLenis.scrollTo(targetY, { immediate: true });
+          } else {
+            window.scrollTo({ top: targetY, behavior: "auto" });
+          }
+          return;
+        }
+
+        if (!isTouchDevice() && activeLenis) {
+          activeLenis.scrollTo(targetY, { duration: 0.85 });
         } else {
-          window.scrollTo({
-            top: targetY,
-            behavior: immediate || prefersReducedMotion ? "auto" : "smooth",
-          });
+          smoothScrollToY(targetY, 650);
         }
       };
 
@@ -1111,6 +1168,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
 
       document.addEventListener("astro:page-load", initPage);
       document.addEventListener("astro:before-swap", () => {
+        cancelProgrammaticScroll();
         if (activeBaseScrollHandler) {
           window.removeEventListener("scroll", activeBaseScrollHandler);
           window.removeEventListener("resize", activeBaseScrollHandler);
