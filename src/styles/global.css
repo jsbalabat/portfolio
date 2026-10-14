@@ -111,6 +111,13 @@ body {
   outline-offset: 2px;
 }
 
+/* Form inputs use clean single border highlight without double outline ring */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+}
+
 /* Typography Helpers */
 .font-display {
   font-family: var(--font-display);

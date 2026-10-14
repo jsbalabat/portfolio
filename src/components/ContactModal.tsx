@@ -181,17 +181,17 @@ export default function ContactModal() {
         {/* Modal Header */}
         <div className="flex items-start justify-between gap-4 mb-6 pb-3 border-b border-border/60">
           <div>
-            <span className="text-[11px] uppercase tracking-widest text-text-muted font-semibold block mb-1">
+            <span className="text-xs uppercase tracking-widest text-text-muted font-semibold block mb-1">
               Direct Channel
             </span>
             <h2 id="contact-modal-title" className="font-display font-black text-2xl sm:text-3xl tracking-tight text-text uppercase">
               Send a Message
             </h2>
-            <p className="font-sans text-xs text-text-muted mt-1">
+            <p className="font-sans text-sm text-text-muted mt-1">
               Or email directly at{" "}
               <a
                 href="mailto:johnfelixmarc@gmail.com"
-                className="text-text font-medium hover:text-accent underline underline-offset-2"
+                className="text-text font-medium text-sm hover:text-accent underline underline-offset-2"
               >
                 johnfelixmarc@gmail.com
               </a>
@@ -218,7 +218,7 @@ export default function ContactModal() {
               <h3 className="font-display font-black text-2xl sm:text-3xl uppercase tracking-tight text-text">
                 Message Sent
               </h3>
-              <p className="font-sans text-xs sm:text-sm text-text-muted mt-2 max-w-sm mx-auto leading-relaxed">
+              <p className="font-sans text-sm text-text-muted mt-2 max-w-sm mx-auto leading-relaxed">
                 Your message has been delivered directly to my inbox. I will get back to you shortly.
               </p>
             </div>
@@ -229,14 +229,14 @@ export default function ContactModal() {
                   setStatus('idle');
                   closeModal();
                 }}
-                className="inline-flex items-center justify-center min-h-[44px] px-5 py-2.5 rounded-xl bg-accent text-accent-text hover:opacity-90 active:scale-[0.98] font-sans font-bold text-xs uppercase tracking-wider transition-all cursor-pointer touch-manipulation"
+                className="inline-flex items-center justify-center min-h-[44px] px-5 py-2.5 rounded-xl bg-accent text-accent-text hover:opacity-90 active:scale-[0.98] font-sans font-bold text-xs sm:text-sm uppercase tracking-wider transition-all cursor-pointer touch-manipulation"
               >
                 Done
               </button>
               <button
                 type="button"
                 onClick={() => setStatus('idle')}
-                className="inline-flex items-center justify-center min-h-[44px] px-4 py-2.5 rounded-xl border border-border hover:bg-surface-raised active:scale-[0.98] text-xs font-sans font-semibold uppercase tracking-wider text-text transition-all cursor-pointer touch-manipulation"
+                className="inline-flex items-center justify-center min-h-[44px] px-4 py-2.5 rounded-xl border border-border hover:bg-surface-raised active:scale-[0.98] text-xs sm:text-sm font-sans font-semibold uppercase tracking-wider text-text transition-all cursor-pointer touch-manipulation"
               >
                 Send Another
               </button>
@@ -274,7 +274,7 @@ export default function ContactModal() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               {/* Name field */}
               <div>
-                <label htmlFor="contact-name" className="block text-xs font-medium text-text-muted mb-1.5">
+                <label htmlFor="contact-name" className="block text-sm font-medium text-text-muted mb-1.5">
                   Name <span className="text-accent">*</span>
                 </label>
                 <input
@@ -285,14 +285,14 @@ export default function ContactModal() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Alex Smith"
-                  className="w-full px-3.5 py-2.5 font-sans text-base sm:text-xs rounded-xl border border-border bg-surface-raised text-text placeholder:text-text-dim focus:border-accent outline-none transition-colors"
+                  className="w-full px-4 py-2.5 sm:py-2.5 font-sans text-base sm:text-sm rounded-xl border border-border bg-surface-raised text-text placeholder:text-text-dim focus:border-highlight focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 outline-none transition-colors"
                   disabled={status === 'submitting'}
                 />
               </div>
 
               {/* Email field */}
               <div>
-                <label htmlFor="contact-email" className="block text-xs font-medium text-text-muted mb-1.5">
+                <label htmlFor="contact-email" className="block text-sm font-medium text-text-muted mb-1.5">
                   Email <span className="text-accent">*</span>
                 </label>
                 <input
@@ -302,7 +302,7 @@ export default function ContactModal() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="alex@company.com"
-                  className="w-full px-3.5 py-2.5 font-sans text-base sm:text-xs rounded-xl border border-border bg-surface-raised text-text placeholder:text-text-dim focus:border-accent outline-none transition-colors"
+                  className="w-full px-4 py-2.5 sm:py-2.5 font-sans text-base sm:text-sm rounded-xl border border-border bg-surface-raised text-text placeholder:text-text-dim focus:border-highlight focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 outline-none transition-colors"
                   disabled={status === 'submitting'}
                 />
               </div>
@@ -310,7 +310,7 @@ export default function ContactModal() {
 
             {/* Subject field */}
             <div>
-              <label htmlFor="contact-subject" className="block text-xs font-medium text-text-muted mb-1.5">
+              <label htmlFor="contact-subject" className="block text-sm font-medium text-text-muted mb-1.5">
                 Subject
               </label>
               <input
@@ -319,14 +319,14 @@ export default function ContactModal() {
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder="Project inquiry / Full-stack opportunity"
-                className="w-full px-3.5 py-2.5 font-sans text-base sm:text-xs rounded-xl border border-border bg-surface-raised text-text placeholder:text-text-dim focus:border-accent outline-none transition-colors"
+                className="w-full px-4 py-2.5 sm:py-2.5 font-sans text-base sm:text-sm rounded-xl border border-border bg-surface-raised text-text placeholder:text-text-dim focus:border-highlight focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 outline-none transition-colors"
                 disabled={status === 'submitting'}
               />
             </div>
 
             {/* Message field */}
             <div>
-              <label htmlFor="contact-message" className="block text-xs font-medium text-text-muted mb-1.5">
+              <label htmlFor="contact-message" className="block text-sm font-medium text-text-muted mb-1.5">
                 Message <span className="text-accent">*</span>
               </label>
               <textarea
@@ -336,7 +336,7 @@ export default function ContactModal() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Hi Marc, I'd like to talk to you about..."
-                className="w-full px-3.5 py-2.5 font-sans text-base sm:text-xs rounded-xl border border-border bg-surface-raised text-text placeholder:text-text-dim focus:border-accent outline-none transition-colors resize-none"
+                className="w-full px-4 py-2.5 sm:py-2.5 font-sans text-base sm:text-sm rounded-xl border border-border bg-surface-raised text-text placeholder:text-text-dim focus:border-highlight focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 outline-none transition-colors resize-none"
                 disabled={status === 'submitting'}
               />
             </div>
@@ -345,7 +345,7 @@ export default function ContactModal() {
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
               <a
                 href="mailto:johnfelixmarc@gmail.com"
-                className="text-xs text-text-muted hover:text-text underline underline-offset-4 decoration-border transition-colors font-medium order-2 sm:order-1"
+                className="text-sm text-text-muted hover:text-text underline underline-offset-4 decoration-border transition-colors font-medium order-2 sm:order-1"
               >
                 Open in email client
               </a>
@@ -354,7 +354,7 @@ export default function ContactModal() {
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="inline-flex items-center justify-center min-h-[44px] px-4 py-2.5 rounded-xl border border-border hover:bg-surface-raised active:scale-[0.98] text-xs font-sans font-semibold uppercase tracking-wider text-text transition-all cursor-pointer touch-manipulation"
+                  className="inline-flex items-center justify-center min-h-[44px] px-4 py-2.5 rounded-xl border border-border hover:bg-surface-raised active:scale-[0.98] text-xs sm:text-sm font-sans font-semibold uppercase tracking-wider text-text transition-all cursor-pointer touch-manipulation"
                   disabled={status === 'submitting'}
                 >
                   Cancel
@@ -362,7 +362,7 @@ export default function ContactModal() {
                 <button
                   type="submit"
                   disabled={status === 'submitting'}
-                  className="inline-flex items-center justify-center min-h-[44px] px-5 py-2.5 rounded-xl bg-accent text-accent-text hover:opacity-90 active:scale-[0.98] transition-all text-xs font-sans font-bold uppercase tracking-wider shadow-xs cursor-pointer gap-2 disabled:opacity-50 touch-manipulation"
+                  className="inline-flex items-center justify-center min-h-[44px] px-5 py-2.5 rounded-xl bg-accent text-accent-text hover:opacity-90 active:scale-[0.98] transition-all text-xs sm:text-sm font-sans font-bold uppercase tracking-wider shadow-xs cursor-pointer gap-2 disabled:opacity-50 touch-manipulation"
                 >
                   {status === 'submitting' ? (
                     <>
