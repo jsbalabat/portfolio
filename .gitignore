@@ -31,3 +31,8 @@ graphify-out/
 
 # Large reference PDF (keep local)
 building-an-effective-dev-portfolio.pdf
+
+# Spec-kit (local only)
+.specify/
+specs/
+

@@ -1,0 +1,189 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('blog');
+  const posts = allPosts.filter((post) => import.meta.env.DEV || !post.data.draft);
+
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+// Retrieve all posts for prev/next navigation
+const allPosts = await getCollection('blog');
+const sortedPosts = allPosts
+  .filter((p) => import.meta.env.DEV || !p.data.draft)
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
+
+const currentIndex = sortedPosts.findIndex((p) => p.id === post.id);
+const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
+const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
+
+// Calculate reading time
+const words = post.body ? post.body.trim().split(/\s+/).length : 200;
+const readTime = Math.max(1, Math.ceil(words / 200));
+
+const formattedDate = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+}).format(post.data.publishedAt);
+---
+
+<BaseLayout
+  title={`${post.data.title} | Marc Balabat`}
+  description={post.data.description}
+  bodyClass="blog-theme"
+  showHeader={false}
+  showFooter={false}
+>
+  <div class="pt-8 sm:pt-12 pb-16 max-w-4xl mx-auto">
+    <!-- Top Navigation Bar: Swapped order (Articles first with arrow, then Return to Portfolio) -->
+    <nav class="flex flex-wrap items-center justify-between gap-4 pb-6 mb-8 border-b border-border text-xs uppercase tracking-wider font-semibold" aria-label="Breadcrumb">
+      <div class="flex items-center gap-2 sm:gap-3">
+        <a
+          href="/blog"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-surface hover:bg-surface-raised text-text hover:text-accent transition-all group shadow-2xs text-xs font-semibold uppercase"
+        >
+          <span class="group-hover:-translate-x-1 transition-transform">←</span>
+          <span>Articles</span>
+        </a>
+        <span class="text-border">/</span>
+        <a
+          href="/#blog"
+          class="inline-flex items-center px-3 py-1.5 rounded-lg border border-border bg-surface hover:bg-surface-raised text-text-muted hover:text-text transition-all shadow-2xs text-xs font-semibold uppercase"
+        >
+          Return to Portfolio
+        </a>
+      </div>
+
+      <span class="text-text-muted font-mono lowercase tracking-normal text-[11px]">
+        {readTime} min read
+      </span>
+    </nav>
+
+    <!-- Post Article -->
+    <article class="reveal-on-scroll">
+      <!-- Cover Image Header (Prominent header object) -->
+      {post.data.coverImage && (
+        <div class="mb-8 sm:mb-10 overflow-hidden rounded-2xl border border-border bg-surface-raised shadow-sm">
+          <img
+            src={post.data.coverImage}
+            alt={post.data.coverImageAlt || post.data.title}
+            class="w-full h-auto aspect-16/9 sm:aspect-21/9 object-cover"
+          />
+        </div>
+      )}
+
+      <!-- Header -->
+      <header class="mb-10 sm:mb-12 space-y-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <time
+            datetime={post.data.publishedAt.toISOString()}
+            class="text-xs font-mono text-text-muted"
+          >
+            {formattedDate}
+          </time>
+          {post.data.updatedAt && (
+            <span class="text-[11px] font-mono text-text-muted/60">
+              (Updated {new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(post.data.updatedAt)})
+            </span>
+          )}
+        </div>
+
+        <h1 class="font-display font-black text-3xl sm:text-5xl lg:text-6xl text-text tracking-tight uppercase leading-tight text-balance">
+          {post.data.title}
+        </h1>
+
+        <p class="text-base sm:text-xl text-text-muted leading-relaxed text-pretty">
+          {post.data.description}
+        </p>
+
+        <!-- Tags -->
+        {post.data.tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 pt-2">
+            {post.data.tags.map((tag) => (
+              <span class="px-2.5 py-1 rounded-lg border border-border-subtle bg-surface-raised text-xs font-mono text-text-muted uppercase tracking-wider">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </header>
+
+      <!-- Post Markdown Body -->
+      <div class="space-y-6 text-sm sm:text-base text-text leading-relaxed font-normal
+        [&>h2]:font-display [&>h2]:font-black [&>h2]:text-2xl [&>h2]:sm:text-3xl [&>h2]:text-text [&>h2]:uppercase [&>h2]:tracking-tight [&>h2]:mt-10 [&>h2]:mb-4
+        [&>h3]:font-display [&>h3]:font-bold [&>h3]:text-xl [&>h3]:sm:text-2xl [&>h3]:text-text [&>h3]:uppercase [&>h3]:tracking-tight [&>h3]:mt-8 [&>h3]:mb-3
+        [&>p]:leading-relaxed [&>p]:text-text-muted [&>p]:text-pretty
+        [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:space-y-2 [&>ul]:text-text-muted
+        [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:space-y-2 [&>ol]:text-text-muted
+        [&>blockquote]:border-l-2 [&>blockquote]:border-accent [&>blockquote]:pl-4 [&>blockquote]:italic [&>blockquote]:text-text-muted
+        [&>pre]:p-4 [&>pre]:rounded-xl [&>pre]:border [&>pre]:border-border [&>pre]:bg-surface-raised [&>pre]:overflow-x-auto [&>pre]:text-xs [&>pre]:font-mono
+        [&>img]:rounded-xl [&>img]:border [&>img]:border-border [&>img]:my-6">
+        <Content />
+      </div>
+
+      <!-- Article End Navigation: Houses Prev/Next Article and All Articles / Portfolio Home -->
+      <nav class="mt-14 pt-8 border-t border-border space-y-6" aria-label="Article navigation">
+        <!-- Prev / Next Article Cards -->
+        {(prevPost || nextPost) && (
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {prevPost ? (
+              <a
+                href={`/blog/${prevPost.id}`}
+                class="p-4 rounded-xl border border-border bg-surface hover:bg-surface-raised transition-all group flex flex-col justify-between gap-2"
+              >
+                <span class="text-[10px] font-mono uppercase tracking-widest text-text-muted flex items-center gap-1 group-hover:text-accent transition-colors">
+                  <span>←</span> Previous Article
+                </span>
+                <span class="font-display font-bold text-sm sm:text-base text-text line-clamp-2 uppercase tracking-tight group-hover:text-accent transition-colors">
+                  {prevPost.data.title}
+                </span>
+              </a>
+            ) : <div class="hidden sm:block"></div>}
+
+            {nextPost ? (
+              <a
+                href={`/blog/${nextPost.id}`}
+                class="p-4 rounded-xl border border-border bg-surface hover:bg-surface-raised transition-all group flex flex-col justify-between items-end gap-2 text-right"
+              >
+                <span class="text-[10px] font-mono uppercase tracking-widest text-text-muted flex items-center gap-1 group-hover:text-accent transition-colors">
+                  Next Article <span>→</span>
+                </span>
+                <span class="font-display font-bold text-sm sm:text-base text-text line-clamp-2 uppercase tracking-tight group-hover:text-accent transition-colors">
+                  {nextPost.data.title}
+                </span>
+              </a>
+            ) : <div class="hidden sm:block"></div>}
+          </div>
+        )}
+
+        <!-- Hub Action Links -->
+        <div class="flex items-center justify-between pt-2">
+          <a
+            href="/blog"
+            class="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold uppercase tracking-wider text-text hover:text-accent transition-colors group"
+          >
+            <span class="group-hover:-translate-x-1 transition-transform">←</span>
+            <span>All Articles</span>
+          </a>
+
+          <a
+            href="/#blog"
+            class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-text-muted hover:text-text transition-colors group"
+          >
+            <span>Portfolio Home</span>
+            <span class="group-hover:translate-x-1 transition-transform">→</span>
+          </a>
+        </div>
+      </nav>
+    </article>
+  </div>
+</BaseLayout>

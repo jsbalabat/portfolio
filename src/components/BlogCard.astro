@@ -1,0 +1,79 @@
+---
+interface Props {
+  post: {
+    id: string;
+    data: {
+      title: string;
+      description: string;
+      publishedAt: Date;
+      tags: string[];
+      coverImage?: string;
+      coverImageAlt?: string;
+      featured?: boolean;
+    };
+    body?: string;
+  };
+}
+
+const { post } = Astro.props;
+
+// Calculate approximate reading time (200 wpm)
+const words = post.body ? post.body.trim().split(/\s+/).length : 200;
+const readTime = Math.max(1, Math.ceil(words / 200));
+
+const formattedDate = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+}).format(post.data.publishedAt);
+---
+
+<article class="group relative rounded-2xl border border-border bg-surface hover-card-lift transition-all flex flex-col justify-between overflow-hidden">
+  {post.data.coverImage && (
+    <div class="aspect-16/10 w-full overflow-hidden bg-surface-raised border-b border-border/50">
+      <img
+        src={post.data.coverImage}
+        alt={post.data.coverImageAlt || post.data.title}
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        loading="lazy"
+      />
+    </div>
+  )}
+
+  <div class="p-5 sm:p-6 flex flex-col flex-1 justify-between">
+    <div>
+      <!-- Meta Header -->
+      <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-text-muted mb-3">
+        <time datetime={post.data.publishedAt.toISOString()}>{formattedDate}</time>
+        <span class="inline-flex items-center gap-1">
+          <span>{readTime} min read</span>
+        </span>
+      </div>
+
+      <!-- Title -->
+      <h3 class="font-display font-bold text-xl sm:text-2xl text-text tracking-tight group-hover:text-accent transition-colors leading-snug mb-2">
+        <a href={`/blog/${post.id}`} class="focus:outline-none">
+          <span class="absolute inset-0 z-10" aria-hidden="true"></span>
+          {post.data.title}
+        </a>
+      </h3>
+
+      <!-- Summary -->
+      <p class="text-xs sm:text-sm text-text-muted leading-relaxed line-clamp-3 mb-4">
+        {post.data.description}
+      </p>
+    </div>
+
+    <!-- Tags Footer -->
+    <div class="flex flex-wrap items-center gap-1.5 pt-3 border-t border-border-subtle mt-auto">
+      {post.data.tags.map((tag) => (
+        <span class="px-2 py-0.5 rounded-md border border-border-subtle bg-surface-raised text-[10px] font-mono text-text-muted uppercase tracking-wider">
+          #{tag}
+        </span>
+      ))}
+      <span class="ml-auto text-xs font-bold text-accent opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">
+        Read →
+      </span>
+    </div>
+  </div>
+</article>

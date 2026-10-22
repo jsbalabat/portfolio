@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import TechIcon from '../components/icons/TechIcon.astro';
+import HomeBlogSection from '../components/HomeBlogSection.astro';
 import { getCollection, render } from 'astro:content';
 
 // Retrieve all projects, sorted by defined order
@@ -297,6 +298,9 @@ const skills = {
       })}
     </div>
   </section>
+
+  <!-- Engineering Blog Highlight Section (Below Projects, Above Stack) -->
+  <HomeBlogSection />
 
   <!-- Technical Stack Bento Grid (Tightened, High-Contrast) -->
   <section id="skills" class="py-14 sm:py-16 lg:py-20 border-b border-border scroll-mt-[43px]">

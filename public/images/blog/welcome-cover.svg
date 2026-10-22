@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141416" />
+      <stop offset="50%" stop-color="#1a1b1e" />
+      <stop offset="100%" stop-color="#0e0f10" />
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="0.5" stroke-opacity="0.05" />
+    </pattern>
+    <radialGradient id="glow" cx="60%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#ff5722" stop-opacity="0.18" />
+      <stop offset="100%" stop-color="#ff5722" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect width="1200" height="630" fill="url(#grid)" />
+  <rect width="1200" height="630" fill="url(#glow)" />
+
+  <!-- Code/Terminal Header Window Mock -->
+  <g transform="translate(100, 90)">
+    <rect width="1000" height="450" rx="16" fill="#18191c" stroke="#2e3035" stroke-width="1.5" />
+    
+    <!-- Window Controls -->
+    <circle cx="36" cy="32" r="6" fill="#ef4444" opacity="0.8" />
+    <circle cx="56" cy="32" r="6" fill="#eab308" opacity="0.8" />
+    <circle cx="76" cy="32" r="6" fill="#22c55e" opacity="0.8" />
+    <line x1="0" y1="64" x2="1000" y2="64" stroke="#26272b" stroke-width="1.5" />
+
+    <text x="500" y="37" fill="#888c96" font-family="monospace" font-size="13" text-anchor="middle" letter-spacing="1">ARCH // GIT-BACKED-CMS.SYS</text>
+
+    <!-- Card Content -->
+    <text x="60" y="140" fill="#ff5722" font-family="monospace" font-size="14" font-weight="700" letter-spacing="2">SYSTEM ARCHITECTURE</text>
+    <text x="60" y="210" fill="#f4f4f5" font-family="system-ui, -apple-system, sans-serif" font-size="44" font-weight="900" letter-spacing="-1">GIT-BACKED CMS &amp; ASTRO</text>
+    <text x="60" y="270" fill="#a1a1aa" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="400">Zero-database static publication pipeline built directly into portfolio</text>
+
+    <!-- Badges -->
+    <g transform="translate(60, 340)">
+      <rect width="100" height="34" rx="8" fill="#222327" stroke="#33353a" />
+      <text x="50" y="22" fill="#d4d4d8" font-family="monospace" font-size="12" text-anchor="middle">ASTRO 5</text>
+      
+      <rect x="115" width="115" height="34" rx="8" fill="#222327" stroke="#33353a" />
+      <text x="172" y="22" fill="#d4d4d8" font-family="monospace" font-size="12" text-anchor="middle">KEYSTATIC</text>
+
+      <rect x="245" width="135" height="34" rx="8" fill="#222327" stroke="#33353a" />
+      <text x="312" y="22" fill="#d4d4d8" font-family="monospace" font-size="12" text-anchor="middle">CLOUDFLARE</text>
+    </g>
+  </g>
+</svg>

@@ -8,11 +8,19 @@ import { ClientRouter } from "astro:transitions";
 interface Props {
   title?: string;
   description?: string;
+  bodyClass?: string;
+  showHeader?: boolean;
+  showFooter?: boolean;
+  showAdminLogin?: boolean;
 }
 
 const {
   title = "Marc | Full-Stack Software Engineer",
   description = "Full-stack engineer specializing in reliable production systems, database architecture, and replacing fragmented workflows.",
+  bodyClass = "",
+  showHeader = true,
+  showFooter = true,
+  showAdminLogin = false,
 } = Astro.props;
 
 const canonicalURL = new URL(
@@ -108,7 +116,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
       });
     </script>
   </head>
-  <body class="min-h-screen bg-bg text-text antialiased selection:bg-accent selection:text-accent-text">
+  <body class={`min-h-screen bg-bg text-text antialiased selection:bg-accent selection:text-accent-text transition-colors duration-200 ${bodyClass}`.trim()}>
     <SplashLoader />
 
     <!-- Background Technical Flair: Left & Right Rails -->
@@ -173,52 +181,55 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
     </aside>
 
     <!-- Dynamic Header (Reveals on scroll, desktop only) -->
-    <header
-      id="site-header"
-      class="hidden md:block fixed top-0 left-0 right-0 z-40 bg-bg/85 backdrop-blur-lg border-b border-border/60 shadow-xs transition-all duration-300 opacity-0 pointer-events-none -translate-y-2 pt-[env(safe-area-inset-top,0px)]"
-    >
-      <div class="w-full lg:w-[80%] mx-auto px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-4">
-        <a href="/" class="group flex items-center gap-2 text-sm tracking-tight text-text shrink-0 touch-manipulation">
-          <img src="/images/logo.png" alt="Marc" class="size-6 sm:size-7 rounded-sm object-contain border border-border/50 shrink-0 group-hover:scale-105 transition-transform" width="28" height="28" />
-          <span class="font-bold text-base tracking-tight font-display">MARC</span>
-          <span class="text-text-muted/60 hidden sm:inline">/</span>
-          <span class="text-text-muted text-xs font-medium tracking-normal hidden sm:inline">SOFTWARE ENGINEER</span>
-        </a>
+    {showHeader && (
+      <header
+        id="site-header"
+        class="hidden md:block fixed top-0 left-0 right-0 z-40 bg-bg/85 backdrop-blur-lg border-b border-border/60 shadow-xs transition-all duration-300 opacity-0 pointer-events-none -translate-y-2 pt-[env(safe-area-inset-top,0px)]"
+      >
+        <div class="w-full lg:w-[80%] mx-auto px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-4">
+          <a href="/" class="group flex items-center gap-2 text-sm tracking-tight text-text shrink-0 touch-manipulation">
+            <img src="/images/logo.png" alt="Marc" class="size-6 sm:size-7 rounded-sm object-contain border border-border/50 shrink-0 group-hover:scale-105 transition-transform" width="28" height="28" />
+            <span class="font-bold text-base tracking-tight font-display">MARC</span>
+            <span class="text-text-muted/60 hidden sm:inline">/</span>
+            <span class="text-text-muted text-xs font-medium tracking-normal hidden sm:inline">SOFTWARE ENGINEER</span>
+          </a>
 
-        <!-- Desktop Navigation Items -->
-        <nav class="hidden md:flex items-center gap-6 text-xs font-semibold uppercase tracking-wider text-text-muted">
-          <a href="/#projects" class="hover:text-text transition-colors">Projects</a>
-          <a href="/#skills" class="hover:text-text transition-colors">Stack</a>
-          <a href="/#contact" class="hover:text-text transition-colors">Contact</a>
+          <!-- Desktop Navigation Items -->
+          <nav class="hidden md:flex items-center gap-6 text-xs font-semibold uppercase tracking-wider text-text-muted">
+            <a href="/#projects" class="hover:text-text transition-colors">Projects</a>
+            <a href="/#blog" class="hover:text-text transition-colors">Articles</a>
+            <a href="/#skills" class="hover:text-text transition-colors">Stack</a>
+            <a href="/#contact" class="hover:text-text transition-colors">Contact</a>
 
-          <!-- TLDR Toggle in Header -->
-          <button
-            id="tldr-toggle-header"
-            data-tldr-toggle
-            type="button"
-            aria-pressed="false"
-            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-border bg-surface hover:bg-surface-raised text-xs font-sans font-medium text-text transition-colors cursor-pointer shadow-2xs shrink-0 select-none"
-            title="Toggle TLDR: Dims detailed narrative and highlights key metrics, tech stacks, and project outcomes"
-          >
-            <span class="tldr-indicator size-1.5 rounded-full bg-text-muted/60 transition-colors shrink-0"></span>
-            <span class="font-semibold tracking-wider shrink-0">TLDR</span>
-            <span class="tldr-badge w-7 min-w-[28px] text-[10px] font-sans font-bold tracking-wider py-0.5 rounded-md bg-surface-raised border border-border-subtle text-text-muted transition-colors inline-flex items-center justify-center text-center shrink-0">OFF</span>
-          </button>
+            <!-- TLDR Toggle in Header -->
+            <button
+              id="tldr-toggle-header"
+              data-tldr-toggle
+              type="button"
+              aria-pressed="false"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-border bg-surface hover:bg-surface-raised text-xs font-sans font-medium text-text transition-colors cursor-pointer shadow-2xs shrink-0 select-none"
+              title="Toggle TLDR: Dims detailed narrative and highlights key metrics, tech stacks, and project outcomes"
+            >
+              <span class="tldr-indicator size-1.5 rounded-full bg-text-muted/60 transition-colors shrink-0"></span>
+              <span class="font-semibold tracking-wider shrink-0">TLDR</span>
+              <span class="tldr-badge w-7 min-w-[28px] text-[10px] font-sans font-bold tracking-wider py-0.5 rounded-md bg-surface-raised border border-border-subtle text-text-muted transition-colors inline-flex items-center justify-center text-center shrink-0">OFF</span>
+            </button>
 
-          <!-- Theme Toggle (System -> Light -> Dark) -->
-          <button
-            id="theme-toggle"
-            type="button"
-            aria-label="Toggle color theme"
-            title="Theme: System (default), Light, Dark"
-            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg hover:bg-surface-raised active:scale-[0.96] border border-border text-xs text-text transition-all cursor-pointer shrink-0 font-medium"
-          >
-            <span id="theme-toggle-icon" class="text-accent">◐</span>
-            <span id="theme-toggle-text">System</span>
-          </button>
-        </nav>
-      </div>
-    </header>
+            <!-- Theme Toggle (System -> Light -> Dark) -->
+            <button
+              id="theme-toggle"
+              type="button"
+              aria-label="Toggle color theme"
+              title="Theme: System (default), Light, Dark"
+              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg hover:bg-surface-raised active:scale-[0.96] border border-border text-xs text-text transition-all cursor-pointer shrink-0 font-medium"
+            >
+              <span id="theme-toggle-icon" class="text-accent">◐</span>
+              <span id="theme-toggle-text">System</span>
+            </button>
+          </nav>
+        </div>
+      </header>
+    )}
 
     <!-- Transparent Native Hit-Test Button (Pure hit target, NO blend mode, 100% clickable on iOS Safari) -->
     <button
@@ -262,6 +273,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         <!-- Nav links -->
         <div class="flex flex-col space-y-1 text-sm uppercase font-semibold text-text">
           <a href="/#projects" class="mobile-nav-link min-h-[44px] flex items-center px-3 py-2.5 rounded-xl hover:bg-surface-raised active:bg-surface-raised hover:text-accent transition-colors touch-manipulation">Projects</a>
+          <a href="/#blog" class="mobile-nav-link min-h-[44px] flex items-center px-3 py-2.5 rounded-xl hover:bg-surface-raised active:bg-surface-raised hover:text-accent transition-colors touch-manipulation">Articles</a>
           <a href="/#skills" class="mobile-nav-link min-h-[44px] flex items-center px-3 py-2.5 rounded-xl hover:bg-surface-raised active:bg-surface-raised hover:text-accent transition-colors touch-manipulation">Stack</a>
           <a href="/#contact" class="mobile-nav-link min-h-[44px] flex items-center px-3 py-2.5 rounded-xl hover:bg-surface-raised active:bg-surface-raised hover:text-accent transition-colors touch-manipulation">Contact</a>
         </div>
@@ -307,27 +319,39 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
       </main>
 
       <!-- Minimalist Editorial Footer -->
-      <footer class="py-8 border-t border-border flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs text-text-muted pb-[calc(2rem+env(safe-area-inset-bottom,0px))]">
-        <div class="flex flex-col gap-0.5">
-          <div class="flex items-center gap-2">
-            <span class="size-2 rounded-full bg-emerald-500"></span>
-            <span class="text-text font-semibold uppercase tracking-wider text-[11px]">AVAILABLE FOR NEW OPPORTUNITIES</span>
+      {showFooter && (
+        <footer class="py-8 border-t border-border flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs text-text-muted pb-[calc(2rem+env(safe-area-inset-bottom,0px))]">
+          <div class="flex flex-col gap-0.5">
+            <div class="flex items-center gap-2">
+              <span class="size-2 rounded-full bg-emerald-500"></span>
+              <span class="text-text font-semibold uppercase tracking-wider text-[11px]">AVAILABLE FOR NEW OPPORTUNITIES</span>
+            </div>
+            <p>© {new Date().getFullYear()} Marc Balabat. v{appVersion} · {gitSha} ({gitBranch})</p>
           </div>
-          <p>© {new Date().getFullYear()} Marc Balabat. v{appVersion} · {gitSha} ({gitBranch})</p>
-        </div>
 
-        <div class="flex flex-wrap items-center gap-x-5 gap-y-1.5 uppercase tracking-wider text-text font-medium text-[11px]">
-          <a href="https://github.com/jsbalabat" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">GitHub</a>
-          <a href="https://www.linkedin.com/in/marc-balabat" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">LinkedIn</a>
-          <button
-            type="button"
-            onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
-            class="hover:text-accent transition-colors cursor-pointer uppercase"
-          >
-            Email
-          </button>
-        </div>
-      </footer>
+          <div class="flex flex-wrap items-center gap-x-5 gap-y-1.5 uppercase tracking-wider text-text font-medium text-[11px]">
+            <a href="https://github.com/jsbalabat" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">GitHub</a>
+            <a href="https://www.linkedin.com/in/marc-balabat" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">LinkedIn</a>
+            <button
+              type="button"
+              onclick="window.dispatchEvent(new CustomEvent('open-contact-modal'))"
+              class="hover:text-accent transition-colors cursor-pointer uppercase"
+            >
+              Email
+            </button>
+            {showAdminLogin && (
+              <a
+                href="/blog/admin"
+                class="hover:text-accent transition-colors text-text-muted/60 lowercase font-mono text-[11px]"
+                title="Author Portal"
+                rel="nofollow"
+              >
+                admin
+              </a>
+            )}
+          </div>
+        </footer>
+      )}
     </div>
 
     <!-- Long Capsule Pill Custom Scrollbar -->

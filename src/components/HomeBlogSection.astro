@@ -1,0 +1,41 @@
+---
+import { getCollection } from 'astro:content';
+import BlogCard from './BlogCard.astro';
+
+const allPosts = await getCollection('blog');
+const recentPosts = allPosts
+  .filter((post) => import.meta.env.DEV || !post.data.draft)
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
+  .slice(0, 3);
+---
+
+{recentPosts.length > 0 && (
+  <section id="blog" class="py-14 sm:py-16 lg:py-20 border-b border-border scroll-mt-[43px]">
+    <!-- Section Header -->
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 sm:mb-10 reveal-on-scroll">
+      <div>
+        <span class="text-xs uppercase tracking-widest text-text-muted font-semibold block mb-1">
+          NOTES & WRITING
+        </span>
+        <h2 class="font-display font-black text-4xl sm:text-6xl tracking-tight uppercase text-text text-balance">
+          ARTICLES
+        </h2>
+      </div>
+
+      <a
+        href="/blog"
+        class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold uppercase tracking-wider text-text hover:text-accent transition-colors group self-start sm:self-auto"
+      >
+        <span>View all articles</span>
+        <span class="group-hover:translate-x-1 transition-transform">→</span>
+      </a>
+    </div>
+
+    <!-- Posts Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 reveal-on-scroll">
+      {recentPosts.map((post) => (
+        <BlogCard post={post} />
+      ))}
+    </div>
+  </section>
+)}

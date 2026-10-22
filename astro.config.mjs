@@ -1,7 +1,8 @@
-import { defineConfig } from 'astro/config';
+import { defineConfig, envField } from 'astro/config';
 import react from '@astrojs/react';
 import cloudflare from '@astrojs/cloudflare';
 import sitemap from '@astrojs/sitemap';
+import keystatic from '@keystatic/astro';
 import tailwindcss from '@tailwindcss/vite';
 import { execSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
@@ -70,8 +71,16 @@ export default defineConfig({
   adapter: cloudflare({
     imageService: 'cloudflare',
   }),
+  env: {
+    schema: {
+      KEYSTATIC_GITHUB_CLIENT_ID: envField.string({ context: 'server', access: 'secret', optional: true }),
+      KEYSTATIC_GITHUB_CLIENT_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
+      KEYSTATIC_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
+    },
+  },
   integrations: [
     react(),
+    keystatic(),
     sitemap(),
   ],
   vite: {
@@ -79,6 +88,9 @@ export default defineConfig({
       'import.meta.env.PUBLIC_APP_VERSION': JSON.stringify(appVersion),
       'import.meta.env.PUBLIC_GIT_SHA': JSON.stringify(commitSha),
       'import.meta.env.PUBLIC_GIT_BRANCH': JSON.stringify(gitBranch),
+    },
+    optimizeDeps: {
+      exclude: ['@keystatic/astro/api', 'astro:env/server'],
     },
     plugins: [
       tailwindcss(),
