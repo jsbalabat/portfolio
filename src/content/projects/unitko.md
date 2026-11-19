@@ -13,7 +13,7 @@ stack:
   - Tailwind CSS
 keyOutcome: Enforced tenant isolation and eliminated cash waterfall drift with 3NF schema constraints.
 metrics: 3NF Relational Schema • 100% RLS Isolation
-liveUrl: null
+liveUrl: https://unitko.vercel.app
 repoUrl: null
 featured: true
 order: 2
