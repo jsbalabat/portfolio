@@ -77,6 +77,10 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
             src={post.data.coverImage}
             alt={post.data.coverImageAlt || post.data.title}
             class="w-full h-auto aspect-16/9 sm:aspect-21/9 object-cover"
+            loading="lazy"
+            decoding="async"
+            width="896"
+            height="504"
           />
         </div>
       )}

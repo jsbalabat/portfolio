@@ -49,13 +49,30 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
     <meta name="generator" content={Astro.generator} />
     <ClientRouter />
 
-    <!-- Google Fonts: DM Sans (Human/Natural Sans) & Alumni Sans (Display) -->
+    <!-- Google Fonts: DM Sans (Human/Natural Sans) & Alumni Sans (Display) - Non-blocking swap -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Alumni+Sans:wght@700;800;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=block"
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Alumni+Sans:wght@700;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap"
     />
+    <link
+      id="google-fonts-css"
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Alumni+Sans:wght@700;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap"
+      media="print"
+    />
+    <script is:inline>
+      const gfc = document.getElementById("google-fonts-css");
+      if (gfc) gfc.setAttribute("media", "all");
+    </script>
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Alumni+Sans:wght@700;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap"
+      />
+    </noscript>
 
     <!-- Primary Meta Tags -->
     <title>{title}</title>
@@ -188,7 +205,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
       >
         <div class="w-full lg:w-[80%] mx-auto px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-4">
           <a href="/" class="group flex items-center gap-2 text-sm tracking-tight text-text shrink-0 touch-manipulation">
-            <img src="/images/logo.png" alt="Marc" class="size-6 sm:size-7 rounded-sm object-contain border border-border/50 shrink-0 group-hover:scale-105 transition-transform" width="28" height="28" />
+            <img src="/images/logo.png" alt="Marc" class="size-6 sm:size-7 rounded-sm object-contain border border-border/50 shrink-0 group-hover:scale-105 transition-transform" width="28" height="28" decoding="async" />
             <span class="font-bold text-base tracking-tight font-display">MARC</span>
             <span class="text-text-muted/60 hidden sm:inline">/</span>
             <span class="text-text-muted text-xs font-medium tracking-normal hidden sm:inline">SOFTWARE ENGINEER</span>
@@ -264,7 +281,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
       <div id="mobile-menu-content" class="w-full max-w-sm mx-auto flex flex-col space-y-4 transition-transform duration-300 -translate-y-4">
         <!-- Brand link -->
         <a id="mobile-menu-logo" href="/" class="flex items-center gap-2 pb-3 border-b border-border/40 text-text touch-manipulation cursor-pointer">
-          <img src="/images/logo.png" alt="Marc" class="size-7 rounded-sm object-contain border border-border/50 shrink-0" width="28" height="28" />
+          <img src="/images/logo.png" alt="Marc" class="size-7 rounded-sm object-contain border border-border/50 shrink-0" width="28" height="28" decoding="async" />
           <span class="font-bold text-base tracking-tight font-display">MARC</span>
           <span class="text-text-muted/60 text-xs">/</span>
           <span class="text-text-muted text-xs font-medium tracking-normal">SOFTWARE ENGINEER</span>
@@ -369,7 +386,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
 
     <!-- Back to Top & Contact Modal -->
     <BackToTop />
-    <ContactModal client:load />
+    <ContactModal client:idle />
 
     <!-- Theme Switcher, Mobile Menu, Lenis, and Scroll-Reveal Observer -->
     <script>

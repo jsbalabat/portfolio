@@ -104,23 +104,24 @@
     });
 
     const dismissSplash = () => {
-      splash.style.transition = 'transform 0.7s cubic-bezier(0.77, 0, 0.175, 1)';
+      splash.style.transition = 'transform 0.35s cubic-bezier(0.77, 0, 0.175, 1)';
       splash.style.transform = 'translateY(-100%)';
       sessionStorage.setItem('splash_shown', 'true');
       splashRunning = false;
       setTimeout(() => {
         splash.style.display = 'none';
-      }, 700);
+      }, 360);
     };
 
-    if (document.readyState === 'complete') {
-      setTimeout(dismissSplash, 500);
+    // Fast, non-blocking reveal: never wait on window.load on slow connections
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      setTimeout(dismissSplash, 200);
     } else {
-      window.addEventListener('load', () => {
-        setTimeout(dismissSplash, 400);
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(dismissSplash, 150);
       }, { once: true });
-      // Safety timeout after 700ms
-      setTimeout(dismissSplash, 700);
+      // Safety timeout after 350ms
+      setTimeout(dismissSplash, 350);
     }
   };
 

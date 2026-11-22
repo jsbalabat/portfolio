@@ -36,6 +36,9 @@ const formattedDate = new Intl.DateTimeFormat('en-US', {
         alt={post.data.coverImageAlt || post.data.title}
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         loading="lazy"
+        decoding="async"
+        width="400"
+        height="250"
       />
     </div>
   )}

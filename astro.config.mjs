@@ -68,6 +68,10 @@ const appVersion = getAppVersion();
 export default defineConfig({
   site: 'https://marcbalabat.tech',
   output: 'static',
+  prefetch: {
+    prefetchAll: false,
+    defaultStrategy: 'tap',
+  },
   adapter: cloudflare({
     imageService: 'cloudflare',
   }),
