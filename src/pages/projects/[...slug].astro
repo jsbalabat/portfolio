@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import TechIcon from '../../components/icons/TechIcon.astro';
+import AuditFlowSimulator from '../../components/AuditFlowSimulator';
 import { getCollection, render } from 'astro:content';
 
 export const prerender = true;
@@ -15,17 +16,20 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props;
 const { Content } = await render(project);
+const isAuditFlow = project.id === 'auditflow';
 ---
 
 <BaseLayout
-  title={`${project.data.title} | Architecture Dossier // ${project.data.liveUrl || project.data.repoUrl ? "Public Access" : "Protected"}`}
-  description={project.data.liveUrl || project.data.repoUrl
+  title={`${project.data.title} | Architecture Dossier // ${isAuditFlow ? 'HITL Engine Showcase' : project.data.liveUrl || project.data.repoUrl ? 'Public Access' : 'Protected'}`}
+  description={isAuditFlow
+    ? 'Automated invoice and purchase order reconciliation engine pairing strictly scoped Pydantic extraction with pure-Python deterministic guardrails and a Human-in-the-Loop approval gate.'
+    : project.data.liveUrl || project.data.repoUrl
     ? `Production architecture and technical specifications for ${project.data.title}.`
     : `Proprietary architecture and production details for ${project.data.title}.`}
 >
-  <div class="min-h-[80svh] flex flex-col justify-center py-12 sm:py-20 max-w-4xl mx-auto">
+  <div class="min-h-[80svh] flex flex-col justify-center py-12 sm:py-20 max-w-4xl mx-auto space-y-10">
     <!-- Back Navigation -->
-    <div class="mb-8 reveal-on-scroll">
+    <div class="reveal-on-scroll">
       <a
         href="/#projects"
         class="group inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-text-muted hover:text-text transition-colors"
@@ -36,9 +40,14 @@ const { Content } = await render(project);
     </div>
 
     <!-- Status Badge & Header -->
-    <div class="space-y-4 mb-10 reveal-on-scroll">
+    <div class="space-y-4 reveal-on-scroll">
       <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
-        {project.data.liveUrl || project.data.repoUrl ? (
+        {isAuditFlow ? (
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface text-xs text-text shadow-2xs max-w-full">
+            <span class="size-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
+            <span class="tracking-wide uppercase text-[10px] sm:text-[11px] font-semibold">PRODUCTION ARCHITECTURE // HITL ENGINE SHOWCASE</span>
+          </div>
+        ) : project.data.liveUrl || project.data.repoUrl ? (
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface text-xs text-text shadow-2xs max-w-full">
             <span class="size-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
             <span class="tracking-wide uppercase text-[10px] sm:text-[11px] font-semibold">
@@ -48,20 +57,22 @@ const { Content } = await render(project);
         ) : (
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface text-xs text-text shadow-2xs max-w-full">
             <span class="size-2 rounded-full bg-amber-500 animate-pulse shrink-0"></span>
-            <span class="tracking-wide uppercase text-[10px] sm:text-[11px] font-semibold">404 / ARCHITECTURE DOSSIER</span>
+            <span class="tracking-wide uppercase text-[10px] sm:text-[11px] font-semibold">404 // ARCHITECTURE DOSSIER</span>
           </div>
         )}
         <div class="text-[10px] sm:text-[11px] font-mono text-text-muted uppercase tracking-widest whitespace-nowrap">
-          REF: SEC-{project.id.toUpperCase()}-01
+          REF: {isAuditFlow ? 'ENG' : 'SEC'}-{project.id.toUpperCase()}-01
         </div>
       </div>
 
       <h1 class="font-display font-black text-4xl sm:text-6xl md:text-7xl tracking-tight uppercase text-text leading-[0.95]">
-        PROJECT DOSSIER // <span class={project.data.liveUrl || project.data.repoUrl ? "text-accent" : "text-text-muted"}>{project.data.liveUrl || project.data.repoUrl ? "PUBLIC ACCESS" : "PROTECTED"}</span>
+        PROJECT DOSSIER // <span class={isAuditFlow || project.data.liveUrl || project.data.repoUrl ? "text-accent" : "text-text-muted"}>{isAuditFlow ? "AUDITFLOW HITL" : project.data.liveUrl || project.data.repoUrl ? "PUBLIC ACCESS" : "PROTECTED"}</span>
       </h1>
 
       <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl font-normal">
-        {project.data.liveUrl || project.data.repoUrl
+        {isAuditFlow
+          ? "Automated invoice and purchase order reconciliation engine pairing strictly scoped Pydantic extraction with pure-Python deterministic guardrails and a Human-in-the-Loop approval gate."
+          : project.data.liveUrl || project.data.repoUrl
           ? `Full production deployment and architectural specifications for ${project.data.title}. Live application and open-source infrastructure are publicly accessible.`
           : "The full architectural dossier, system diagrams, and proprietary architecture for this production deployment are currently restricted under non-disclosure agreements or undergoing sanitized release."}
       </p>
@@ -161,17 +172,198 @@ const { Content } = await render(project);
         </div>
       </div>
 
-      <!-- Architectural Brief Narrative -->
-      <div class="pt-4 border-t border-border space-y-2 text-xs sm:text-sm text-text-muted leading-relaxed [&>p]:leading-relaxed [&>p+p]:mt-2">
-        <span class="text-[10px] font-mono uppercase tracking-widest text-text-muted font-bold block mb-1">
-          Architectural Brief
-        </span>
-        <Content />
-      </div>
+      {!isAuditFlow && (
+        <!-- Architectural Brief Narrative for other projects -->
+        <div class="pt-4 border-t border-border space-y-2 text-xs sm:text-sm text-text-muted leading-relaxed [&>p]:leading-relaxed [&>p+p]:mt-2">
+          <span class="text-[10px] font-mono uppercase tracking-widest text-text-muted font-bold block mb-1">
+            Architectural Brief
+          </span>
+          <Content />
+        </div>
+      )}
     </div>
 
+    <!-- Embedded Interactive Automation Flow Simulator (AuditFlow Showcase) -->
+    {isAuditFlow && (
+      <div class="space-y-4 reveal-on-scroll">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-[10px] font-mono uppercase tracking-widest text-text-muted font-bold block">
+              LIVE PIPELINE TESTBENCH
+            </span>
+            <h3 class="font-display font-black text-2xl sm:text-3xl uppercase tracking-tight text-text">
+              Interactive Execution & HITL Gate
+            </h3>
+          </div>
+          <span class="text-xs font-mono text-emerald-400 hidden sm:inline">
+            5 Scenarios • Zero Backend Required
+          </span>
+        </div>
+
+        <AuditFlowSimulator client:load />
+      </div>
+    )}
+
+    <!-- Architectural Deep-Dive Dossier -->
+    {isAuditFlow && (
+      <div class="space-y-8 reveal-on-scroll pt-2">
+        <div class="border-b border-border pb-3">
+          <span class="text-[10px] font-mono uppercase tracking-widest text-text-muted font-bold block mb-1">
+            ENGINEERING SPECIFICATION // SYSTEM BLUEPRINT
+          </span>
+          <h3 class="font-display font-black text-3xl sm:text-4xl uppercase tracking-tight text-text">
+            Architectural Walkthrough & Design Tradeoffs
+          </h3>
+        </div>
+
+        <!-- Section 1: Executive Overview & The Financial Hallucination Problem -->
+        <div class="rounded-2xl border border-border bg-surface p-6 sm:p-8 space-y-4">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-surface-raised border border-border text-[10px] font-mono text-text-muted uppercase font-bold">
+              01 // CORE PROBLEM
+            </span>
+            <h4 class="font-display font-bold text-xl sm:text-2xl uppercase tracking-tight text-text">
+              Why Autonomous Financial Extraction Fails in Production
+            </h4>
+          </div>
+          <p class="text-sm text-text-muted leading-relaxed">
+            In accounts payable workflows, delegating invoice calculations, tax validation, or approval authority directly to large language models creates intolerable financial hallucination risk. LLMs frequently miscalculate multi-line tax roundings, conflate subtotals with freight surcharges, or hallucinate authorization on subtle contract variations.
+          </p>
+          <p class="text-sm text-text-muted leading-relaxed">
+            <strong>AuditFlow</strong> solves this failure mode by drawing an immutable architectural boundary: LLMs are strictly confined to structured schema extraction and token confidence scoring. Every subsequent financial gate—line-item math, tax jurisdiction verification, PO balance tracking, and approval limits—runs exclusively in deterministic Python using exact <code class="font-mono text-text font-bold">Decimal</code> arithmetic.
+          </p>
+        </div>
+
+        <!-- Section 2: Deterministic vs. LLM Boundary -->
+        <div class="rounded-2xl border border-border bg-surface p-6 sm:p-8 space-y-4">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-surface-raised border border-border text-[10px] font-mono text-text-muted uppercase font-bold">
+              02 // BOUNDARY ISOLATION
+            </span>
+            <h4 class="font-display font-bold text-xl sm:text-2xl uppercase tracking-tight text-text">
+              The Deterministic vs. LLM Guardrail Boundary
+            </h4>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            <div class="p-4 rounded-xl border border-border bg-surface-raised/40 space-y-2">
+              <span class="text-[10px] font-mono uppercase tracking-widest text-text-dim font-bold block">
+                Scoped LLM Domain (Probabilistic)
+              </span>
+              <ul class="text-xs text-text-muted space-y-1.5 list-disc pl-4">
+                <li>Extract raw invoice tokens into strict Pydantic v2 schemas (<code class="font-mono text-text">InvoicePayload</code>).</li>
+                <li>Output field-level extraction confidence score (0.00 to 1.00).</li>
+                <li>Normalized vendor naming and address resolution.</li>
+                <li>Zero arithmetic calculations or decision rights.</li>
+              </ul>
+            </div>
+
+            <div class="p-4 rounded-xl border border-border bg-surface-raised/40 space-y-2">
+              <span class="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold block">
+                Deterministic Engine (Pure Python)
+              </span>
+              <ul class="text-xs text-text-muted space-y-1.5 list-disc pl-4">
+                <li><code class="font-mono text-text">Decimal</code> line-item sum equality: <code class="font-mono text-text">sum(items) == subtotal</code>.</li>
+                <li>Tax jurisdiction formulas and zero-rated exemption checks.</li>
+                <li>Purchase Order balance validation and unbilled credit checks.</li>
+                <li>Autonomous approval gates: <code class="font-mono text-text">&lt;= $1,000.00</code> and <code class="font-mono text-text">confidence &gt;= 0.90</code>.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Durable State Machine & Idempotent Ingestion -->
+        <div class="rounded-2xl border border-border bg-surface p-6 sm:p-8 space-y-4">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-surface-raised border border-border text-[10px] font-mono text-text-muted uppercase font-bold">
+              03 // STATE MACHINE
+            </span>
+            <h4 class="font-display font-bold text-xl sm:text-2xl uppercase tracking-tight text-text">
+              Durable State Transitions &amp; Idempotency-Key Dedup
+            </h4>
+          </div>
+          <p class="text-sm text-text-muted leading-relaxed">
+            Financial webhooks from payment gateways or ERP systems frequently retry on intermittent network timeouts. AuditFlow implements atomic deduplication via SHA-256 payload hashing and <code class="font-mono text-text">Idempotency-Key</code> indexes in PostgreSQL:
+          </p>
+          <div class="p-4 rounded-xl border border-border-subtle bg-surface-raised font-mono text-xs text-text overflow-x-auto leading-relaxed">
+            <code>ingested ──▶ extracted ──▶ validated ──▶ awaiting_human ──▶ approved | rejected | failed</code>
+          </div>
+          <p class="text-sm text-text-muted leading-relaxed">
+            Duplicate requests instantly short-circuit at the ingestion layer in <strong class="text-text">0.8ms</strong> with an <code class="font-mono text-text">X-Idempotent-Replay: true</code> response, consuming zero LLM tokens and making zero database mutations. An append-only <code class="font-mono text-text">run_events</code> audit table records every transition with actor metadata and microsecond timing, protected by HTTP <code class="font-mono text-text">409 Conflict</code> double-decision concurrency guards.
+          </p>
+        </div>
+
+        <!-- Section 4: Human-in-the-Loop & Automated Clarifications -->
+        <div class="rounded-2xl border border-border bg-surface p-6 sm:p-8 space-y-4">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-surface-raised border border-border text-[10px] font-mono text-text-muted uppercase font-bold">
+              04 // HUMAN-IN-THE-LOOP
+            </span>
+            <h4 class="font-display font-bold text-xl sm:text-2xl uppercase tracking-tight text-text">
+              HITL Review Gate &amp; Vendor Clarification Dispatch
+            </h4>
+          </div>
+          <p class="text-sm text-text-muted leading-relaxed">
+            Whenever an invoice breaches a deterministic gate (line-item math mismatch, tax variance, high-value threshold &gt; $1,000, or OCR confidence &lt; 0.90), execution halts immediately in the <code class="font-mono text-amber-400 font-bold">awaiting_human</code> state.
+          </p>
+          <p class="text-sm text-text-muted leading-relaxed">
+            Operations analysts can inspect the exact failing rule via the Next.js 16 console or Slack notifications. When an analyst clicks <strong>Reject &amp; Draft Email</strong>, AuditFlow's state machine automatically drafts a targeted vendor clarification email detailing the exact line-item delta (e.g. citing computed $525.00 vs stated $550.00), eliminating back-and-forth email friction.
+          </p>
+        </div>
+
+        <!-- Section 5: Golden Evaluation Harness & Benchmarks -->
+        <div class="rounded-2xl border border-border bg-surface p-6 sm:p-8 space-y-4">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-surface-raised border border-border text-[10px] font-mono text-text-muted uppercase font-bold">
+              05 // BENCHMARKS
+            </span>
+            <h4 class="font-display font-bold text-xl sm:text-2xl uppercase tracking-tight text-text">
+              Golden Evaluation Harness &amp; Adversarial Test Suite
+            </h4>
+          </div>
+          <p class="text-sm text-text-muted leading-relaxed">
+            Reliability is verified through a rigorous 25-case golden evaluation suite encompassing adversarial injections, degraded scans, currency mismatches, and double-entry attacks:
+          </p>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+            <div class="p-3.5 rounded-xl border border-border bg-surface-raised/40 text-center">
+              <span class="text-[10px] font-mono uppercase tracking-widest text-text-dim block">Decision Accuracy</span>
+              <span class="font-display font-black text-2xl text-emerald-400">100.0%</span>
+            </div>
+            <div class="p-3.5 rounded-xl border border-border bg-surface-raised/40 text-center">
+              <span class="text-[10px] font-mono uppercase tracking-widest text-text-dim block">False-Approval Rate</span>
+              <span class="font-display font-black text-2xl text-emerald-400">0.0%</span>
+            </div>
+            <div class="p-3.5 rounded-xl border border-border bg-surface-raised/40 text-center">
+              <span class="text-[10px] font-mono uppercase tracking-widest text-text-dim block">p95 Engine Latency</span>
+              <span class="font-display font-black text-2xl text-text">5.75 ms</span>
+            </div>
+            <div class="p-3.5 rounded-xl border border-border bg-surface-raised/40 text-center">
+              <span class="text-[10px] font-mono uppercase tracking-widest text-text-dim block">Unit &amp; Integ Tests</span>
+              <span class="font-display font-black text-2xl text-text">17 / 17</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 6: Hybrid Architecture (Code + Low-Code) -->
+        <div class="rounded-2xl border border-border bg-surface p-6 sm:p-8 space-y-4">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded bg-surface-raised border border-border text-[10px] font-mono text-text-muted uppercase font-bold">
+              06 // HYBRID ARCHITECTURE
+            </span>
+            <h4 class="font-display font-bold text-xl sm:text-2xl uppercase tracking-tight text-text">
+              Code + Low-Code Orchestration (FastAPI &amp; n8n)
+            </h4>
+          </div>
+          <p class="text-sm text-text-muted leading-relaxed">
+            AuditFlow demonstrates that modern automation systems should pair mission-critical custom backend code with modular low-code orchestrators. The core deterministic engine is built with <strong>FastAPI, Pydantic v2, and PostgreSQL</strong>, while external webhook receivers, Slack notifications, and vendor email dispatches are orchestrated through an exportable <strong>n8n</strong> workflow (<code class="font-mono text-text">n8n/auditflow-workflow.json</code>), granting operations teams visual observability without compromising code-level mathematical rigor.
+          </p>
+        </div>
+      </div>
+    )}
+
     <!-- Actions -->
-    <div class="flex flex-wrap items-center gap-3 pt-8 reveal-on-scroll">
+    <div class="flex flex-wrap items-center gap-3 pt-4 reveal-on-scroll">
       {project.data.liveUrl && (
         <a
           href={project.data.liveUrl}
@@ -199,7 +391,7 @@ const { Content } = await render(project);
 
       <a
         href="/#projects"
-        class={project.data.liveUrl
+        class={project.data.liveUrl || project.data.repoUrl
           ? "inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-border bg-surface hover:bg-surface-raised hover:border-text-muted active:scale-[0.97] text-text-muted hover:text-text transition-all text-xs font-semibold uppercase tracking-wider"
           : "inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-accent-text hover:scale-[1.02] active:scale-[0.98] transition-all text-xs font-bold uppercase tracking-wider shadow-xs"}
       >
