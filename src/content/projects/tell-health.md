@@ -12,8 +12,8 @@ stack:
   - Web Crypto API
 keyOutcome: Built deterministic schema validation and automated HIPAA-compliant PII redacting filters.
 metrics: Zero PII Leakage • <15ms Validation
-liveUrl: null
-repoUrl: null
+liveUrl: https://tell-health.vercel.app
+repoUrl: https://github.com/jsbalabat/tell-health
 featured: true
 order: 3
 ---
