@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import TechIcon from '../../components/icons/TechIcon.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 
 export const prerender = true;
 
@@ -14,11 +14,14 @@ export async function getStaticPaths() {
 }
 
 const { project } = Astro.props;
+const { Content } = await render(project);
 ---
 
 <BaseLayout
-  title={`${project.data.title} | Architecture Dossier // Protected`}
-  description={`Proprietary architecture and production details for ${project.data.title}.`}
+  title={`${project.data.title} | Architecture Dossier // ${project.data.liveUrl || project.data.repoUrl ? "Public Access" : "Protected"}`}
+  description={project.data.liveUrl || project.data.repoUrl
+    ? `Production architecture and technical specifications for ${project.data.title}.`
+    : `Proprietary architecture and production details for ${project.data.title}.`}
 >
   <div class="min-h-[80svh] flex flex-col justify-center py-12 sm:py-20 max-w-4xl mx-auto">
     <!-- Back Navigation -->
@@ -35,10 +38,12 @@ const { project } = Astro.props;
     <!-- Status Badge & Header -->
     <div class="space-y-4 mb-10 reveal-on-scroll">
       <div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
-        {project.data.liveUrl ? (
+        {project.data.liveUrl || project.data.repoUrl ? (
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface text-xs text-text shadow-2xs max-w-full">
             <span class="size-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
-            <span class="tracking-wide uppercase text-[10px] sm:text-[11px] font-semibold">PRODUCTION LIVE // PUBLIC DEPLOYMENT</span>
+            <span class="tracking-wide uppercase text-[10px] sm:text-[11px] font-semibold">
+              {project.data.liveUrl ? "PRODUCTION LIVE // PUBLIC DEPLOYMENT" : "OPEN SOURCE // PUBLIC REPOSITORY"}
+            </span>
           </div>
         ) : (
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-surface text-xs text-text shadow-2xs max-w-full">
@@ -52,11 +57,11 @@ const { project } = Astro.props;
       </div>
 
       <h1 class="font-display font-black text-4xl sm:text-6xl md:text-7xl tracking-tight uppercase text-text leading-[0.95]">
-        PROJECT DOSSIER // <span class={project.data.liveUrl ? "text-accent" : "text-text-muted"}>{project.data.liveUrl ? "PUBLIC ACCESS" : "PROTECTED"}</span>
+        PROJECT DOSSIER // <span class={project.data.liveUrl || project.data.repoUrl ? "text-accent" : "text-text-muted"}>{project.data.liveUrl || project.data.repoUrl ? "PUBLIC ACCESS" : "PROTECTED"}</span>
       </h1>
 
       <p class="text-sm sm:text-base text-text-muted leading-relaxed max-w-2xl font-normal">
-        {project.data.liveUrl
+        {project.data.liveUrl || project.data.repoUrl
           ? `Full production deployment and architectural specifications for ${project.data.title}. Live application and open-source infrastructure are publicly accessible.`
           : "The full architectural dossier, system diagrams, and proprietary architecture for this production deployment are currently restricted under non-disclosure agreements or undergoing sanitized release."}
       </p>
@@ -104,6 +109,41 @@ const { project } = Astro.props;
             {project.data.metrics}
           </span>
         </div>
+
+        {project.data.repoUrl && (
+          <div class="space-y-1.5">
+            <span class="text-[10px] font-mono uppercase tracking-widest text-text-muted font-bold block">
+              Source Repository
+            </span>
+            <a
+              href={project.data.repoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 text-text hover:text-accent font-mono text-[11px] font-semibold tracking-wider transition-colors"
+            >
+              <TechIcon name="github" class="w-3.5 h-3.5 text-accent" />
+              <span>{project.data.repoUrl.replace('https://github.com/', 'github.com/')}</span>
+              <span class="text-xs">↗</span>
+            </a>
+          </div>
+        )}
+
+        {project.data.liveUrl && (
+          <div class="space-y-1.5">
+            <span class="text-[10px] font-mono uppercase tracking-widest text-text-muted font-bold block">
+              Live Production
+            </span>
+            <a
+              href={project.data.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 text-text hover:text-accent font-mono text-[11px] font-semibold tracking-wider transition-colors"
+            >
+              <span>{project.data.liveUrl.replace('https://', '')}</span>
+              <span class="text-xs">↗</span>
+            </a>
+          </div>
+        )}
       </div>
 
       <!-- Verified Production Stack -->
@@ -119,6 +159,14 @@ const { project } = Astro.props;
             </span>
           ))}
         </div>
+      </div>
+
+      <!-- Architectural Brief Narrative -->
+      <div class="pt-4 border-t border-border space-y-2 text-xs sm:text-sm text-text-muted leading-relaxed [&>p]:leading-relaxed [&>p+p]:mt-2">
+        <span class="text-[10px] font-mono uppercase tracking-widest text-text-muted font-bold block mb-1">
+          Architectural Brief
+        </span>
+        <Content />
       </div>
     </div>
 

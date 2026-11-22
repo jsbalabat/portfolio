@@ -280,12 +280,12 @@ const skills = {
                       href={project.data.repoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      class="min-h-[36px] sm:min-h-[30px] px-3 py-1.5 inline-flex items-center gap-1.5 rounded-lg border border-border-subtle bg-surface-raised text-text-muted hover:text-text hover:border-text-muted text-[10px] font-semibold uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 pointer-events-auto touch-manipulation"
-                      title={`View source code for ${project.data.title}`}
+                      class="min-h-[36px] sm:min-h-[30px] px-3 py-1.5 inline-flex items-center gap-1.5 rounded-lg border border-border-subtle bg-surface-raised text-text hover:text-accent hover:border-text-muted active:scale-95 text-[10px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 pointer-events-auto touch-manipulation"
+                      title={`Open GitHub repository for ${project.data.title}`}
                     >
-                      <TechIcon name="github" class="w-2.5 h-2.5" />
-                      <span>Repo</span>
-                      <span class="text-[10px]">↗</span>
+                      <TechIcon name="github" class="w-3 h-3 text-accent" />
+                      <span class="whitespace-nowrap leading-none">GitHub Repo</span>
+                      <span class="text-[10px] leading-none">↗</span>
                     </a>
                   )}
                   <span class="inline group-hover:text-accent transition-colors whitespace-nowrap">SYS.ARCH // {indexStr}</span>
