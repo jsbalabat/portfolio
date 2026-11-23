@@ -1,7 +1,7 @@
 {
   "siteName": "Marc Balabat",
   "articlesTitle": "ARTICLES",
-  "articlesDescription": "Architecture walkthroughs, design tradeoffs, and technical breakdowns from production systems.",
+  "articlesDescription": "Engineering writeups and production notes.",
   "authorName": "Marc Balabat",
   "authorRole": "Full-Stack Software Engineer",
   "githubUrl": "https://github.com/jsbalabat",

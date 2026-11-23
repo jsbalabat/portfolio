@@ -1,7 +1,7 @@
 ---
 title: Ledgerly
 category: Mobile / B2B Logistics
-tagline: Offline-first Flutter invoicing and real-time inventory management replacing manual Excel billing.
+tagline: Offline-first mobile invoicing and inventory.
 role: Sole Engineer (Architecture to Deployment)
 timeline: 2025 - 2026
 stack:
@@ -10,12 +10,10 @@ stack:
   - Firebase Cloud Functions
   - Firestore
   - Node.js
-keyOutcome: Replaced Excel billing via idempotent Cloud Functions write-path with zero inventory sync conflicts.
-metrics: 6 Companies • ~150 Invoices/Day
+keyOutcome: Zero inventory sync conflicts across 6 distribution firms.
+metrics: 6 Firms • ~150 Invoices/Day
 liveUrl: null
 repoUrl: null
 featured: true
 order: 1
 ---
-
-Designed and developed a resilient offline-first mobile application adopted by six distribution companies. Built a secure server-authoritative write path where Firebase Cloud Functions atomically validate inventory decrements, customer credit limits, and document numbering, eliminating spreadsheet reconciliation conflicts completely.

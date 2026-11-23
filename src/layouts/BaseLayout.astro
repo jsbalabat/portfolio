@@ -141,14 +141,12 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
       aria-hidden="true"
       class="pointer-events-none fixed top-0 bottom-0 left-2 xl:left-5 z-0 hidden lg:flex flex-col justify-between items-center py-12 text-text-muted/30 select-none font-mono text-[9px] tracking-widest uppercase"
     >
-      <!-- Top: Reticle + Lat -->
       <div class="flex flex-col items-center gap-2">
         <svg class="w-3.5 h-3.5 text-text-muted/40 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2">
           <circle cx="8" cy="8" r="5" stroke-dasharray="2 2"></circle>
           <line x1="8" y1="1" x2="8" y2="15"></line>
           <line x1="1" y1="8" x2="15" y2="8"></line>
         </svg>
-        <span class="[writing-mode:vertical-rl] rotate-180">SYS.01 // LAT 14.5995° N</span>
       </div>
 
       <!-- Middle: Vertical measurement tick marks line -->
@@ -160,9 +158,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         <span class="w-2 h-[1px] bg-border-subtle"></span>
       </div>
 
-      <!-- Bottom: PROD_SYS // ACTIVE -->
       <div class="flex flex-col items-center gap-2">
-        <span class="[writing-mode:vertical-rl] rotate-180">PROD_SYS // ACTIVE</span>
         <div class="w-1.5 h-1.5 rounded-full bg-emerald-500/40"></div>
       </div>
     </aside>
@@ -171,10 +167,8 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
       aria-hidden="true"
       class="pointer-events-none fixed top-0 bottom-0 right-2 xl:right-5 z-0 hidden lg:flex flex-col justify-between items-center py-12 text-text-muted/30 select-none font-mono text-[9px] tracking-widest uppercase"
     >
-      <!-- Top: Longitude + 3NF -->
       <div class="flex flex-col items-center gap-2">
         <div class="w-1.5 h-1.5 rounded-full bg-accent/40"></div>
-        <span class="[writing-mode:vertical-rl]">LNG 120.9842° E // 3NF</span>
       </div>
 
       <!-- Middle: Vertical measurement line with coordinate marks -->
@@ -186,9 +180,7 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
         <span class="w-2 h-[1px] bg-border-subtle"></span>
       </div>
 
-      <!-- Bottom: Technical crosshair SVG + telemetry status -->
       <div class="flex flex-col items-center gap-2">
-        <span class="[writing-mode:vertical-rl]">TELEMETRY // OK</span>
         <svg class="w-3.5 h-3.5 text-text-muted/40 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2">
           <rect x="3" y="3" width="10" height="10" stroke-dasharray="2 2"></rect>
           <line x1="8" y1="2" x2="8" y2="14"></line>
@@ -339,10 +331,6 @@ const gitBranch = import.meta.env.PUBLIC_GIT_BRANCH || "main";
       {showFooter && (
         <footer class="py-8 border-t border-border flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs text-text-muted pb-[calc(2rem+env(safe-area-inset-bottom,0px))]">
           <div class="flex flex-col gap-0.5">
-            <div class="flex items-center gap-2">
-              <span class="size-2 rounded-full bg-emerald-500"></span>
-              <span class="text-text font-semibold uppercase tracking-wider text-[11px]">AVAILABLE FOR NEW OPPORTUNITIES</span>
-            </div>
             <p>© {new Date().getFullYear()} Marc Balabat. v{appVersion} · {gitSha} ({gitBranch})</p>
           </div>
 
